@@ -3,6 +3,14 @@
 > **Navigate the LLM landscape with confidence.**  
 > An interactive, visually immersive app that helps developers and product teams pick the right Large Language Model for their use case — through two complementary experiences: a living knowledge graph and a guided Q&A picker.
 
+<p align="center">
+  <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg" />
+  <img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" />
+  <img alt="Built with Next.js" src="https://img.shields.io/badge/built%20with-Next.js%2014-black?logo=next.js" />
+  <img alt="Three.js" src="https://img.shields.io/badge/3D-Three.js-orange?logo=three.js" />
+  <img alt="Deployed on Vercel" src="https://img.shields.io/badge/deployed%20on-Vercel-black?logo=vercel" />
+</p>
+
 ---
 
 ## ✨ What Is This?
@@ -13,8 +21,8 @@ The LLM ecosystem is exploding. GPT-4o, Claude 3.5, Gemini 1.5, Mistral, Llama 3
 
 | Flow | What it does |
 |---|---|
-| 🕸️ **Knowledge Graph** | A dynamic, neuron-inspired graph that clusters "like" LLMs together so you can visually explore the landscape and understand relationships at a glance. |
-| 🧭 **Q&A Picker** | A conversational drill-down that asks about your app's purpose, constraints, and priorities — then surfaces the best-fit LLM(s) with a clear rationale. |
+| 🕸️ **Knowledge Graph** | A dynamic, neuron-inspired 3D graph that clusters "like" LLMs together so you can visually explore the landscape and understand relationships at a glance. |
+| 🧭 **Q&A Picker** | A conversational drill-down that asks about your app's purpose, constraints, and priorities — then surfaces the best-fit LLM(s) with a clear, plain-English rationale. |
 
 ---
 
@@ -39,12 +47,13 @@ Each **node** is an LLM. Nodes that share characteristics — similar benchmark 
 | Element | Design Choice |
 |---|---|
 | Background | Deep space black (`#050810`) with a subtle radial gradient bloom at center |
-| Fog | Layered, animated `THREE.FogExp2` or CSS `backdrop-filter` blur planes drifting slowly across the scene |
-| Nodes | Glowing spheres with a soft bloom post-processing pass; color-coded by provider family |
+| Fog | Layered, animated `THREE.FogExp2` planes drifting slowly across the scene — evoking the haze between synapses |
+| Nodes | Glowing spheres with a soft **UnrealBloom** post-processing pass; color-coded by provider family |
 | Edges | Semi-transparent, luminous threads (`opacity: 0.25–0.6`) that brighten on hover |
-| Pulse animation | Sinusoidal scale + emissive intensity oscillation on each node, offset by a random phase so they feel organic |
+| Pulse animation | Sinusoidal scale + emissive intensity oscillation on each node, offset by a random phase so they feel organic and alive |
 | Particle field | Sparse floating dust particles in the background to reinforce the "neural space" atmosphere |
-| Typography | Clean, futuristic sans-serif (e.g., **Inter** or **Space Grotesk**) with glowing text accents |
+| Typography | Clean, futuristic sans-serif (**Space Grotesk** / **Inter**) with glowing text accents |
+| Cluster halos | Soft, colored radial gradients behind each cluster group to visually separate "families" of models |
 
 ---
 
@@ -98,7 +107,7 @@ Each recommendation surfaces:
 - **Why it fits** — a 2–3 sentence plain-English explanation tied to the user's answers
 - **Key stats** — context window, cost, latency tier, license
 - **Alternatives** — 1–2 runner-up models with brief trade-off notes
-- **"Explore in Graph"** — deep-links into the Knowledge Graph with the recommended node highlighted
+- **"Explore in Graph"** — deep-links into the Knowledge Graph with the recommended node highlighted and pulsing
 
 ---
 
@@ -108,14 +117,14 @@ Each recommendation surfaces:
 
 | Layer | Technology | Why |
 |---|---|---|
-| Framework | **Next.js 14** (App Router) | File-based routing, RSC for fast initial loads, excellent DX |
-| Language | **TypeScript** | Type safety across the entire codebase |
+| Framework | **Next.js 14** (App Router) | File-based routing, React Server Components for fast initial loads, excellent DX |
+| Language | **TypeScript** | End-to-end type safety across the entire codebase |
 | Styling | **Tailwind CSS** + **shadcn/ui** | Utility-first speed with beautiful, accessible components out of the box |
 | 3D / Graph | **Three.js** via **React Three Fiber** + **@react-three/drei** | Declarative 3D in React; `drei` provides helpers for bloom, fog, and orbit controls |
-| Graph physics | **d3-force-3d** | Force-directed layout in 3D space; drives node simulation |
+| Graph physics | **d3-force-3d** | Force-directed layout in 3D space; drives the node simulation and clustering |
 | Graph rendering | **react-force-graph-3d** | Wraps Three.js + d3-force-3d into a ready-made 3D force graph component |
 | Post-processing | **@react-three/postprocessing** (UnrealBloom) | The "neurons glowing" bloom effect with minimal setup |
-| Animations | **Framer Motion** | Smooth page transitions and Q&A step animations |
+| Animations | **Framer Motion** | Smooth page transitions, Q&A step animations, and result card reveals |
 | State management | **Zustand** | Lightweight, boilerplate-free global state for graph filters and picker flow |
 | Data fetching | **TanStack Query** | Caching and background refresh for LLM metadata |
 
@@ -133,7 +142,7 @@ Each recommendation surfaces:
 
 | Concern | Technology |
 |---|---|
-| Hosting | **Vercel** — zero-config Next.js deployment, edge network |
+| Hosting | **Vercel** — zero-config Next.js deployment, global edge network |
 | CI/CD | **GitHub Actions** — lint, type-check, and deploy on push |
 | Package manager | **pnpm** — fast, disk-efficient |
 | Linting / formatting | **ESLint** + **Prettier** |
@@ -145,25 +154,26 @@ Each recommendation surfaces:
 ## 🎨 Design System at a Glance
 
 ```
-Primary palette
-  Background:   #050810  (deep space)
-  Surface:      #0d1117  (card / panel)
-  Border:       #1e2a3a  (subtle divider)
-  Accent Blue:  #3b82f6  (interactive / links)
-  Accent Cyan:  #06b6d4  (graph edges / glow)
-  Accent Purple:#a855f7  (cluster highlights)
-  Text Primary: #f0f6fc
-  Text Muted:   #8b949e
+Primary Palette
+  Background:    #050810  (deep space)
+  Surface:       #0d1117  (card / panel)
+  Border:        #1e2a3a  (subtle divider)
+  Accent Blue:   #3b82f6  (interactive / links)
+  Accent Cyan:   #06b6d4  (graph edges / glow)
+  Accent Purple: #a855f7  (cluster highlights)
+  Text Primary:  #f0f6fc
+  Text Muted:    #8b949e
 
 Typography
   Display:  Space Grotesk, 700
   Body:     Inter, 400 / 500
-  Mono:     JetBrains Mono (code snippets, stats)
+  Mono:     JetBrains Mono  (code snippets, stats)
 
-Motion principles
-  - Ease: spring-based (no linear easing)
-  - Duration: 200–400 ms for UI; 800–1200 ms for graph transitions
-  - Idle animations: always subtle, never distracting
+Motion Principles
+  - Easing:    spring-based (no linear easing)
+  - Duration:  200–400 ms for UI; 800–1200 ms for graph transitions
+  - Idle:      always subtle, never distracting
+  - Fog drift: 20–40 s loop, randomized per layer
 ```
 
 ---
@@ -171,20 +181,43 @@ Motion principles
 ## 🗺️ Roadmap
 
 - [ ] Seed database with initial set of ~30 LLMs
-- [ ] Build Knowledge Graph view (3D force layout + bloom)
+- [ ] Build Knowledge Graph view (3D force layout + bloom + fog)
 - [ ] Build Q&A Picker flow (branching question engine)
 - [ ] Connect Picker result → Graph highlight
-- [ ] Add LLM comparison table view
+- [ ] Add LLM side-by-side comparison table view
 - [ ] Community-contributed LLM entries (with moderation)
-- [ ] Embed benchmark data (MMLU, HumanEval, MATH, etc.)
+- [ ] Embed benchmark data (MMLU, HumanEval, MATH, GPQA, etc.)
 - [ ] "What changed this week" feed for new model releases
-- [ ] API endpoint so other tools can query recommendations
+- [ ] API endpoint so other tools can query recommendations programmatically
+
+---
+
+## 🚀 Getting Started
+
+> ⚠️ **No code yet** — this repo is in the planning phase. The section below describes the intended setup once development begins.
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/eeduvall/llm-knowledge-base.git
+cd llm-knowledge-base
+
+# 2. Install dependencies
+pnpm install
+
+# 3. Copy environment variables
+cp .env.example .env.local
+# → Fill in your Supabase URL, anon key, etc.
+
+# 4. Run the development server
+pnpm dev
+# → Open http://localhost:3000
+```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Whether it's adding a new LLM to the dataset, improving the question flow, or refining the visual design — open an issue or pull request.
+Contributions are welcome! Whether it's adding a new LLM to the dataset, improving the question flow, or refining the visual design — open an issue or pull request and let's build this together.
 
 ---
 
