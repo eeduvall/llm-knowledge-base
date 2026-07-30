@@ -79,6 +79,11 @@ export function GraphAnimation() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    // Respect prefers-reduced-motion: skip animation entirely
+    const prefersReduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
     const resize = () => {
       canvas.width = canvas.offsetWidth
       canvas.height = canvas.offsetHeight
@@ -88,6 +93,47 @@ export function GraphAnimation() {
 
     resize()
     window.addEventListener('resize', resize)
+
+    if (prefersReduced) {
+      // Draw a single static frame and stop
+      const w = canvas.width
+      const h = canvas.height
+      const nodes = nodesRef.current
+      const edges = edgesRef.current
+
+      ctx.clearRect(0, 0, w, h)
+      edges.forEach(({ from, to }) => {
+        const a = nodes[from]
+        const b = nodes[to]
+        const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y)
+        grad.addColorStop(0, a.color + '55')
+        grad.addColorStop(1, b.color + '33')
+        ctx.beginPath()
+        ctx.moveTo(a.x, a.y)
+        ctx.lineTo(b.x, b.y)
+        ctx.strokeStyle = grad
+        ctx.lineWidth = 0.8
+        ctx.stroke()
+      })
+      nodes.forEach((node) => {
+        const r = node.r
+        const core = ctx.createRadialGradient(
+          node.x - r * 0.3, node.y - r * 0.3, 0,
+          node.x, node.y, r
+        )
+        core.addColorStop(0, '#ffffff')
+        core.addColorStop(0.4, node.color)
+        core.addColorStop(1, node.color + 'aa')
+        ctx.beginPath()
+        ctx.arc(node.x, node.y, r, 0, Math.PI * 2)
+        ctx.fillStyle = core
+        ctx.fill()
+      })
+
+      return () => {
+        window.removeEventListener('resize', resize)
+      }
+    }
 
     let t = 0
 
@@ -148,6 +194,8 @@ export function GraphAnimation() {
         ctx.arc(node.x, node.y, r, 0, Math.PI * 2)
         ctx.fillStyle = core
         ctx.fill()
+
+        void i // suppress unused-var lint for index
       })
 
       animRef.current = requestAnimationFrame(draw)
@@ -166,6 +214,7 @@ export function GraphAnimation() {
       ref={canvasRef}
       className="w-full h-full"
       style={{ display: 'block' }}
+      aria-hidden="true"
     />
   )
 }
