@@ -28,18 +28,18 @@ export function Navbar() {
 
       {/* Nav links */}
       <div className="flex items-center gap-8">
-        <div className="hidden md:flex items-center gap-8" role="list">
+        <ul className="hidden md:flex items-center gap-8 list-none">
           {(['Graph', 'Picker', 'Models', 'Changelog'] as const).map((item) => (
-            <Link
-              key={item}
-              href={`/${item.toLowerCase()}`}
-              className="text-sm text-white/70 hover:text-white transition-colors duration-200"
-              role="listitem"
-            >
-              {item}
-            </Link>
+            <li key={item}>
+              <Link
+                href={`/${item.toLowerCase()}`}
+                className="text-sm text-white/70 hover:text-white transition-colors duration-200"
+              >
+                {item}
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
         <Link
           href="/sign-in"
           className="text-sm font-medium text-white border border-white/30 rounded px-4 py-1.5 hover:border-white/60 hover:bg-white/5 transition-all duration-200"
