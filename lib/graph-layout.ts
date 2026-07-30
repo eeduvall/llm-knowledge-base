@@ -59,12 +59,12 @@ const CENTER_GRAVITY = 0.015
 export function tickLayout(
   nodes: GraphNode[],
   edges: GraphEdge[],
-  width: number,
-  height: number
+  // width and height are kept for API compatibility but the gravity center is
+  // always world-space origin (0, 0) — the camera transform in GraphCanvas
+  // maps (0, 0) to the screen centre.
+  _width: number,
+  _height: number
 ): void {
-  const cx = width / 2
-  const cy = height / 2
-
   // Repulsion between all node pairs
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
@@ -102,10 +102,11 @@ export function tickLayout(
     b.vy -= fy
   }
 
-  // Gravity toward center
+  // Gravity toward world-space origin (0, 0), which the camera maps to the
+  // screen centre.
   for (const node of nodes) {
-    node.vx += (cx - node.x) * CENTER_GRAVITY
-    node.vy += (cy - node.y) * CENTER_GRAVITY
+    node.vx += (0 - node.x) * CENTER_GRAVITY
+    node.vy += (0 - node.y) * CENTER_GRAVITY
   }
 
   // Integrate velocities
