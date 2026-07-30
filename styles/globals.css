@@ -4,21 +4,42 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Dark mode (default) ─────────────────────────────────────────────────── */
 :root {
   --color-bg:        #050510;
+  --color-surface:   rgba(255, 255, 255, 0.03);
+  --color-border:    rgba(255, 255, 255, 0.07);
+  --color-text:      #ffffff;
+  --color-text-muted: rgba(255, 255, 255, 0.5);
   --color-primary:   #6C63FF;
   --color-secondary: #00D4FF;
   --color-accent:    #FF6B9D;
   --color-fog:       rgba(100, 120, 255, 0.04);
+  --color-nav-bg:    rgba(5, 5, 16, 0.85);
+}
+
+/* ── Light mode overrides ────────────────────────────────────────────────── */
+html.light {
+  --color-bg:        #f5f5ff;
+  --color-surface:   rgba(108, 99, 255, 0.04);
+  --color-border:    rgba(108, 99, 255, 0.15);
+  --color-text:      #0d0d1a;
+  --color-text-muted: rgba(13, 13, 26, 0.55);
+  --color-primary:   #5a52e0;
+  --color-secondary: #0099bb;
+  --color-accent:    #e0527a;
+  --color-fog:       rgba(108, 99, 255, 0.03);
+  --color-nav-bg:    rgba(245, 245, 255, 0.92);
 }
 
 html,
 body {
   background-color: var(--color-bg);
-  color: #ffffff;
+  color: var(--color-text);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 * {

@@ -59,7 +59,7 @@ export function GraphCanvas({
     }
   }, [hoveredId])
 
-  // Zoom-to-fit when filter changes
+  // Zoom-to-fit when visible set changes
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -67,17 +67,10 @@ export function GraphCanvas({
     const w = canvas.offsetWidth || canvas.width
     const h = canvas.offsetHeight || canvas.height
 
-    if (filterProvider === null) {
-      // Reset to default view
-      cameraTargetRef.current = { x: 0, y: 0, scale: 1 }
-      return
-    }
+    const visibleNodes = nodesRef.current.filter((n) => visibleIds.has(n.id))
 
-    // Compute bounding box of visible nodes
-    const visibleNodes = nodesRef.current.filter(
-      (n) => n.provider === filterProvider
-    )
-    if (visibleNodes.length === 0) {
+    if (visibleNodes.length === 0 || visibleNodes.length === nodesRef.current.length) {
+      // All visible or none — reset to default view
       cameraTargetRef.current = { x: 0, y: 0, scale: 1 }
       return
     }
@@ -104,21 +97,16 @@ export function GraphCanvas({
     const scaleY = h / bboxH
     const scale = Math.min(scaleX, scaleY, 2.5) // cap at 2.5×
 
-    // Camera offset: translate so bbox center maps to canvas center
-    // After transform: screenX = (worldX - cx) * scale + w/2
-    // We want bboxCx to map to w/2, so cx = bboxCx
     cameraTargetRef.current = {
       x: bboxCx,
       y: bboxCy,
       scale,
     }
-  }, [filterProvider])
+  }, [visibleIds])
 
   const getVisibleNodes = useCallback((): GraphNode[] => {
-    return nodesRef.current.filter(
-      (n) => filterProvider === null || n.provider === filterProvider
-    )
-  }, [filterProvider])
+    return nodesRef.current.filter((n) => visibleIds.has(n.id))
+  }, [visibleIds])
 
   const getNodeAt = useCallback(
     (screenX: number, screenY: number): GraphNode | null => {

@@ -14,6 +14,18 @@ type Props = {
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
+      {/*
+        Inline script runs before first paint to apply the saved theme class,
+        preventing a flash of the wrong theme on hard reload.
+        Reads localStorage key "llm-kb-theme"; falls back to prefers-color-scheme.
+      */}
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('llm-kb-theme');if(t==='light'){document.documentElement.classList.add('light')}else if(!t&&window.matchMedia('(prefers-color-scheme: light)').matches){document.documentElement.classList.add('light')}}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   )
