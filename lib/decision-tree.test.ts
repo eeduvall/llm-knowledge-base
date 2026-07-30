@@ -32,9 +32,7 @@ function makeModel(overrides: Partial<Model> = {}): Model {
   }
 }
 
-const allQuestionIds = QUESTIONS.map((q) => q.id)
-
-function allAnswers(overrides: Partial<UserAnswers> = {}): UserAnswers {
+function allAnswers(overrides: Record<string, string> = {}): UserAnswers {
   const base: UserAnswers = {
     use_case: 'chatbot',
     latency: 'medium',
