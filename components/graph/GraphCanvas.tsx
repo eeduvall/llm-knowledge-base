@@ -14,6 +14,12 @@ type Props = {
   onHoverNode: (id: string | null) => void
 }
 
+type Camera = {
+  x: number
+  y: number
+  scale: number
+}
+
 export function GraphCanvas({
   nodes,
   edges,
@@ -29,6 +35,10 @@ export function GraphCanvas({
   const edgesRef = useRef<GraphEdge[]>(edges)
   const tRef = useRef(0)
   const synapseRef = useRef<{ id: string; t: number } | null>(null)
+
+  // Camera state: current and target for smooth interpolation
+  const cameraRef = useRef<Camera>({ x: 0, y: 0, scale: 1 })
+  const cameraTargetRef = useRef<Camera>({ x: 0, y: 0, scale: 1 })
 
   // Keep refs in sync with props
   useEffect(() => {
@@ -46,17 +56,86 @@ export function GraphCanvas({
     }
   }, [hoveredId])
 
-  const getNodeAt = useCallback((x: number, y: number): GraphNode | null => {
-    for (const node of nodesRef.current) {
-      const visible =
-        filterProvider === null || node.provider === filterProvider
-      if (!visible) continue
-      const dx = node.x - x
-      const dy = node.y - y
-      if (Math.sqrt(dx * dx + dy * dy) <= node.radius + 6) return node
+  // Zoom-to-fit when filter changes
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const w = canvas.offsetWidth || canvas.width
+    const h = canvas.offsetHeight || canvas.height
+
+    if (filterProvider === null) {
+      // Reset to default view
+      cameraTargetRef.current = { x: 0, y: 0, scale: 1 }
+      return
     }
-    return null
+
+    // Compute bounding box of visible nodes
+    const visibleNodes = nodesRef.current.filter(
+      (n) => n.provider === filterProvider
+    )
+    if (visibleNodes.length === 0) {
+      cameraTargetRef.current = { x: 0, y: 0, scale: 1 }
+      return
+    }
+
+    let minX = Infinity
+    let maxX = -Infinity
+    let minY = Infinity
+    let maxY = -Infinity
+
+    for (const n of visibleNodes) {
+      minX = Math.min(minX, n.x - n.radius)
+      maxX = Math.max(maxX, n.x + n.radius)
+      minY = Math.min(minY, n.y - n.radius)
+      maxY = Math.max(maxY, n.y + n.radius)
+    }
+
+    const padding = 80
+    const bboxW = maxX - minX + padding * 2
+    const bboxH = maxY - minY + padding * 2
+    const bboxCx = (minX + maxX) / 2
+    const bboxCy = (minY + maxY) / 2
+
+    const scaleX = w / bboxW
+    const scaleY = h / bboxH
+    const scale = Math.min(scaleX, scaleY, 2.5) // cap at 2.5×
+
+    // Camera offset: translate so bbox center maps to canvas center
+    // After transform: screenX = (worldX - cx) * scale + w/2
+    // We want bboxCx to map to w/2, so cx = bboxCx
+    cameraTargetRef.current = {
+      x: bboxCx,
+      y: bboxCy,
+      scale,
+    }
   }, [filterProvider])
+
+  const getNodeAt = useCallback(
+    (screenX: number, screenY: number): GraphNode | null => {
+      const canvas = canvasRef.current
+      if (!canvas) return null
+      const w = canvas.width
+      const h = canvas.height
+      const cam = cameraRef.current
+
+      // Convert screen coords to world coords
+      const worldX = (screenX - w / 2) / cam.scale + cam.x
+      const worldY = (screenY - h / 2) / cam.scale + cam.y
+
+      for (const node of nodesRef.current) {
+        const visible =
+          filterProvider === null || node.provider === filterProvider
+        if (!visible) continue
+        const dx = node.x - worldX
+        const dy = node.y - worldY
+        if (Math.sqrt(dx * dx + dy * dy) <= node.radius + 6 / cam.scale)
+          return node
+      }
+      return null
+    },
+    [filterProvider]
+  )
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -70,6 +149,8 @@ export function GraphCanvas({
     }
     resize()
     window.addEventListener('resize', resize)
+
+    const LERP = 0.08 // smoothing factor per frame
 
     const draw = () => {
       tRef.current += 0.008
@@ -88,7 +169,20 @@ export function GraphCanvas({
       // Run physics
       tickLayout(nodes, edges, w, h)
 
+      // Smooth camera interpolation
+      const cam = cameraRef.current
+      const target = cameraTargetRef.current
+      cam.x += (target.x - cam.x) * LERP
+      cam.y += (target.y - cam.y) * LERP
+      cam.scale += (target.scale - cam.scale) * LERP
+
       ctx.clearRect(0, 0, w, h)
+
+      // Apply camera transform: translate so world-center maps to canvas-center
+      ctx.save()
+      ctx.translate(w / 2, h / 2)
+      ctx.scale(cam.scale, cam.scale)
+      ctx.translate(-cam.x, -cam.y)
 
       // Draw edges
       for (const edge of edges) {
@@ -202,6 +296,8 @@ export function GraphCanvas({
           ctx.fillText(node.label, node.x, node.y + r + 14)
         }
       }
+
+      ctx.restore()
 
       animRef.current = requestAnimationFrame(draw)
     }
