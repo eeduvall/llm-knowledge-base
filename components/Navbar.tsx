@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 
-/** Inline SVG galaxy logo — spiral arms, star dots, glowing core.
- *  Uses only design-system palette colors defined in styles/globals.css.
- *  Dynamic radial-gradient values are the only inline styles (cannot be
- *  expressed as static Tailwind classes per AGENTS.md §6).
+/** Inline SVG galaxy logo — tilted elliptical disc with glowing core.
+ *  The disc shape reads clearly at 28 × 28 px where spiral arms become
+ *  indistinct.  Uses only design-system palette colors defined in
+ *  styles/globals.css.  Dynamic radial-gradient values are the only inline
+ *  styles (cannot be expressed as static Tailwind classes per AGENTS.md §6).
  */
 function GalaxyLogo() {
   return (
@@ -19,85 +20,68 @@ function GalaxyLogo() {
       role="img"
     >
       <defs>
-        {/* Radial glow for the core */}
-        <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-          <stop offset="40%" stopColor="#6C63FF" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#050510" stopOpacity="0" />
+        {/* Soft outer halo */}
+        <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stopColor="#6C63FF" stopOpacity="0.18" />
+          <stop offset="70%"  stopColor="#00D4FF" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="#050510" stopOpacity="0"    />
         </radialGradient>
-        {/* Outer haze */}
-        <radialGradient id="outerHaze" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#6C63FF" stopOpacity="0.15" />
-          <stop offset="60%" stopColor="#00D4FF" stopOpacity="0.08" />
-          <stop offset="100%" stopColor="#050510" stopOpacity="0" />
+        {/* Bright core glow */}
+        <radialGradient id="core" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stopColor="#ffffff"  stopOpacity="1"   />
+          <stop offset="45%"  stopColor="#6C63FF"  stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#050510"  stopOpacity="0"   />
         </radialGradient>
-        {/* Arm gradient — primary to secondary */}
-        <linearGradient id="armGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#6C63FF" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#00D4FF" stopOpacity="0.3" />
-        </linearGradient>
-        <linearGradient id="armGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#00D4FF" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#6C63FF" stopOpacity="0.3" />
-        </linearGradient>
       </defs>
 
-      {/* Outer diffuse haze */}
-      <circle cx="14" cy="14" r="13" fill="url(#outerHaze)" />
+      {/* Outer diffuse halo */}
+      <ellipse cx="14" cy="14" rx="13" ry="13" fill="url(#halo)" />
 
-      {/* Spiral arm 1 — sweeps from lower-left to upper-right */}
-      <path
-        d="M 4 20 Q 8 14 14 14 Q 20 14 22 8"
-        stroke="url(#armGrad1)"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.85"
-      />
-      {/* Spiral arm 2 — counter-sweep */}
-      <path
-        d="M 24 20 Q 20 14 14 14 Q 8 14 6 8"
-        stroke="url(#armGrad2)"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.85"
-      />
-      {/* Thinner outer arm extension 1 */}
-      <path
-        d="M 2 16 Q 6 13 10 12"
+      {/* Galactic disc — outer ring, tilted ~20 ° */}
+      <ellipse
+        cx="14" cy="14"
+        rx="11" ry="4.5"
         stroke="#6C63FF"
-        strokeWidth="1"
-        strokeLinecap="round"
+        strokeWidth="1.4"
+        strokeOpacity="0.7"
         fill="none"
-        opacity="0.5"
-      />
-      {/* Thinner outer arm extension 2 */}
-      <path
-        d="M 26 16 Q 22 13 18 12"
-        stroke="#00D4FF"
-        strokeWidth="1"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.5"
+        transform="rotate(-20 14 14)"
       />
 
-      {/* Star dots scattered in the arms */}
-      <circle cx="6"  cy="21" r="0.8" fill="#00D4FF" opacity="0.9" />
-      <circle cx="9"  cy="18" r="0.6" fill="#6C63FF" opacity="0.8" />
-      <circle cx="20" cy="9"  r="0.8" fill="#6C63FF" opacity="0.9" />
-      <circle cx="22" cy="19" r="0.7" fill="#00D4FF" opacity="0.8" />
-      <circle cx="5"  cy="12" r="0.5" fill="#FF6B9D" opacity="0.7" />
-      <circle cx="23" cy="12" r="0.5" fill="#FF6B9D" opacity="0.7" />
-      <circle cx="11" cy="8"  r="0.6" fill="#00D4FF" opacity="0.6" />
-      <circle cx="17" cy="20" r="0.6" fill="#6C63FF" opacity="0.6" />
-      <circle cx="8"  cy="10" r="0.4" fill="#ffffff"  opacity="0.5" />
-      <circle cx="20" cy="18" r="0.4" fill="#ffffff"  opacity="0.5" />
+      {/* Galactic disc — mid ring */}
+      <ellipse
+        cx="14" cy="14"
+        rx="7.5" ry="3"
+        stroke="#00D4FF"
+        strokeWidth="1.1"
+        strokeOpacity="0.65"
+        fill="none"
+        transform="rotate(-20 14 14)"
+      />
+
+      {/* Faint inner disc fill to suggest the bulge */}
+      <ellipse
+        cx="14" cy="14"
+        rx="5" ry="2"
+        fill="#6C63FF"
+        fillOpacity="0.12"
+        transform="rotate(-20 14 14)"
+      />
+
+      {/* Star dots — scattered around the disc plane */}
+      <circle cx="4"  cy="11" r="0.7" fill="#00D4FF" opacity="0.85" />
+      <circle cx="24" cy="17" r="0.7" fill="#6C63FF" opacity="0.85" />
+      <circle cx="7"  cy="18" r="0.55" fill="#6C63FF" opacity="0.7" />
+      <circle cx="21" cy="10" r="0.55" fill="#00D4FF" opacity="0.7" />
+      <circle cx="3"  cy="15" r="0.45" fill="#FF6B9D" opacity="0.6" />
+      <circle cx="25" cy="13" r="0.45" fill="#FF6B9D" opacity="0.6" />
+      <circle cx="10" cy="6"  r="0.4"  fill="#ffffff"  opacity="0.5" />
+      <circle cx="18" cy="22" r="0.4"  fill="#ffffff"  opacity="0.5" />
 
       {/* Bright galactic core */}
-      <circle cx="14" cy="14" r="3.5" fill="url(#coreGlow)" />
-      {/* Core highlight */}
-      <circle cx="13" cy="13" r="1" fill="#ffffff" opacity="0.9" />
+      <circle cx="14" cy="14" r="3" fill="url(#core)" />
+      {/* Core pinpoint highlight */}
+      <circle cx="13.3" cy="13.3" r="0.9" fill="#ffffff" opacity="0.95" />
     </svg>
   )
 }
@@ -108,7 +92,7 @@ export function Navbar() {
       style={{ backgroundColor: 'rgba(5, 5, 16, 0.85)' }}>
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2 group">
-        <div className="w-7 h-7 flex items-center justify-center">
+        <div className="w-7 h-7 flex items-center justify-center" aria-hidden="true">
           <GalaxyLogo />
         </div>
         <span className="font-display font-bold text-white text-base tracking-tight"
