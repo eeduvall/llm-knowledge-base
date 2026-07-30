@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import '../styles/globals.css'
+import { QueryProvider } from '@/components/QueryProvider'
 
 export const metadata: Metadata = {
   title: 'LLM Knowledge Base — Stop guessing which model to ship',
@@ -26,7 +27,9 @@ export default function RootLayout({ children }: Props) {
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   )
 }
