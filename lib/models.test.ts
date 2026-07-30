@@ -28,4 +28,10 @@ describe('PROVIDER_COLORS', () => {
       expect(color).toMatch(/^#[0-9A-Fa-f]{6}$/)
     }
   })
+
+  it('all provider colors are unique (no two providers share a color)', () => {
+    const colors = Object.values(PROVIDER_COLORS)
+    const unique = new Set(colors)
+    expect(unique.size).toBe(colors.length)
+  })
 })

@@ -1,3 +1,5 @@
+'use client'
+
 import type { Model } from '@/lib/models'
 
 type Props = {

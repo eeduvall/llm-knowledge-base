@@ -1,6 +1,7 @@
 import { loadModels } from '@/lib/models-server'
 import { GraphExplorer } from '@/components/graph/GraphExplorer'
 import { Navbar } from '@/components/Navbar'
+import type { Model } from '@/lib/models'
 
 export const metadata = {
   title: 'Knowledge Graph Explorer — LLM Knowledge Base',
@@ -9,7 +10,27 @@ export const metadata = {
 }
 
 export default function GraphPage() {
-  const models = loadModels()
+  let models: Model[] = []
+  let loadError = false
+
+  try {
+    models = loadModels()
+  } catch {
+    loadError = true
+  }
+
+  if (loadError) {
+    return (
+      <main style={{ backgroundColor: '#050510', minHeight: '100vh' }}>
+        <Navbar />
+        <div className="flex items-center justify-center" style={{ height: '100vh' }}>
+          <p className="text-white/60 text-sm">
+            Unable to load model data. Please try again later.
+          </p>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main style={{ backgroundColor: '#050510', minHeight: '100vh' }}>

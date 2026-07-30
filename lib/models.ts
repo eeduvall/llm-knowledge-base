@@ -49,14 +49,15 @@ export type Model = {
 
 // ---------------------------------------------------------------------------
 // Provider colour mapping (matches design-system palette)
+// Each provider has a unique colour for clear visual distinction in the graph.
 // ---------------------------------------------------------------------------
 
 export const PROVIDER_COLORS: Record<string, string> = {
-  openai: '#6C63FF',
-  anthropic: '#00D4FF',
-  google: '#FF6B9D',
-  meta: '#9B8FFF',
-  mistral: '#00D4FF',
+  openai: '#6C63FF',   // primary violet
+  anthropic: '#00D4FF', // cyan bioluminescence
+  google: '#FF6B9D',   // accent pink
+  meta: '#9B8FFF',     // soft violet
+  mistral: '#F7B731',  // amber — distinct from all others
 }
 
 export function getProviderColor(provider: string): string {
