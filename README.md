@@ -228,6 +228,65 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 
 ---
 
+---
+
+## Backend Setup (PostgreSQL via Supabase)
+
+### 1. Create a Supabase project
+
+1. Go to [supabase.com](https://supabase.com) and create a new project.
+2. Note your **Project URL** and **anon key** from Settings > API.
+3. Also copy the **service-role key** (keep this secret).
+
+### 2. Configure environment variables
+
+```bash
+cp .env.example .env.local
+# Fill in:
+# NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+# SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
+
+### 3. Run migrations
+
+Open the SQL Editor in your Supabase dashboard and run each file in order:
+
+1. `lib/db/migrations/001_create_models.sql` - creates all tables, indexes, triggers
+2. `lib/db/migrations/002_seed_models.sql` - inserts the 11 base model rows
+3. `lib/db/migrations/002b_seed_related.sql` - inserts modalities, capabilities, pricing, benchmarks, links, strengths, weaknesses
+
+Alternatively, use the Supabase CLI:
+
+```bash
+npm install -g supabase
+supabase login
+supabase link --project-ref your-project-ref
+supabase db push
+```
+
+### 4. Database schema
+
+| Table | Purpose |
+|---|---|
+| `models` | Core model metadata |
+| `model_modalities` | Text, image, audio, video per model |
+| `model_capabilities` | Capability tags |
+| `model_pricing` | Input/output price per 1M tokens |
+| `model_benchmarks` | MMLU, HumanEval, MT-Bench scores |
+| `model_strengths` | Ordered strengths list |
+| `model_weaknesses` | Ordered weaknesses list |
+| `model_links` | Docs and paper URLs |
+
+### 5. API endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/models` | List all models (`?provider=openai`, `?capability=vision`) |
+| GET | `/api/models/:id` | Get a single model by ID |
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Model data goes stale fast — PRs that update `data/models.yaml` with new models, corrected benchmarks, or pricing changes are especially appreciated.
