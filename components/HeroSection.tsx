@@ -6,9 +6,10 @@ import { GraphAnimation } from './GraphAnimation'
 export function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
-      {/* Background gradient */}
+      {/* Background gradient — decorative */}
       <div
         className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
         style={{
           background:
             'radial-gradient(ellipse 80% 60% at 70% 50%, rgba(108,99,255,0.08) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 30% 60%, rgba(0,212,255,0.05) 0%, transparent 60%)',
@@ -31,6 +32,7 @@ export function HeroSection() {
               <span
                 className="w-1.5 h-1.5 rounded-full animate-pulse"
                 style={{ backgroundColor: '#00D4FF' }}
+                aria-hidden="true"
               />
               55 Models · Updated Daily
             </div>
@@ -66,7 +68,8 @@ export function HeroSection() {
               className="inline-flex items-center gap-2 px-6 py-3 rounded font-semibold text-sm text-white transition-all duration-200 hover:opacity-90 hover:scale-[1.02]"
               style={{ backgroundColor: '#6C63FF' }}
             >
-              Explore the graph →
+              Explore the graph
+              <span aria-hidden="true"> →</span>
             </Link>
             <Link
               href="/picker"
@@ -78,7 +81,7 @@ export function HeroSection() {
           </div>
 
           {/* Provider list */}
-          <div className="flex flex-wrap items-center gap-4 mt-4">
+          <div className="flex flex-wrap items-center gap-4 mt-4" aria-label="Supported providers">
             {['OpenAI', 'Anthropic', 'Meta', 'Mistral', 'Google', '+31 OSS'].map(
               (provider) => (
                 <span
@@ -93,8 +96,8 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Right: animated graph */}
-        <div className="relative h-[480px] lg:h-[600px] w-full">
+        {/* Right: animated graph — decorative, motion respects prefers-reduced-motion via CSS */}
+        <div className="relative h-[480px] lg:h-[600px] w-full" aria-hidden="true">
           <GraphAnimation />
         </div>
       </div>
