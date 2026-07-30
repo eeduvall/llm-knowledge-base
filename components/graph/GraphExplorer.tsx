@@ -23,8 +23,11 @@ function buildNodes(models: Model[]): GraphNode[] {
       provider: model.provider,
       family: model.family,
       color: getProviderColor(model.provider),
-      x: 400 + Math.cos(angle) * radius,
-      y: 300 + Math.sin(angle) * radius,
+      // Initial positions centered on world-space origin (0, 0) so the camera
+      // transform in GraphCanvas (which maps world origin to screen centre)
+      // starts the nodes in the visible area.
+      x: Math.cos(angle) * radius,
+      y: Math.sin(angle) * radius,
       vx: 0,
       vy: 0,
       radius: model.context_window >= 500_000 ? 9 : model.context_window >= 100_000 ? 7 : 5,
