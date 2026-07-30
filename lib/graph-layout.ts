@@ -21,6 +21,27 @@ export type GraphEdge = {
   strength: number
 }
 
+/**
+ * Metadata used by buildEdges to determine clustering relationships.
+ * All fields are optional so callers can supply only what they have.
+ */
+export type NodeMeta = {
+  family: string
+  provider: string
+  /** Primary modality (first entry in the model's modalities array). */
+  primaryModality?: string
+  /** Cost tier derived from input pricing: 'free' | 'low' | 'mid' | 'high' */
+  costTier?: string
+  /** MMLU benchmark score, used to group by performance band. */
+  mmlu?: number | null
+}
+
+/**
+ * Clustering axis that determines which edges buildEdges creates.
+ * Matches the ClusterMode type exported from FilterBar.
+ */
+export type ClusterMode = 'family' | 'provider' | 'cost-tier' | 'modality' | 'benchmark'
+
 // ---------------------------------------------------------------------------
 // Layout constants
 // ---------------------------------------------------------------------------
@@ -98,15 +119,78 @@ export function tickLayout(
 }
 
 // ---------------------------------------------------------------------------
+// Cost-tier helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Derive a cost tier string from an input price (USD per 1M tokens).
+ * null / undefined → 'free' (open-weight models with no hosted pricing).
+ */
+export function deriveCostTier(inputPrice: number | null | undefined): string {
+  if (inputPrice == null) return 'free'
+  if (inputPrice < 0.5) return 'low'
+  if (inputPrice < 5) return 'mid'
+  return 'high'
+}
+
+/**
+ * Derive a benchmark band from an MMLU score.
+ * null / undefined → 'unknown'.
+ */
+export function deriveBenchmarkBand(mmlu: number | null | undefined): string {
+  if (mmlu == null) return 'unknown'
+  if (mmlu >= 87) return 'frontier'
+  if (mmlu >= 80) return 'strong'
+  if (mmlu >= 70) return 'capable'
+  return 'emerging'
+}
+
+// ---------------------------------------------------------------------------
 // Edge generation from model data
 // ---------------------------------------------------------------------------
 
+/**
+ * Build graph edges based on the chosen clustering axis.
+ *
+ * Each axis defines a "group key" function.  Two nodes share an edge when
+ * they belong to the same group; the edge strength reflects how tightly
+ * related they are within that group.
+ *
+ * @param nodes       Graph nodes to connect.
+ * @param metaMap     Per-node metadata keyed by node id.
+ * @param clusterMode Which axis to cluster by (default: 'family').
+ */
 export function buildEdges(
   nodes: GraphNode[],
-  modelFamilies: Record<string, string>
+  metaMap: Record<string, NodeMeta>,
+  clusterMode: ClusterMode = 'family'
 ): GraphEdge[] {
   const edges: GraphEdge[] = []
   const added = new Set<string>()
+
+  /** Returns the group key for a node under the current cluster mode. */
+  function groupKey(nodeId: string): string {
+    const meta = metaMap[nodeId]
+    if (!meta) return nodeId // isolated — no group
+    switch (clusterMode) {
+      case 'family':
+        return meta.family
+      case 'provider':
+        return meta.provider
+      case 'cost-tier':
+        return meta.costTier ?? deriveCostTier(undefined)
+      case 'modality':
+        return meta.primaryModality ?? 'text'
+      case 'benchmark':
+        return deriveBenchmarkBand(meta.mmlu)
+    }
+  }
+
+  /**
+   * For 'family' mode we also add a weaker same-provider edge so the graph
+   * retains some provider-level structure even when families differ.
+   */
+  const addFamilyFallback = clusterMode === 'family'
 
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
@@ -115,17 +199,23 @@ export function buildEdges(
       const key = `${a.id}--${b.id}`
       if (added.has(key)) continue
 
-      // Same family → strong edge
-      if (modelFamilies[a.id] === modelFamilies[b.id]) {
+      const gA = groupKey(a.id)
+      const gB = groupKey(b.id)
+
+      if (gA === gB) {
         edges.push({ source: a.id, target: b.id, strength: 1.5 })
         added.add(key)
         continue
       }
 
-      // Same provider → medium edge
-      if (a.provider === b.provider) {
-        edges.push({ source: a.id, target: b.id, strength: 0.8 })
-        added.add(key)
+      // Family mode: secondary edge for same provider
+      if (addFamilyFallback) {
+        const metaA = metaMap[a.id]
+        const metaB = metaMap[b.id]
+        if (metaA && metaB && metaA.provider === metaB.provider) {
+          edges.push({ source: a.id, target: b.id, strength: 0.8 })
+          added.add(key)
+        }
       }
     }
   }

@@ -9,7 +9,8 @@ type Props = {
   edges: GraphEdge[]
   selectedId: string | null
   hoveredId: string | null
-  filterProvider: string | null
+  /** Set of node ids that pass all active filters; all others are dimmed. */
+  visibleIds: Set<string>
   onSelectNode: (id: string | null) => void
   onHoverNode: (id: string | null) => void
 }
@@ -25,7 +26,7 @@ export function GraphCanvas({
   edges,
   selectedId,
   hoveredId,
-  filterProvider,
+  visibleIds,
   onSelectNode,
   onHoverNode,
 }: Props) {
@@ -132,8 +133,7 @@ export function GraphCanvas({
       const worldY = (screenY - h / 2) / cam.scale + cam.y
 
       for (const node of nodesRef.current) {
-        const visible =
-          filterProvider === null || node.provider === filterProvider
+        const visible = visibleIds.has(node.id)
         if (!visible) continue
         const dx = node.x - worldX
         const dy = node.y - worldY
@@ -142,7 +142,7 @@ export function GraphCanvas({
       }
       return null
     },
-    [filterProvider]
+    [visibleIds]
   )
 
   useEffect(() => {
@@ -198,10 +198,8 @@ export function GraphCanvas({
         const b = nodes.find((n) => n.id === edge.target)
         if (!a || !b) continue
 
-        const aVisible =
-          filterProvider === null || a.provider === filterProvider
-        const bVisible =
-          filterProvider === null || b.provider === filterProvider
+        const aVisible = visibleIds.has(a.id)
+        const bVisible = visibleIds.has(b.id)
         if (!aVisible && !bVisible) continue
 
         const alpha = aVisible && bVisible ? 0.35 : 0.1
@@ -238,8 +236,7 @@ export function GraphCanvas({
 
       // Draw nodes
       for (const node of nodes) {
-        const visible =
-          filterProvider === null || node.provider === filterProvider
+        const visible = visibleIds.has(node.id)
         const isSelected = node.id === selectedId
         const isHovered = node.id === hoveredId
         const dimmed = !visible
@@ -316,7 +313,7 @@ export function GraphCanvas({
       cancelAnimationFrame(animRef.current)
       window.removeEventListener('resize', resize)
     }
-  }, [selectedId, hoveredId, filterProvider])
+  }, [selectedId, hoveredId, visibleIds])
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {

@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
-import type { Model } from '@/lib/models'
+import type { Model, Modality } from '@/lib/models'
 import { getProviderColor } from '@/lib/models'
-import type { GraphNode, GraphEdge } from '@/lib/graph-layout'
-import { buildEdges } from '@/lib/graph-layout'
+import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout'
+import { buildEdges, deriveCostTier } from '@/lib/graph-layout'
 import { GraphCanvas } from '@/components/graph/GraphCanvas'
 import { NodePanel } from '@/components/graph/NodePanel'
 import { FilterBar } from '@/components/graph/FilterBar'
+import type { ClusterMode } from '@/components/graph/FilterBar'
 
 type Props = {
   models: Model[]
@@ -36,24 +37,83 @@ function buildNodes(models: Model[]): GraphNode[] {
   })
 }
 
+function buildMetaMap(models: Model[]): Record<string, NodeMeta> {
+  const map: Record<string, NodeMeta> = {}
+  for (const m of models) {
+    map[m.id] = {
+      family: m.family,
+      provider: m.provider,
+      primaryModality: m.modalities[0] ?? 'text',
+      costTier: deriveCostTier(m.pricing.input),
+      mmlu: m.benchmarks.mmlu,
+    }
+  }
+  return map
+}
+
 export function GraphExplorer({ models }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [filterProvider, setFilterProvider] = useState<string | null>(null)
+  const [activeCapabilities, setActiveCapabilities] = useState<string[]>([])
+  const [activeModalities, setActiveModalities] = useState<Modality[]>([])
+  const [activeLicenses, setActiveLicenses] = useState<string[]>([])
+  const [clusterMode, setClusterMode] = useState<ClusterMode>('family')
   const [searchQuery, setSearchQuery] = useState('')
 
   const nodes = useMemo(() => buildNodes(models), [models])
 
-  const edges = useMemo<GraphEdge[]>(() => {
-    const familyMap: Record<string, string> = {}
-    for (const m of models) familyMap[m.id] = m.family
-    return buildEdges(nodes, familyMap)
-  }, [nodes, models])
+  const metaMap = useMemo(() => buildMetaMap(models), [models])
 
+  const edges = useMemo<GraphEdge[]>(
+    () => buildEdges(nodes, metaMap, clusterMode),
+    [nodes, metaMap, clusterMode]
+  )
+
+  // Derive unique filter options from model data
   const providers = useMemo(
     () => Array.from(new Set(models.map((m) => m.provider))).sort(),
     [models]
   )
+
+  const allCapabilities = useMemo(
+    () => Array.from(new Set(models.flatMap((m) => m.capabilities))).sort(),
+    [models]
+  )
+
+  const allModalities = useMemo(
+    () => Array.from(new Set(models.flatMap((m) => m.modalities))).sort() as Modality[],
+    [models]
+  )
+
+  const allLicenses = useMemo(
+    () => Array.from(new Set(models.map((m) => m.license))).sort(),
+    [models]
+  )
+
+  // Build a set of model ids that pass all active filters
+  const visibleIds = useMemo(() => {
+    return new Set(
+      models
+        .filter((m) => {
+          if (filterProvider !== null && m.provider !== filterProvider) return false
+          if (
+            activeCapabilities.length > 0 &&
+            !activeCapabilities.every((c) => m.capabilities.includes(c))
+          )
+            return false
+          if (
+            activeModalities.length > 0 &&
+            !activeModalities.every((mod) => m.modalities.includes(mod))
+          )
+            return false
+          if (activeLicenses.length > 0 && !activeLicenses.includes(m.license))
+            return false
+          return true
+        })
+        .map((m) => m.id)
+    )
+  }, [models, filterProvider, activeCapabilities, activeModalities, activeLicenses])
 
   // Apply search: highlight matching node
   const effectiveSelectedId = useMemo(() => {
@@ -85,25 +145,58 @@ export function GraphExplorer({ models }: Props) {
     setSearchQuery('')
   }, [])
 
+  const handleToggleCapability = useCallback((cap: string) => {
+    setActiveCapabilities((prev) =>
+      prev.includes(cap) ? prev.filter((c) => c !== cap) : [...prev, cap]
+    )
+  }, [])
+
+  const handleToggleModality = useCallback((mod: string) => {
+    setActiveModalities((prev) => {
+      const m = mod as Modality
+      return prev.includes(m) ? prev.filter((v) => v !== m) : [...prev, m]
+    })
+  }, [])
+
+  const handleToggleLicense = useCallback((lic: string) => {
+    setActiveLicenses((prev) =>
+      prev.includes(lic) ? prev.filter((l) => l !== lic) : [...prev, lic]
+    )
+  }, [])
+
   return (
     <div className="relative w-full h-full">
       <FilterBar
-        providers={providers}
-        activeProvider={filterProvider}
-        onSelect={setFilterProvider}
         searchQuery={searchQuery}
         onSearch={setSearchQuery}
+        providers={providers}
+        activeProvider={filterProvider}
+        onSelectProvider={setFilterProvider}
+        capabilities={allCapabilities}
+        activeCapabilities={activeCapabilities}
+        onToggleCapability={handleToggleCapability}
+        modalities={allModalities}
+        activeModalities={activeModalities}
+        onToggleModality={handleToggleModality}
+        licenses={allLicenses}
+        activeLicenses={activeLicenses}
+        onToggleLicense={handleToggleLicense}
+        clusterMode={clusterMode}
+        onSetClusterMode={setClusterMode}
       />
 
-      <GraphCanvas
-        nodes={nodes}
-        edges={edges}
-        selectedId={effectiveSelectedId}
-        hoveredId={hoveredId}
-        filterProvider={filterProvider}
-        onSelectNode={handleSelectNode}
-        onHoverNode={setHoveredId}
-      />
+      {/* Canvas is offset to the right of the filter panel (13rem = 208px) */}
+      <div className="absolute top-0 right-0 bottom-0" style={{ left: '13rem' }}>
+        <GraphCanvas
+          nodes={nodes}
+          edges={edges}
+          selectedId={effectiveSelectedId}
+          hoveredId={hoveredId}
+          visibleIds={visibleIds}
+          onSelectNode={handleSelectNode}
+          onHoverNode={setHoveredId}
+        />
+      </div>
 
       {selectedModel && (
         <NodePanel model={selectedModel} onClose={handleClosePanel} />
