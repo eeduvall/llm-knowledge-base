@@ -20,8 +20,6 @@ type Camera = {
   scale: number
 }
 
-type CameraTarget = Camera
-
 export function GraphCanvas({
   nodes,
   edges,
@@ -40,7 +38,7 @@ export function GraphCanvas({
 
   // Camera state: current and target for smooth interpolation
   const cameraRef = useRef<Camera>({ x: 0, y: 0, scale: 1 })
-  const cameraTargetRef = useRef<CameraTarget>({ x: 0, y: 0, scale: 1 })
+  const cameraTargetRef = useRef<Camera>({ x: 0, y: 0, scale: 1 })
 
   // Keep refs in sync with props
   useEffect(() => {
