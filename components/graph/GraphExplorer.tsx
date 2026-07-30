@@ -112,14 +112,17 @@ export function GraphExplorer({ models }: Props) {
       {/* Legend */}
       <div
         className="absolute bottom-4 left-4 flex flex-col gap-1.5 z-10"
+        role="list"
+        aria-label="Provider color legend"
       >
         {providers.map((provider) => {
           const color = getProviderColor(provider)
           return (
-            <div key={provider} className="flex items-center gap-2">
+            <div key={provider} className="flex items-center gap-2" role="listitem">
               <div
                 className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                 style={{ backgroundColor: color }}
+                aria-hidden="true"
               />
               <span className="text-xs font-mono capitalize" style={{ color: 'rgba(255,255,255,0.45)' }}>
                 {provider}

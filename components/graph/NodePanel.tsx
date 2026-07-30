@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import type { Model } from '@/lib/models'
 
 type Props = {
@@ -24,8 +25,16 @@ function formatBenchmark(value: number | null): string {
 }
 
 export function NodePanel({ model, onClose }: Props) {
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Move focus to the close button when the panel opens
+  useEffect(() => {
+    closeButtonRef.current?.focus()
+  }, [model.id])
+
   return (
     <aside
+      aria-label={`Model details: ${model.name}`}
       className="absolute top-0 right-0 h-full w-80 flex flex-col overflow-y-auto z-20 border-l"
       style={{
         backgroundColor: 'rgba(5, 5, 16, 0.95)',
@@ -50,9 +59,10 @@ export function NodePanel({ model, onClose }: Props) {
           <span className="text-xs text-white/40 font-mono">{model.id}</span>
         </div>
         <button
+          ref={closeButtonRef}
           onClick={onClose}
           className="text-white/40 hover:text-white transition-colors duration-200 mt-1 flex-shrink-0"
-          aria-label="Close panel"
+          aria-label={`Close ${model.name} details`}
         >
           <svg
             width="16"
@@ -207,8 +217,9 @@ export function NodePanel({ model, onClose }: Props) {
                 rel="noopener noreferrer"
                 className="text-xs font-medium transition-colors duration-200"
                 style={{ color: '#6C63FF' }}
+                aria-label={`${model.name} documentation (opens in new tab)`}
               >
-                Docs ↗
+                Docs <span aria-hidden="true">↗</span>
               </a>
             )}
             {model.links.paper && (
@@ -218,8 +229,9 @@ export function NodePanel({ model, onClose }: Props) {
                 rel="noopener noreferrer"
                 className="text-xs font-medium transition-colors duration-200"
                 style={{ color: '#6C63FF' }}
+                aria-label={`${model.name} paper (opens in new tab)`}
               >
-                Paper ↗
+                Paper <span aria-hidden="true">↗</span>
               </a>
             )}
           </div>
