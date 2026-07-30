@@ -1,7 +1,7 @@
 import { tickLayout, buildEdges } from './graph-layout'
 import type { GraphNode } from './graph-layout'
 
-function makeNode(id: string, provider: string, family: string, x = 400, y = 300): GraphNode {
+function makeNode(id: string, provider: string, family: string, x = 0, y = 0): GraphNode {
   return {
     id,
     label: id,
@@ -20,8 +20,8 @@ function makeNode(id: string, provider: string, family: string, x = 400, y = 300
 describe('tickLayout', () => {
   it('moves nodes (updates x/y positions) via repulsion', () => {
     const nodes: GraphNode[] = [
-      makeNode('a', 'openai', 'gpt-4', 390, 300),
-      makeNode('b', 'anthropic', 'claude-3', 410, 300),
+      makeNode('a', 'openai', 'gpt-4', -10, 0),
+      makeNode('b', 'anthropic', 'claude-3', 10, 0),
     ]
 
     const beforeAx = nodes[0].x
@@ -32,17 +32,19 @@ describe('tickLayout', () => {
     expect(nodes[1].x).toBeGreaterThan(beforeBx)
   })
 
-  it('applies center gravity — nodes drift toward center over many ticks', () => {
-    const nodes: GraphNode[] = [makeNode('a', 'openai', 'gpt-4', 0, 0)]
+  it('applies center gravity — nodes drift toward world-space origin (0, 0) over many ticks', () => {
+    // Place a single node far from the origin; with no repulsion partner it
+    // should be pulled toward (0, 0) by center gravity.
+    const nodes: GraphNode[] = [makeNode('a', 'openai', 'gpt-4', 400, 300)]
     nodes[0].vx = 0
     nodes[0].vy = 0
 
     for (let i = 0; i < 50; i++) {
       tickLayout(nodes, [], 800, 600)
     }
-    // Node should have moved toward center (400, 300)
-    expect(nodes[0].x).toBeGreaterThan(0)
-    expect(nodes[0].y).toBeGreaterThan(0)
+    // Node should have moved closer to origin — x < 400, y < 300
+    expect(nodes[0].x).toBeLessThan(400)
+    expect(nodes[0].y).toBeLessThan(300)
   })
 
   it('does not throw with empty nodes array', () => {
@@ -51,8 +53,8 @@ describe('tickLayout', () => {
 
   it('applies spring attraction along edges', () => {
     const nodes: GraphNode[] = [
-      makeNode('a', 'openai', 'gpt-4', 100, 300),
-      makeNode('b', 'openai', 'gpt-4', 700, 300),
+      makeNode('a', 'openai', 'gpt-4', -300, 0),
+      makeNode('b', 'openai', 'gpt-4', 300, 0),
     ]
     const edges = [{ source: 'a', target: 'b', strength: 1 }]
     const beforeDist = Math.abs(nodes[1].x - nodes[0].x)
