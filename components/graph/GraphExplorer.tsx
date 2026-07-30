@@ -3,8 +3,8 @@
 import { useState, useMemo, useCallback } from 'react'
 import type { Model, Modality } from '@/lib/models'
 import { getProviderColor } from '@/lib/models'
-import type { GraphNode, GraphEdge } from '@/lib/graph-layout'
-import { buildEdges } from '@/lib/graph-layout'
+import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout'
+import { buildEdges, deriveCostTier } from '@/lib/graph-layout'
 import { GraphCanvas } from '@/components/graph/GraphCanvas'
 import { NodePanel } from '@/components/graph/NodePanel'
 import { FilterBar } from '@/components/graph/FilterBar'
@@ -34,6 +34,20 @@ function buildNodes(models: Model[]): GraphNode[] {
   })
 }
 
+function buildMetaMap(models: Model[]): Record<string, NodeMeta> {
+  const map: Record<string, NodeMeta> = {}
+  for (const m of models) {
+    map[m.id] = {
+      family: m.family,
+      provider: m.provider,
+      primaryModality: m.modalities[0] ?? 'text',
+      costTier: deriveCostTier(m.pricing.input),
+      mmlu: m.benchmarks.mmlu,
+    }
+  }
+  return map
+}
+
 export function GraphExplorer({ models }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
@@ -46,11 +60,12 @@ export function GraphExplorer({ models }: Props) {
 
   const nodes = useMemo(() => buildNodes(models), [models])
 
-  const edges = useMemo<GraphEdge[]>(() => {
-    const familyMap: Record<string, string> = {}
-    for (const m of models) familyMap[m.id] = m.family
-    return buildEdges(nodes, familyMap)
-  }, [nodes, models])
+  const metaMap = useMemo(() => buildMetaMap(models), [models])
+
+  const edges = useMemo<GraphEdge[]>(
+    () => buildEdges(nodes, metaMap, clusterMode),
+    [nodes, metaMap, clusterMode]
+  )
 
   // Derive unique filter options from model data
   const providers = useMemo(

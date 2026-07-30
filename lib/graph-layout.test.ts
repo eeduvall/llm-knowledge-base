@@ -1,5 +1,5 @@
-import { tickLayout, buildEdges } from './graph-layout'
-import type { GraphNode } from './graph-layout'
+import { tickLayout, buildEdges, deriveCostTier, deriveBenchmarkBand } from './graph-layout'
+import type { GraphNode, NodeMeta } from './graph-layout'
 
 function makeNode(id: string, provider: string, family: string, x = 400, y = 300): GraphNode {
   return {
@@ -15,6 +15,10 @@ function makeNode(id: string, provider: string, family: string, x = 400, y = 300
     radius: 6,
     pulseOffset: 0,
   }
+}
+
+function makeMeta(family: string, provider: string, overrides: Partial<NodeMeta> = {}): NodeMeta {
+  return { family, provider, ...overrides }
 }
 
 describe('tickLayout', () => {
@@ -63,14 +67,17 @@ describe('tickLayout', () => {
   })
 })
 
-describe('buildEdges', () => {
+describe('buildEdges — family mode (default)', () => {
   it('creates strong edges between nodes in the same family', () => {
     const nodes: GraphNode[] = [
       makeNode('gpt-4o', 'openai', 'gpt-4'),
       makeNode('gpt-4o-mini', 'openai', 'gpt-4'),
     ]
-    const familyMap = { 'gpt-4o': 'gpt-4', 'gpt-4o-mini': 'gpt-4' }
-    const edges = buildEdges(nodes, familyMap)
+    const metaMap = {
+      'gpt-4o': makeMeta('gpt-4', 'openai'),
+      'gpt-4o-mini': makeMeta('gpt-4', 'openai'),
+    }
+    const edges = buildEdges(nodes, metaMap, 'family')
     const edge = edges.find(
       (e) =>
         (e.source === 'gpt-4o' && e.target === 'gpt-4o-mini') ||
@@ -85,11 +92,11 @@ describe('buildEdges', () => {
       makeNode('claude-3-5-sonnet', 'anthropic', 'claude-3-5'),
       makeNode('claude-3-haiku', 'anthropic', 'claude-3'),
     ]
-    const familyMap = {
-      'claude-3-5-sonnet': 'claude-3-5',
-      'claude-3-haiku': 'claude-3',
+    const metaMap = {
+      'claude-3-5-sonnet': makeMeta('claude-3-5', 'anthropic'),
+      'claude-3-haiku': makeMeta('claude-3', 'anthropic'),
     }
-    const edges = buildEdges(nodes, familyMap)
+    const edges = buildEdges(nodes, metaMap, 'family')
     const edge = edges.find(
       (e) =>
         (e.source === 'claude-3-5-sonnet' && e.target === 'claude-3-haiku') ||
@@ -104,8 +111,11 @@ describe('buildEdges', () => {
       makeNode('gpt-4o', 'openai', 'gpt-4'),
       makeNode('claude-3-haiku', 'anthropic', 'claude-3'),
     ]
-    const familyMap = { 'gpt-4o': 'gpt-4', 'claude-3-haiku': 'claude-3' }
-    const edges = buildEdges(nodes, familyMap)
+    const metaMap = {
+      'gpt-4o': makeMeta('gpt-4', 'openai'),
+      'claude-3-haiku': makeMeta('claude-3', 'anthropic'),
+    }
+    const edges = buildEdges(nodes, metaMap, 'family')
     expect(edges).toHaveLength(0)
   })
 
@@ -115,14 +125,147 @@ describe('buildEdges', () => {
       makeNode('b', 'openai', 'gpt-4'),
       makeNode('c', 'openai', 'gpt-4'),
     ]
-    const familyMap = { a: 'gpt-4', b: 'gpt-4', c: 'gpt-4' }
-    const edges = buildEdges(nodes, familyMap)
+    const metaMap = {
+      a: makeMeta('gpt-4', 'openai'),
+      b: makeMeta('gpt-4', 'openai'),
+      c: makeMeta('gpt-4', 'openai'),
+    }
+    const edges = buildEdges(nodes, metaMap, 'family')
     const keys = edges.map((e) => `${e.source}--${e.target}`)
     const unique = new Set(keys)
     expect(keys.length).toBe(unique.size)
   })
 
   it('returns empty array for empty nodes', () => {
-    expect(buildEdges([], {})).toEqual([])
+    expect(buildEdges([], {}, 'family')).toEqual([])
   })
+})
+
+describe('buildEdges — provider mode', () => {
+  it('connects nodes from the same provider regardless of family', () => {
+    const nodes: GraphNode[] = [
+      makeNode('gpt-4o', 'openai', 'gpt-4'),
+      makeNode('o1-preview', 'openai', 'o1'),
+      makeNode('claude-3-haiku', 'anthropic', 'claude-3'),
+    ]
+    const metaMap = {
+      'gpt-4o': makeMeta('gpt-4', 'openai'),
+      'o1-preview': makeMeta('o1', 'openai'),
+      'claude-3-haiku': makeMeta('claude-3', 'anthropic'),
+    }
+    const edges = buildEdges(nodes, metaMap, 'provider')
+    const openaiEdge = edges.find(
+      (e) =>
+        (e.source === 'gpt-4o' && e.target === 'o1-preview') ||
+        (e.source === 'o1-preview' && e.target === 'gpt-4o')
+    )
+    expect(openaiEdge).toBeDefined()
+    expect(openaiEdge!.strength).toBe(1.5)
+    // Cross-provider edge should not exist
+    const crossEdge = edges.find(
+      (e) =>
+        (e.source === 'gpt-4o' && e.target === 'claude-3-haiku') ||
+        (e.source === 'claude-3-haiku' && e.target === 'gpt-4o')
+    )
+    expect(crossEdge).toBeUndefined()
+  })
+})
+
+describe('buildEdges — cost-tier mode', () => {
+  it('connects nodes in the same cost tier', () => {
+    const nodes: GraphNode[] = [
+      makeNode('cheap-a', 'openai', 'gpt-4'),
+      makeNode('cheap-b', 'anthropic', 'claude-3'),
+      makeNode('expensive-c', 'openai', 'o1'),
+    ]
+    const metaMap = {
+      'cheap-a': makeMeta('gpt-4', 'openai', { costTier: 'low' }),
+      'cheap-b': makeMeta('claude-3', 'anthropic', { costTier: 'low' }),
+      'expensive-c': makeMeta('o1', 'openai', { costTier: 'high' }),
+    }
+    const edges = buildEdges(nodes, metaMap, 'cost-tier')
+    const cheapEdge = edges.find(
+      (e) =>
+        (e.source === 'cheap-a' && e.target === 'cheap-b') ||
+        (e.source === 'cheap-b' && e.target === 'cheap-a')
+    )
+    expect(cheapEdge).toBeDefined()
+    const expensiveEdge = edges.find(
+      (e) =>
+        (e.source === 'cheap-a' && e.target === 'expensive-c') ||
+        (e.source === 'expensive-c' && e.target === 'cheap-a')
+    )
+    expect(expensiveEdge).toBeUndefined()
+  })
+})
+
+describe('buildEdges — modality mode', () => {
+  it('connects nodes with the same primary modality', () => {
+    const nodes: GraphNode[] = [
+      makeNode('text-a', 'openai', 'gpt-4'),
+      makeNode('text-b', 'anthropic', 'claude-3'),
+      makeNode('image-c', 'google', 'gemini-1.5'),
+    ]
+    const metaMap = {
+      'text-a': makeMeta('gpt-4', 'openai', { primaryModality: 'text' }),
+      'text-b': makeMeta('claude-3', 'anthropic', { primaryModality: 'text' }),
+      'image-c': makeMeta('gemini-1.5', 'google', { primaryModality: 'image' }),
+    }
+    const edges = buildEdges(nodes, metaMap, 'modality')
+    const textEdge = edges.find(
+      (e) =>
+        (e.source === 'text-a' && e.target === 'text-b') ||
+        (e.source === 'text-b' && e.target === 'text-a')
+    )
+    expect(textEdge).toBeDefined()
+    const crossEdge = edges.find(
+      (e) =>
+        (e.source === 'text-a' && e.target === 'image-c') ||
+        (e.source === 'image-c' && e.target === 'text-a')
+    )
+    expect(crossEdge).toBeUndefined()
+  })
+})
+
+describe('buildEdges — benchmark mode', () => {
+  it('connects nodes in the same benchmark band', () => {
+    const nodes: GraphNode[] = [
+      makeNode('frontier-a', 'openai', 'gpt-4'),
+      makeNode('frontier-b', 'anthropic', 'claude-3'),
+      makeNode('capable-c', 'meta', 'llama-3'),
+    ]
+    const metaMap = {
+      'frontier-a': makeMeta('gpt-4', 'openai', { mmlu: 88.7 }),
+      'frontier-b': makeMeta('claude-3', 'anthropic', { mmlu: 88.7 }),
+      'capable-c': makeMeta('llama-3', 'meta', { mmlu: 75.0 }),
+    }
+    const edges = buildEdges(nodes, metaMap, 'benchmark')
+    const frontierEdge = edges.find(
+      (e) =>
+        (e.source === 'frontier-a' && e.target === 'frontier-b') ||
+        (e.source === 'frontier-b' && e.target === 'frontier-a')
+    )
+    expect(frontierEdge).toBeDefined()
+    const crossEdge = edges.find(
+      (e) =>
+        (e.source === 'frontier-a' && e.target === 'capable-c') ||
+        (e.source === 'capable-c' && e.target === 'frontier-a')
+    )
+    expect(crossEdge).toBeUndefined()
+  })
+})
+
+describe('deriveCostTier', () => {
+  it('returns free for null', () => expect(deriveCostTier(null)).toBe('free'))
+  it('returns low for < 0.5', () => expect(deriveCostTier(0.15)).toBe('low'))
+  it('returns mid for 0.5–4.99', () => expect(deriveCostTier(3.0)).toBe('mid'))
+  it('returns high for >= 5', () => expect(deriveCostTier(15.0)).toBe('high'))
+})
+
+describe('deriveBenchmarkBand', () => {
+  it('returns unknown for null', () => expect(deriveBenchmarkBand(null)).toBe('unknown'))
+  it('returns frontier for >= 87', () => expect(deriveBenchmarkBand(88.7)).toBe('frontier'))
+  it('returns strong for 80–86.9', () => expect(deriveBenchmarkBand(83.6)).toBe('strong'))
+  it('returns capable for 70–79.9', () => expect(deriveBenchmarkBand(75.2)).toBe('capable'))
+  it('returns emerging for < 70', () => expect(deriveBenchmarkBand(68.0)).toBe('emerging'))
 })
