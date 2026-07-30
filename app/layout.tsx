@@ -11,9 +11,26 @@ type Props = {
   children: React.ReactNode
 }
 
+/** Inline script that runs before first paint to apply the saved theme class,
+ *  preventing a flash of the wrong theme on page load. */
+const themeScript = `
+(function(){
+  try {
+    var t = localStorage.getItem('llm-kb-theme');
+    if (!t) {
+      t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+    if (t === 'light') document.documentElement.classList.add('light');
+  } catch(e) {}
+})();
+`
+
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>{children}</body>
     </html>
   )

@@ -4,7 +4,7 @@ import { FeaturesSection } from '@/components/FeaturesSection'
 
 export default function HomePage() {
   return (
-    <main style={{ backgroundColor: '#050510', minHeight: '100vh' }}>
+    <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
       <Navbar />
       <HeroSection />
       <FeaturesSection />

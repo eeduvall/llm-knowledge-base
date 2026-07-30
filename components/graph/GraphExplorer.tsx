@@ -118,7 +118,7 @@ export function GraphExplorer({ models }: Props) {
                 className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                 style={{ backgroundColor: color }}
               />
-              <span className="text-xs font-mono capitalize" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              <span className="text-xs font-mono capitalize" style={{ color: 'var(--color-text-subtle)' }}>
                 {provider}
               </span>
             </div>

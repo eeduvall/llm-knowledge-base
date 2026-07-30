@@ -28,30 +28,31 @@ export function NodePanel({ model, onClose }: Props) {
     <aside
       className="absolute top-0 right-0 h-full w-80 flex flex-col overflow-y-auto z-20 border-l"
       style={{
-        backgroundColor: 'rgba(5, 5, 16, 0.95)',
-        borderColor: 'rgba(255,255,255,0.08)',
+        backgroundColor: 'var(--color-bg-panel)',
+        borderColor: 'var(--color-border-soft)',
       }}
     >
       {/* Header */}
       <div
         className="flex items-start justify-between p-5 border-b"
-        style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+        style={{ borderColor: 'var(--color-border-soft)' }}
       >
         <div className="flex flex-col gap-1">
           <span
             className="text-xs font-mono font-medium tracking-widest uppercase"
-            style={{ color: '#6C63FF' }}
+            style={{ color: 'var(--color-primary)' }}
           >
             {model.provider}
           </span>
-          <h2 className="text-lg font-bold text-white leading-tight">
+          <h2 className="text-lg font-bold leading-tight" style={{ color: 'var(--color-text)' }}>
             {model.name}
           </h2>
-          <span className="text-xs text-white/40 font-mono">{model.id}</span>
+          <span className="text-xs font-mono" style={{ color: 'var(--color-text-faint)' }}>{model.id}</span>
         </div>
         <button
           onClick={onClose}
-          className="text-white/40 hover:text-white transition-colors duration-200 mt-1 flex-shrink-0"
+          className="mt-1 flex-shrink-0 transition-colors duration-200"
+          style={{ color: 'var(--color-text-faint)' }}
           aria-label="Close panel"
         >
           <svg
@@ -74,7 +75,7 @@ export function NodePanel({ model, onClose }: Props) {
       {/* Stats grid */}
       <div
         className="grid grid-cols-2 gap-px border-b"
-        style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(255,255,255,0.04)' }}
+        style={{ borderColor: 'var(--color-border-soft)', backgroundColor: 'var(--color-bg-stats-grid)' }}
       >
         {[
           { label: 'Context', value: formatContextWindow(model.context_window) + ' tokens' },
@@ -85,12 +86,12 @@ export function NodePanel({ model, onClose }: Props) {
           <div
             key={label}
             className="flex flex-col gap-1 p-4"
-            style={{ backgroundColor: 'rgba(5,5,16,0.6)' }}
+            style={{ backgroundColor: 'var(--color-bg-stat)' }}
           >
-            <span className="text-xs text-white/40 font-mono uppercase tracking-wider">
+            <span className="text-xs font-mono uppercase tracking-wider" style={{ color: 'var(--color-text-faint)' }}>
               {label}
             </span>
-            <span className="text-sm font-semibold text-white">{value}</span>
+            <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{value}</span>
           </div>
         ))}
       </div>
@@ -98,9 +99,9 @@ export function NodePanel({ model, onClose }: Props) {
       {/* Benchmarks */}
       <div
         className="p-5 border-b"
-        style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+        style={{ borderColor: 'var(--color-border-soft)' }}
       >
-        <h3 className="text-xs font-mono font-medium tracking-widest uppercase text-white/40 mb-3">
+        <h3 className="text-xs font-mono font-medium tracking-widest uppercase mb-3" style={{ color: 'var(--color-text-faint)' }}>
           Benchmarks
         </h3>
         <div className="flex flex-col gap-2">
@@ -110,8 +111,8 @@ export function NodePanel({ model, onClose }: Props) {
             { label: 'MT-Bench', value: formatBenchmark(model.benchmarks.mt_bench) },
           ].map(({ label, value }) => (
             <div key={label} className="flex items-center justify-between">
-              <span className="text-xs text-white/50">{label}</span>
-              <span className="text-xs font-mono font-medium text-white/80">
+              <span className="text-xs" style={{ color: 'var(--color-text-dim)' }}>{label}</span>
+              <span className="text-xs font-mono font-medium" style={{ color: 'var(--color-text-soft)' }}>
                 {value}
               </span>
             </div>
@@ -122,9 +123,9 @@ export function NodePanel({ model, onClose }: Props) {
       {/* Modalities & Capabilities */}
       <div
         className="p-5 border-b"
-        style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+        style={{ borderColor: 'var(--color-border-soft)' }}
       >
-        <h3 className="text-xs font-mono font-medium tracking-widest uppercase text-white/40 mb-3">
+        <h3 className="text-xs font-mono font-medium tracking-widest uppercase mb-3" style={{ color: 'var(--color-text-faint)' }}>
           Modalities
         </h3>
         <div className="flex flex-wrap gap-1.5 mb-4">
@@ -134,7 +135,7 @@ export function NodePanel({ model, onClose }: Props) {
               className="px-2 py-0.5 rounded text-xs font-mono font-medium"
               style={{
                 backgroundColor: 'rgba(0,212,255,0.1)',
-                color: '#00D4FF',
+                color: 'var(--color-secondary)',
                 border: '1px solid rgba(0,212,255,0.2)',
               }}
             >
@@ -142,7 +143,7 @@ export function NodePanel({ model, onClose }: Props) {
             </span>
           ))}
         </div>
-        <h3 className="text-xs font-mono font-medium tracking-widest uppercase text-white/40 mb-3">
+        <h3 className="text-xs font-mono font-medium tracking-widest uppercase mb-3" style={{ color: 'var(--color-text-faint)' }}>
           Capabilities
         </h3>
         <div className="flex flex-wrap gap-1.5">
@@ -152,7 +153,7 @@ export function NodePanel({ model, onClose }: Props) {
               className="px-2 py-0.5 rounded text-xs font-mono font-medium"
               style={{
                 backgroundColor: 'rgba(108,99,255,0.1)',
-                color: '#9B8FFF',
+                color: 'var(--color-primary)',
                 border: '1px solid rgba(108,99,255,0.2)',
               }}
             >
@@ -165,26 +166,26 @@ export function NodePanel({ model, onClose }: Props) {
       {/* Strengths & Weaknesses */}
       <div className="p-5 flex flex-col gap-4">
         <div>
-          <h3 className="text-xs font-mono font-medium tracking-widest uppercase text-white/40 mb-2">
+          <h3 className="text-xs font-mono font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--color-text-faint)' }}>
             Strengths
           </h3>
           <ul className="flex flex-col gap-1.5">
             {model.strengths.map((s) => (
-              <li key={s} className="flex items-start gap-2 text-xs text-white/70">
-                <span style={{ color: '#00D4FF' }} aria-hidden="true">+</span>
+              <li key={s} className="flex items-start gap-2 text-xs" style={{ color: 'var(--color-text-soft)' }}>
+                <span style={{ color: 'var(--color-secondary)' }} aria-hidden="true">+</span>
                 {s}
               </li>
             ))}
           </ul>
         </div>
         <div>
-          <h3 className="text-xs font-mono font-medium tracking-widest uppercase text-white/40 mb-2">
+          <h3 className="text-xs font-mono font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--color-text-faint)' }}>
             Weaknesses
           </h3>
           <ul className="flex flex-col gap-1.5">
             {model.weaknesses.map((w) => (
-              <li key={w} className="flex items-start gap-2 text-xs text-white/70">
-                <span style={{ color: '#FF6B9D' }} aria-hidden="true">−</span>
+              <li key={w} className="flex items-start gap-2 text-xs" style={{ color: 'var(--color-text-soft)' }}>
+                <span style={{ color: 'var(--color-accent)' }} aria-hidden="true">−</span>
                 {w}
               </li>
             ))}
@@ -192,9 +193,9 @@ export function NodePanel({ model, onClose }: Props) {
         </div>
 
         {/* License */}
-        <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-          <span className="text-xs text-white/40 font-mono uppercase tracking-wider">License</span>
-          <span className="text-xs font-mono font-medium text-white/70">{model.license}</span>
+        <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: 'var(--color-border-soft)' }}>
+          <span className="text-xs font-mono uppercase tracking-wider" style={{ color: 'var(--color-text-faint)' }}>License</span>
+          <span className="text-xs font-mono font-medium" style={{ color: 'var(--color-text-soft)' }}>{model.license}</span>
         </div>
 
         {/* Links */}
@@ -206,7 +207,7 @@ export function NodePanel({ model, onClose }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-medium transition-colors duration-200"
-                style={{ color: '#6C63FF' }}
+                style={{ color: 'var(--color-primary)' }}
               >
                 Docs ↗
               </a>
@@ -217,7 +218,7 @@ export function NodePanel({ model, onClose }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-medium transition-colors duration-200"
-                style={{ color: '#6C63FF' }}
+                style={{ color: 'var(--color-primary)' }}
               >
                 Paper ↗
               </a>

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useTheme } from '@/hooks/useTheme'
 
 /** Inline SVG galaxy logo — tilted elliptical disc with glowing core.
  *  The disc shape reads clearly at 28 × 28 px where spiral arms become
@@ -86,37 +87,97 @@ function GalaxyLogo() {
   )
 }
 
-export function Navbar() {
+/** Sun icon for light mode */
+function SunIcon() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-white/5 backdrop-blur-sm"
-      style={{ backgroundColor: 'rgba(5, 5, 16, 0.85)' }}>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.5" />
+      <line x1="8" y1="1" x2="8" y2="3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="8" y1="13" x2="8" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="1" y1="8" x2="3" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="13" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="2.93" y1="2.93" x2="4.34" y2="4.34" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="11.66" y1="11.66" x2="13.07" y2="13.07" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="2.93" y1="13.07" x2="4.34" y2="11.66" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="11.66" y1="4.34" x2="13.07" y2="2.93" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+/** Moon icon for dark mode */
+function MoonIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M13.5 10.5A6 6 0 0 1 5.5 2.5a6 6 0 1 0 8 8z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function Navbar() {
+  const { theme, toggleTheme } = useTheme()
+
+  return (
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b backdrop-blur-sm"
+      style={{
+        backgroundColor: 'var(--color-bg-nav)',
+        borderColor: 'var(--color-border-nav)',
+      }}
+    >
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2 group">
         <div className="w-7 h-7 flex items-center justify-center" aria-hidden="true">
           <GalaxyLogo />
         </div>
-        <span className="font-display font-bold text-white text-base tracking-tight"
-          style={{ fontFamily: 'Syne, sans-serif' }}>
+        <span
+          className="font-display font-bold text-base tracking-tight"
+          style={{ fontFamily: 'Syne, sans-serif', color: 'var(--color-text)' }}
+        >
           LLM Knowledge Base
         </span>
       </Link>
 
       {/* Nav links */}
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-4">
         <div className="hidden md:flex items-center gap-8">
           {(['Graph', 'Picker', 'Models', 'Changelog'] as const).map((item) => (
             <Link
               key={item}
               href={`/${item.toLowerCase()}`}
-              className="text-sm text-white/70 hover:text-white transition-colors duration-200"
+              className="text-sm transition-colors duration-200"
+              style={{ color: 'var(--color-text-nav)' }}
             >
               {item}
             </Link>
           ))}
         </div>
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className="flex items-center justify-center w-8 h-8 rounded transition-all duration-200"
+          style={{
+            color: 'var(--color-text-nav)',
+            border: '1px solid var(--color-border-sign-in)',
+          }}
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+        </button>
+
         <Link
           href="/sign-in"
-          className="text-sm font-medium text-white border border-white/30 rounded px-4 py-1.5 hover:border-white/60 hover:bg-white/5 transition-all duration-200"
+          className="text-sm font-medium rounded px-4 py-1.5 transition-all duration-200"
+          style={{
+            color: 'var(--color-text)',
+            border: '1px solid var(--color-border-sign-in)',
+          }}
         >
           Sign in
         </Link>

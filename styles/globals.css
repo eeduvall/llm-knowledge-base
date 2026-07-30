@@ -4,18 +4,84 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Dark mode (default) ─────────────────────────────────────────────────── */
 :root {
-  --color-bg:        #050510;
-  --color-primary:   #6C63FF;
-  --color-secondary: #00D4FF;
-  --color-accent:    #FF6B9D;
-  --color-fog:       rgba(100, 120, 255, 0.04);
+  --color-bg:              #050510;
+  --color-bg-nav:          rgba(5, 5, 16, 0.85);
+  --color-bg-card:         rgba(255, 255, 255, 0.03);
+  --color-bg-card-hover:   rgba(255, 255, 255, 0.06);
+  --color-bg-input:        rgba(5, 5, 16, 0.85);
+  --color-bg-pill:         rgba(255, 255, 255, 0.05);
+  --color-bg-stat:         rgba(5, 5, 16, 0.6);
+  --color-bg-panel:        rgba(5, 5, 16, 0.95);
+  --color-bg-stats-grid:   rgba(255, 255, 255, 0.04);
+
+  --color-primary:         #6C63FF;
+  --color-secondary:       #00D4FF;
+  --color-accent:          #FF6B9D;
+  --color-fog:             rgba(100, 120, 255, 0.04);
+
+  --color-text:            #ffffff;
+  --color-text-muted:      rgba(255, 255, 255, 0.60);
+  --color-text-faint:      rgba(255, 255, 255, 0.40);
+  --color-text-dimmer:     rgba(255, 255, 255, 0.35);
+  --color-text-dim:        rgba(255, 255, 255, 0.50);
+  --color-text-soft:       rgba(255, 255, 255, 0.70);
+  --color-text-subtle:     rgba(255, 255, 255, 0.45);
+  --color-text-nav:        rgba(255, 255, 255, 0.70);
+
+  --color-border:          rgba(255, 255, 255, 0.07);
+  --color-border-soft:     rgba(255, 255, 255, 0.08);
+  --color-border-nav:      rgba(255, 255, 255, 0.05);
+  --color-border-input:    rgba(255, 255, 255, 0.12);
+  --color-border-pill:     rgba(255, 255, 255, 0.08);
+  --color-border-sign-in:  rgba(255, 255, 255, 0.30);
+
+  --color-scrollbar-track: var(--color-bg);
+  --color-scrollbar-thumb: var(--color-primary);
+}
+
+/* ── Light mode overrides ────────────────────────────────────────────────── */
+html.light {
+  --color-bg:              #f4f4fb;
+  --color-bg-nav:          rgba(244, 244, 251, 0.90);
+  --color-bg-card:         rgba(108, 99, 255, 0.04);
+  --color-bg-card-hover:   rgba(108, 99, 255, 0.08);
+  --color-bg-input:        rgba(255, 255, 255, 0.90);
+  --color-bg-pill:         rgba(108, 99, 255, 0.06);
+  --color-bg-stat:         rgba(255, 255, 255, 0.80);
+  --color-bg-panel:        rgba(244, 244, 251, 0.98);
+  --color-bg-stats-grid:   rgba(108, 99, 255, 0.04);
+
+  --color-primary:         #5a52e0;
+  --color-secondary:       #0099bb;
+  --color-accent:          #d94f80;
+  --color-fog:             rgba(90, 82, 224, 0.04);
+
+  --color-text:            #0f0e1a;
+  --color-text-muted:      rgba(15, 14, 26, 0.65);
+  --color-text-faint:      rgba(15, 14, 26, 0.45);
+  --color-text-dimmer:     rgba(15, 14, 26, 0.40);
+  --color-text-dim:        rgba(15, 14, 26, 0.55);
+  --color-text-soft:       rgba(15, 14, 26, 0.75);
+  --color-text-subtle:     rgba(15, 14, 26, 0.50);
+  --color-text-nav:        rgba(15, 14, 26, 0.70);
+
+  --color-border:          rgba(15, 14, 26, 0.10);
+  --color-border-soft:     rgba(15, 14, 26, 0.10);
+  --color-border-nav:      rgba(15, 14, 26, 0.08);
+  --color-border-input:    rgba(15, 14, 26, 0.18);
+  --color-border-pill:     rgba(15, 14, 26, 0.10);
+  --color-border-sign-in:  rgba(15, 14, 26, 0.30);
+
+  --color-scrollbar-track: #e8e8f4;
+  --color-scrollbar-thumb: var(--color-primary);
 }
 
 html,
 body {
   background-color: var(--color-bg);
-  color: #ffffff;
+  color: var(--color-text);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -32,9 +98,9 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-bg);
+  background: var(--color-scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
+  background: var(--color-scrollbar-thumb);
   border-radius: 3px;
 }

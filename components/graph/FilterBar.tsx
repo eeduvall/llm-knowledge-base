@@ -28,10 +28,11 @@ export function FilterBar({
           placeholder="Search models…"
           value={searchQuery}
           onChange={(e) => onSearch(e.target.value)}
-          className="w-52 px-3 py-2 text-sm text-white placeholder-white/30 rounded border outline-none focus:border-white/30 transition-colors duration-200"
+          className="w-52 px-3 py-2 text-sm rounded border outline-none transition-colors duration-200"
           style={{
-            backgroundColor: 'rgba(5,5,16,0.85)',
-            borderColor: 'rgba(255,255,255,0.12)',
+            backgroundColor: 'var(--color-bg-input)',
+            borderColor: 'var(--color-border-input)',
+            color: 'var(--color-text)',
           }}
           aria-label="Search models"
         />
@@ -46,9 +47,9 @@ export function FilterBar({
             backgroundColor:
               activeProvider === null
                 ? 'rgba(108,99,255,0.25)'
-                : 'rgba(255,255,255,0.05)',
-            color: activeProvider === null ? '#6C63FF' : 'rgba(255,255,255,0.5)',
-            border: `1px solid ${activeProvider === null ? 'rgba(108,99,255,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                : 'var(--color-bg-pill)',
+            color: activeProvider === null ? 'var(--color-primary)' : 'var(--color-text-subtle)',
+            border: `1px solid ${activeProvider === null ? 'rgba(108,99,255,0.4)' : 'var(--color-border-pill)'}`,
           }}
         >
           All
@@ -64,9 +65,9 @@ export function FilterBar({
               style={{
                 backgroundColor: isActive
                   ? `${color}22`
-                  : 'rgba(255,255,255,0.05)',
-                color: isActive ? color : 'rgba(255,255,255,0.5)',
-                border: `1px solid ${isActive ? color + '44' : 'rgba(255,255,255,0.08)'}`,
+                  : 'var(--color-bg-pill)',
+                color: isActive ? color : 'var(--color-text-subtle)',
+                border: `1px solid ${isActive ? color + '44' : 'var(--color-border-pill)'}`,
               }}
             >
               {provider}

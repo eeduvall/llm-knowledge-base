@@ -21,10 +21,10 @@ export default function GraphPage() {
 
   if (loadError) {
     return (
-      <main style={{ backgroundColor: '#050510', minHeight: '100vh' }}>
+      <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
         <Navbar />
         <div className="flex items-center justify-center" style={{ height: '100vh' }}>
-          <p className="text-white/60 text-sm">
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Unable to load model data. Please try again later.
           </p>
         </div>
@@ -33,7 +33,7 @@ export default function GraphPage() {
   }
 
   return (
-    <main style={{ backgroundColor: '#050510', minHeight: '100vh' }}>
+    <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
       <Navbar />
       <section
         className="relative pt-16"
@@ -56,7 +56,7 @@ export default function GraphPage() {
         {/* No-script fallback */}
         <noscript>
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-white/60 text-sm">
+            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
               JavaScript is required to view the interactive graph. Please
               enable it in your browser settings.
             </p>
