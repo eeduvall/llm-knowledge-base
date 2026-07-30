@@ -48,7 +48,7 @@ export function GraphCanvas({
     if (hoveredId) synapseRef.current = { id: hoveredId, t: 0 }
   }, [hoveredId])
 
-  // Zoom-to-fit when visibleIds changes
+  // Zoom-to-fit when visible set changes
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -56,13 +56,14 @@ export function GraphCanvas({
     const w = canvas.offsetWidth || canvas.width
     const h = canvas.offsetHeight || canvas.height
 
-    // If all nodes are visible, reset to default view
     const allVisible = nodesRef.current.every((n) => visibleIds.has(n.id))
     if (allVisible) {
+      // Reset to default view
       cameraTargetRef.current = { x: 0, y: 0, scale: 1 }
       return
     }
 
+    // Compute bounding box of visible nodes
     const visibleNodes = nodesRef.current.filter((n) => visibleIds.has(n.id))
     if (visibleNodes.length === 0) {
       cameraTargetRef.current = { x: 0, y: 0, scale: 1 }
@@ -87,7 +88,14 @@ export function GraphCanvas({
     const scaleY = h / bboxH
     const scale = Math.min(scaleX, scaleY, 2.5)
 
-    cameraTargetRef.current = { x: bboxCx, y: bboxCy, scale }
+    // Camera offset: translate so bbox center maps to canvas center
+    // After transform: screenX = (worldX - cx) * scale + w/2
+    // We want bboxCx to map to w/2, so cx = bboxCx
+    cameraTargetRef.current = {
+      x: bboxCx,
+      y: bboxCy,
+      scale,
+    }
   }, [visibleIds])
 
   const getVisibleNodes = useCallback((): GraphNode[] => {

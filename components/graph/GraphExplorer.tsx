@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import type { Model, Modality } from '@/lib/models'
 import { getProviderColor } from '@/lib/models'
 import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout'
@@ -11,7 +12,18 @@ import { FilterBar } from '@/components/graph/FilterBar'
 import type { ClusterMode } from '@/components/graph/FilterBar'
 
 type Props = {
-  models: Model[]
+  /** Initial model list from the server (SSR). TanStack Query will refresh
+   *  from /api/models in the background and keep the graph up to date. */
+  initialModels: Model[]
+}
+
+async function fetchModels(): Promise<Model[]> {
+  const res = await fetch('/api/models')
+  if (!res.ok) {
+    throw new Error(`Failed to fetch models: ${res.status} ${res.statusText}`)
+  }
+  const json = (await res.json()) as { models: Model[] }
+  return json.models
 }
 
 function buildNodes(models: Model[]): GraphNode[] {
@@ -51,7 +63,7 @@ function buildMetaMap(models: Model[]): Record<string, NodeMeta> {
   return map
 }
 
-export function GraphExplorer({ models }: Props) {
+export function GraphExplorer({ initialModels }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [filterProvider, setFilterProvider] = useState<string | null>(null)
@@ -60,6 +72,14 @@ export function GraphExplorer({ models }: Props) {
   const [activeLicenses, setActiveLicenses] = useState<string[]>([])
   const [clusterMode, setClusterMode] = useState<ClusterMode>('family')
   const [searchQuery, setSearchQuery] = useState('')
+
+  // Fetch models from the API; use the SSR-provided list as initial data so
+  // the graph renders immediately without a loading flash.
+  const { data: models = initialModels } = useQuery<Model[]>({
+    queryKey: ['models'],
+    queryFn: fetchModels,
+    initialData: initialModels,
+  })
 
   const nodes = useMemo(() => buildNodes(models), [models])
 
