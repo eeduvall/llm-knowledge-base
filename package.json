@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "db:migrate": "ts-node --project tsconfig.scripts.json scripts/migrate.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.109.0",
+    "@tanstack/react-query": "^5.101.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.3.8",
