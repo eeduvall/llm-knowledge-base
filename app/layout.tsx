@@ -11,34 +11,9 @@ type Props = {
   children: React.ReactNode
 }
 
-/**
- * Inline script injected before first paint to apply the saved theme class.
- * This prevents a flash of the wrong theme on hard reload.
- * Reads localStorage key `llm-kb-theme`; falls back to `prefers-color-scheme`.
- */
-const themeScript = `
-(function() {
-  try {
-    var saved = localStorage.getItem('llm-kb-theme');
-    if (saved === 'light') {
-      document.documentElement.classList.add('light');
-    } else if (!saved) {
-      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (!prefersDark) {
-        document.documentElement.classList.add('light');
-      }
-    }
-  } catch (e) {}
-})();
-`.trim()
-
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
-      {/* eslint-disable-next-line react/no-danger */}
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
       <body>{children}</body>
     </html>
   )

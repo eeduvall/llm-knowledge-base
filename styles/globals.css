@@ -4,52 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Dark mode (default) ──────────────────────────────────────────────────── */
 :root {
+  /* ── Core palette ─────────────────────────────────────────────────────── */
   --color-bg:        #050510;
-  --color-surface:   rgba(255, 255, 255, 0.03);
-  --color-border:    rgba(255, 255, 255, 0.07);
-  --color-text:      #ffffff;
-  --color-text-muted: rgba(255, 255, 255, 0.50);
-  --color-text-faint: rgba(255, 255, 255, 0.35);
   --color-primary:   #6C63FF;
   --color-secondary: #00D4FF;
   --color-accent:    #FF6B9D;
   --color-fog:       rgba(100, 120, 255, 0.04);
-  --color-nav-bg:    rgba(5, 5, 16, 0.85);
-  --color-panel-bg:  rgba(5, 5, 16, 0.95);
-  --color-panel-bg-alt: rgba(5, 5, 16, 0.60);
-  --color-overlay:   rgba(5, 5, 16, 0.88);
-  --color-input-bg:  rgba(255, 255, 255, 0.05);
-  --color-input-border: rgba(255, 255, 255, 0.10);
-  --color-pill-bg:   rgba(255, 255, 255, 0.05);
-  --color-pill-border: rgba(255, 255, 255, 0.08);
-  --color-stats-bg:  rgba(255, 255, 255, 0.04);
-  --color-divider:   rgba(255, 255, 255, 0.08);
-}
 
-/* ── Light mode overrides ─────────────────────────────────────────────────── */
-html.light {
-  --color-bg:        #f4f4fb;
-  --color-surface:   rgba(0, 0, 0, 0.03);
-  --color-border:    rgba(0, 0, 0, 0.08);
-  --color-text:      #0d0d1a;
-  --color-text-muted: rgba(13, 13, 26, 0.55);
-  --color-text-faint: rgba(13, 13, 26, 0.40);
-  --color-primary:   #5a52e0;
-  --color-secondary: #0099bb;
-  --color-accent:    #d94f7e;
-  --color-fog:       rgba(100, 120, 255, 0.03);
-  --color-nav-bg:    rgba(244, 244, 251, 0.90);
-  --color-panel-bg:  rgba(244, 244, 251, 0.97);
-  --color-panel-bg-alt: rgba(244, 244, 251, 0.80);
-  --color-overlay:   rgba(244, 244, 251, 0.92);
-  --color-input-bg:  rgba(0, 0, 0, 0.04);
-  --color-input-border: rgba(0, 0, 0, 0.12);
-  --color-pill-bg:   rgba(0, 0, 0, 0.04);
-  --color-pill-border: rgba(0, 0, 0, 0.10);
-  --color-stats-bg:  rgba(0, 0, 0, 0.03);
-  --color-divider:   rgba(0, 0, 0, 0.08);
+  /* ── Semantic surface tokens ──────────────────────────────────────────── */
+  --color-text:          #ffffff;
+  --color-text-muted:    rgba(255, 255, 255, 0.50);
+  --color-text-faint:    rgba(255, 255, 255, 0.35);
+  --color-surface:       rgba(255, 255, 255, 0.03);
+  --color-border:        rgba(255, 255, 255, 0.07);
+  --color-divider:       rgba(255, 255, 255, 0.08);
+  --color-nav-bg:        rgba(5, 5, 16, 0.85);
+  --color-panel-bg:      rgba(5, 5, 16, 0.95);
+  --color-panel-bg-alt:  rgba(5, 5, 16, 0.60);
+  --color-overlay:       rgba(5, 5, 16, 0.88);
+  --color-input-bg:      rgba(255, 255, 255, 0.05);
+  --color-input-border:  rgba(255, 255, 255, 0.10);
+  --color-pill-bg:       rgba(255, 255, 255, 0.05);
+  --color-pill-border:   rgba(255, 255, 255, 0.08);
+  --color-stats-bg:      rgba(255, 255, 255, 0.04);
 }
 
 html,

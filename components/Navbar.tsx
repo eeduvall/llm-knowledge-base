@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useTheme } from '@/lib/useTheme'
 
 /** Inline SVG galaxy logo — tilted elliptical disc with glowing core.
  *  The disc shape reads clearly at 28 × 28 px where spiral arms become
@@ -87,28 +86,7 @@ function GalaxyLogo() {
   )
 }
 
-/** Sun icon for light mode */
-function SunIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-/** Moon icon for dark mode */
-function MoonIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M13.5 10A6 6 0 016 2.5a6 6 0 100 11 6 6 0 007.5-3.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 export function Navbar() {
-  const { theme, toggleTheme } = useTheme()
-
   return (
     <nav
       aria-label="Main navigation"
@@ -132,7 +110,7 @@ export function Navbar() {
       </Link>
 
       {/* Nav links */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-8">
         <ul className="hidden md:flex items-center gap-8 list-none">
           {(['Graph', 'Picker', 'Models', 'Changelog'] as const).map((item) => (
             <li key={item}>
@@ -146,21 +124,6 @@ export function Navbar() {
             </li>
           ))}
         </ul>
-
-        {/* Theme toggle */}
-        <button
-          onClick={toggleTheme}
-          className="flex items-center justify-center w-8 h-8 rounded transition-colors duration-200"
-          style={{
-            color: 'var(--color-text-muted)',
-            border: '1px solid var(--color-border)',
-          }}
-          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          aria-pressed={theme === 'light'}
-        >
-          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-        </button>
-
         <Link
           href="/sign-in"
           className="text-sm font-medium rounded px-4 py-1.5 transition-all duration-200"

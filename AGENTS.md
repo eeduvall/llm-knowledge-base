@@ -133,11 +133,29 @@ export function NodePanel({ modelId, onSelect }: { modelId: string; onSelect: (i
 
 ```css
 :root {
-  --color-bg:        #050510;
-  --color-primary:   #6C63FF;
-  --color-secondary: #00D4FF;
-  --color-accent:    #FF6B9D;
-  --color-fog:       rgba(100, 120, 255, 0.04);
+  /* Core palette */
+  --color-bg:           #050510;
+  --color-primary:      #6C63FF;
+  --color-secondary:    #00D4FF;
+  --color-accent:       #FF6B9D;
+  --color-fog:          rgba(100, 120, 255, 0.04);
+
+  /* Semantic surface tokens */
+  --color-text:         #ffffff;
+  --color-text-muted:   rgba(255, 255, 255, 0.50);
+  --color-text-faint:   rgba(255, 255, 255, 0.35);
+  --color-surface:      rgba(255, 255, 255, 0.03);
+  --color-border:       rgba(255, 255, 255, 0.07);
+  --color-divider:      rgba(255, 255, 255, 0.08);
+  --color-nav-bg:       rgba(5, 5, 16, 0.85);
+  --color-panel-bg:     rgba(5, 5, 16, 0.95);
+  --color-panel-bg-alt: rgba(5, 5, 16, 0.60);
+  --color-overlay:      rgba(5, 5, 16, 0.88);
+  --color-input-bg:     rgba(255, 255, 255, 0.05);
+  --color-input-border: rgba(255, 255, 255, 0.10);
+  --color-pill-bg:      rgba(255, 255, 255, 0.05);
+  --color-pill-border:  rgba(255, 255, 255, 0.08);
+  --color-stats-bg:     rgba(255, 255, 255, 0.04);
 }
 ```
 
