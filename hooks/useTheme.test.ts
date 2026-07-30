@@ -12,6 +12,7 @@ describe('useTheme', () => {
 
   it('defaults to dark theme when no preference is stored', () => {
     const { result } = renderHook(() => useTheme())
+    act(() => {})
     expect(result.current.theme).toBe('dark')
     expect(document.documentElement.classList.contains('light')).toBe(false)
   })
@@ -19,7 +20,6 @@ describe('useTheme', () => {
   it('reads stored light preference from localStorage', () => {
     localStorage.setItem('llm-kb-theme', 'light')
     const { result } = renderHook(() => useTheme())
-    // After effect runs, theme should be light
     act(() => {})
     expect(result.current.theme).toBe('light')
     expect(document.documentElement.classList.contains('light')).toBe(true)
@@ -33,8 +33,17 @@ describe('useTheme', () => {
     expect(document.documentElement.classList.contains('light')).toBe(false)
   })
 
+  it('does not overwrite stored light preference on first render', () => {
+    localStorage.setItem('llm-kb-theme', 'light')
+    renderHook(() => useTheme())
+    act(() => {})
+    // The stored value must still be 'light', not overwritten to 'dark'
+    expect(localStorage.getItem('llm-kb-theme')).toBe('light')
+  })
+
   it('toggleTheme switches from dark to light', () => {
     const { result } = renderHook(() => useTheme())
+    act(() => {})
     act(() => {
       result.current.toggleTheme()
     })
@@ -57,6 +66,7 @@ describe('useTheme', () => {
 
   it('persists theme to localStorage on toggle', () => {
     const { result } = renderHook(() => useTheme())
+    act(() => {})
     act(() => {
       result.current.toggleTheme()
     })

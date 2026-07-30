@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 
 export type Theme = 'dark' | 'light'
 
@@ -23,14 +23,28 @@ function getInitialTheme(): Theme {
  */
 export function useTheme(): { theme: Theme; toggleTheme: () => void } {
   const [theme, setTheme] = useState<Theme>('dark')
+  // Tracks whether the initial read from localStorage has completed.
+  // The persistence effect must not write to localStorage on the very first
+  // render (before the read effect runs), or it would overwrite a stored
+  // 'light' preference with the default 'dark'.
+  const mountedRef = useRef(false)
 
-  // Sync state with the class already applied by the inline script
+  // On mount: read stored preference and apply it
   useEffect(() => {
-    setTheme(getInitialTheme())
+    const initial = getInitialTheme()
+    setTheme(initial)
+    const html = document.documentElement
+    if (initial === 'light') {
+      html.classList.add('light')
+    } else {
+      html.classList.remove('light')
+    }
+    mountedRef.current = true
   }, [])
 
-  // Apply class and persist whenever theme changes
+  // After mount: apply class and persist whenever theme changes
   useEffect(() => {
+    if (!mountedRef.current) return
     const html = document.documentElement
     if (theme === 'light') {
       html.classList.add('light')
