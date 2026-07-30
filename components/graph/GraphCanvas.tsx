@@ -35,6 +35,8 @@ export function GraphCanvas({
   const edgesRef = useRef<GraphEdge[]>(edges)
   const tRef = useRef(0)
   const synapseRef = useRef<{ id: string; t: number } | null>(null)
+  // Track keyboard-focused node index for arrow-key navigation
+  const focusIndexRef = useRef<number>(-1)
 
   // Camera state: current and target for smooth interpolation
   const cameraRef = useRef<Camera>({ x: 0, y: 0, scale: 1 })
@@ -109,6 +111,12 @@ export function GraphCanvas({
       y: bboxCy,
       scale,
     }
+  }, [filterProvider])
+
+  const getVisibleNodes = useCallback((): GraphNode[] => {
+    return nodesRef.current.filter(
+      (n) => filterProvider === null || n.provider === filterProvider
+    )
   }, [filterProvider])
 
   const getNodeAt = useCallback(
@@ -341,6 +349,52 @@ export function GraphCanvas({
     onHoverNode(null)
   }, [onHoverNode])
 
+  // Keyboard navigation: Tab focuses canvas, arrow keys cycle nodes, Enter selects
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLCanvasElement>) => {
+      const visible = getVisibleNodes()
+      if (visible.length === 0) return
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault()
+        focusIndexRef.current = (focusIndexRef.current + 1) % visible.length
+        const node = visible[focusIndexRef.current]
+        onHoverNode(node.id)
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault()
+        focusIndexRef.current =
+          (focusIndexRef.current - 1 + visible.length) % visible.length
+        const node = visible[focusIndexRef.current]
+        onHoverNode(node.id)
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        if (focusIndexRef.current >= 0 && focusIndexRef.current < visible.length) {
+          const node = visible[focusIndexRef.current]
+          onSelectNode(node.id)
+        }
+      } else if (e.key === 'Escape') {
+        onSelectNode(null)
+        onHoverNode(null)
+        focusIndexRef.current = -1
+      }
+    },
+    [getVisibleNodes, onHoverNode, onSelectNode]
+  )
+
+  const handleBlur = useCallback(() => {
+    onHoverNode(null)
+    focusIndexRef.current = -1
+  }, [onHoverNode])
+
+  // Derive accessible label from hovered/selected node
+  const hoveredNode = nodes.find((n) => n.id === hoveredId)
+  const selectedNode = nodes.find((n) => n.id === selectedId)
+  const ariaLabel = selectedNode
+    ? `Knowledge graph — ${selectedNode.label} selected. Use arrow keys to navigate nodes, Enter to select, Escape to deselect.`
+    : hoveredNode
+    ? `Knowledge graph — ${hoveredNode.label} highlighted. Press Enter to open details.`
+    : 'Interactive LLM knowledge graph. Use arrow keys to navigate nodes, Enter to select.'
+
   return (
     <canvas
       ref={canvasRef}
@@ -349,8 +403,11 @@ export function GraphCanvas({
       onMouseMove={handleMouseMove}
       onClick={handleClick}
       onMouseLeave={handleMouseLeave}
-      aria-label="Interactive LLM knowledge graph"
-      role="img"
+      onKeyDown={handleKeyDown}
+      onBlur={handleBlur}
+      aria-label={ariaLabel}
+      role="application"
+      tabIndex={0}
     />
   )
 }

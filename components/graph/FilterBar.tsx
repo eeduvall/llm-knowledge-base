@@ -18,12 +18,14 @@ export function FilterBar({
   onSearch,
 }: Props) {
   return (
-    <div
-      className="absolute top-4 left-4 z-10 flex flex-col gap-3"
-    >
+    <div className="absolute top-4 left-4 z-10 flex flex-col gap-3">
       {/* Search */}
       <div className="relative">
+        <label htmlFor="graph-search" className="sr-only">
+          Search models
+        </label>
         <input
+          id="graph-search"
           type="search"
           placeholder="Search models…"
           value={searchQuery}
@@ -34,14 +36,18 @@ export function FilterBar({
             borderColor: 'var(--color-border-input)',
             color: 'var(--color-text)',
           }}
-          aria-label="Search models"
         />
       </div>
 
       {/* Provider filters */}
-      <div className="flex flex-col gap-1.5">
+      <div
+        role="group"
+        aria-label="Filter by provider"
+        className="flex flex-col gap-1.5"
+      >
         <button
           onClick={() => onSelect(null)}
+          aria-pressed={activeProvider === null}
           className="w-fit px-3 py-1 rounded text-xs font-mono font-medium transition-all duration-200"
           style={{
             backgroundColor:
@@ -61,6 +67,7 @@ export function FilterBar({
             <button
               key={provider}
               onClick={() => onSelect(isActive ? null : provider)}
+              aria-pressed={isActive}
               className="w-fit px-3 py-1 rounded text-xs font-mono font-medium capitalize transition-all duration-200"
               style={{
                 backgroundColor: isActive

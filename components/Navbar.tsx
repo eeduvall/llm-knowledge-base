@@ -124,6 +124,7 @@ export function Navbar() {
 
   return (
     <nav
+      aria-label="Main navigation"
       className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b backdrop-blur-sm"
       style={{
         backgroundColor: 'var(--color-bg-nav)',
@@ -131,7 +132,7 @@ export function Navbar() {
       }}
     >
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 group">
+      <Link href="/" className="flex items-center gap-2 group" aria-label="LLM Knowledge Base home">
         <div className="w-7 h-7 flex items-center justify-center" aria-hidden="true">
           <GalaxyLogo />
         </div>
@@ -145,18 +146,19 @@ export function Navbar() {
 
       {/* Nav links */}
       <div className="flex items-center gap-4">
-        <div className="hidden md:flex items-center gap-8">
+        <ul className="hidden md:flex items-center gap-8 list-none">
           {(['Graph', 'Picker', 'Models', 'Changelog'] as const).map((item) => (
-            <Link
-              key={item}
-              href={`/${item.toLowerCase()}`}
-              className="text-sm transition-colors duration-200"
-              style={{ color: 'var(--color-text-nav)' }}
-            >
-              {item}
-            </Link>
+            <li key={item}>
+              <Link
+                href={`/${item.toLowerCase()}`}
+                className="text-sm transition-colors duration-200"
+                style={{ color: 'var(--color-text-nav)' }}
+              >
+                {item}
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
 
         {/* Theme toggle */}
         <button
