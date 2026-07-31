@@ -76,9 +76,9 @@ export function ModelCard({ model }: Props) {
               key={cap}
               className="px-2 py-0.5 rounded text-xs font-mono"
               style={{
-                backgroundColor: 'rgba(108,99,255,0.10)',
-                color: '#9B8FFF',
-                border: '1px solid rgba(108,99,255,0.20)',
+                backgroundColor: 'var(--color-primary-subtle)',
+                color: 'var(--color-primary-light)',
+                border: '1px solid var(--color-primary-dim)',
               }}
             >
               {cap}

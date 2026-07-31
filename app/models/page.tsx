@@ -11,7 +11,7 @@ export default function ModelsPage() {
   const models = loadModels()
 
   return (
-    <main style={{ backgroundColor: '#050510', minHeight: '100vh' }}>
+    <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
       <Navbar />
 
       <div className="pt-24 pb-16 px-6 max-w-6xl mx-auto">

@@ -49,7 +49,7 @@ export default function ModelDetailPage({ params }: Props) {
   const providerColor = getProviderColor(model.provider)
 
   return (
-    <main style={{ backgroundColor: '#050510', minHeight: '100vh' }}>
+    <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
       <Navbar />
 
       <div className="pt-24 pb-16 px-6 max-w-4xl mx-auto">
@@ -136,9 +136,7 @@ export default function ModelDetailPage({ params }: Props) {
           >
             Benchmarks
           </h2>
-          <dl
-            className="grid grid-cols-3 gap-4"
-          >
+          <dl className="grid grid-cols-3 gap-4">
             {[
               { label: 'MMLU', value: formatBenchmark(model.benchmarks.mmlu) },
               { label: 'HumanEval', value: formatBenchmark(model.benchmarks.humaneval) },
@@ -185,9 +183,9 @@ export default function ModelDetailPage({ params }: Props) {
                     <span
                       className="px-3 py-1 rounded-full text-xs font-mono font-medium"
                       style={{
-                        backgroundColor: 'rgba(0,212,255,0.10)',
-                        color: '#00D4FF',
-                        border: '1px solid rgba(0,212,255,0.20)',
+                        backgroundColor: 'var(--color-secondary-subtle)',
+                        color: 'var(--color-secondary)',
+                        border: '1px solid var(--color-secondary-dim)',
                       }}
                     >
                       {m}
@@ -209,9 +207,9 @@ export default function ModelDetailPage({ params }: Props) {
                     <span
                       className="px-3 py-1 rounded-full text-xs font-mono font-medium"
                       style={{
-                        backgroundColor: 'rgba(108,99,255,0.10)',
-                        color: '#9B8FFF',
-                        border: '1px solid rgba(108,99,255,0.20)',
+                        backgroundColor: 'var(--color-primary-subtle)',
+                        color: 'var(--color-primary-light)',
+                        border: '1px solid var(--color-primary-dim)',
                       }}
                     >
                       {c}
@@ -242,7 +240,7 @@ export default function ModelDetailPage({ params }: Props) {
               <ul className="flex flex-col gap-2 list-none">
                 {model.strengths.map((s) => (
                   <li key={s} className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    <span style={{ color: '#00D4FF' }} aria-hidden="true">+</span>
+                    <span style={{ color: 'var(--color-secondary)' }} aria-hidden="true">+</span>
                     {s}
                   </li>
                 ))}
@@ -264,7 +262,7 @@ export default function ModelDetailPage({ params }: Props) {
               <ul className="flex flex-col gap-2 list-none">
                 {model.weaknesses.map((w) => (
                   <li key={w} className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    <span style={{ color: '#FF6B9D' }} aria-hidden="true">−</span>
+                    <span style={{ color: 'var(--color-accent)' }} aria-hidden="true">−</span>
                     {w}
                   </li>
                 ))}
@@ -291,7 +289,7 @@ export default function ModelDetailPage({ params }: Props) {
                   className="text-sm font-medium px-4 py-2 rounded-lg border transition-all duration-200 hover:bg-white/5"
                   style={{
                     color: 'var(--color-primary)',
-                    borderColor: 'rgba(108,99,255,0.35)',
+                    borderColor: 'var(--color-primary-border)',
                   }}
                   aria-label={`${model.name} documentation (opens in new tab)`}
                 >
@@ -306,7 +304,7 @@ export default function ModelDetailPage({ params }: Props) {
                   className="text-sm font-medium px-4 py-2 rounded-lg border transition-all duration-200 hover:bg-white/5"
                   style={{
                     color: 'var(--color-primary)',
-                    borderColor: 'rgba(108,99,255,0.35)',
+                    borderColor: 'var(--color-primary-border)',
                   }}
                   aria-label={`${model.name} paper (opens in new tab)`}
                 >
@@ -322,7 +320,7 @@ export default function ModelDetailPage({ params }: Props) {
           className="rounded-xl p-5 border flex items-center justify-between"
           style={{
             backgroundColor: 'var(--color-panel-bg-alt)',
-            borderColor: 'rgba(108,99,255,0.20)',
+            borderColor: 'var(--color-primary-dim)',
           }}
         >
           <div>
@@ -338,7 +336,7 @@ export default function ModelDetailPage({ params }: Props) {
             className="text-sm font-medium px-4 py-2 rounded-lg border transition-all duration-200 hover:bg-white/5 flex-shrink-0 ml-4"
             style={{
               color: 'var(--color-primary)',
-              borderColor: 'rgba(108,99,255,0.35)',
+              borderColor: 'var(--color-primary-border)',
             }}
           >
             Open Graph →
