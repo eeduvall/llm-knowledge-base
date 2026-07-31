@@ -27,25 +27,19 @@ const CHANGELOG: ChangelogEntry[] = [
 
 export default function ChangelogPage() {
   return (
-    <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
+    <main className="bg-[var(--color-bg)] min-h-screen">
       <Navbar />
 
       <div className="pt-24 pb-16 px-6 max-w-3xl mx-auto">
         {/* Page header */}
         <header className="mb-12">
-          <p
-            className="text-xs font-mono font-medium tracking-widest uppercase mb-3"
-            style={{ color: 'var(--color-primary)' }}
-          >
+          <p className="text-xs font-mono font-medium tracking-widest uppercase mb-3 text-[var(--color-primary)]">
             Release History
           </p>
-          <h1
-            className="text-4xl font-bold mb-3"
-            style={{ color: 'var(--color-text)', fontFamily: 'Syne, sans-serif' }}
-          >
+          <h1 className="text-4xl font-bold mb-3 text-[var(--color-text)] font-[Syne,sans-serif]">
             Changelog
           </h1>
-          <p className="text-base max-w-xl" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-base max-w-xl text-[var(--color-text-muted)]">
             All notable changes to LLM Knowledge Base are documented here.
           </p>
         </header>
@@ -56,36 +50,27 @@ export default function ChangelogPage() {
             {CHANGELOG.map((entry) => (
               <li
                 key={entry.version}
-                className="rounded-lg p-6 border"
-                style={{
-                  backgroundColor: 'var(--color-surface)',
-                  borderColor: 'var(--color-border)',
-                }}
+                className="rounded-lg p-6 border bg-[var(--color-surface)] border-[var(--color-border)]"
               >
                 <div className="flex items-center gap-4 mb-4">
-                  <span
-                    className="text-sm font-mono font-semibold px-2 py-0.5 rounded"
-                    style={{
-                      backgroundColor: 'var(--color-panel-bg-alt)',
-                      color: 'var(--color-primary)',
-                    }}
-                  >
+                  <span className="text-sm font-mono font-semibold px-2 py-0.5 rounded bg-[var(--color-panel-bg-alt)] text-[var(--color-primary)]">
                     v{entry.version}
                   </span>
                   <time
                     dateTime={entry.date}
-                    className="text-sm"
-                    style={{ color: 'var(--color-text-muted)' }}
+                    className="text-sm text-[var(--color-text-muted)]"
                   >
                     {entry.date}
                   </time>
                 </div>
                 <ul className="list-none space-y-2">
                   {entry.changes.map((change, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]"
+                    >
                       <span
-                        className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: 'var(--color-secondary)' }}
+                        className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-[var(--color-secondary)]"
                         aria-hidden="true"
                       />
                       {change}
