@@ -5,17 +5,34 @@
 @tailwind utilities;
 
 :root {
+  /* Core palette */
   --color-bg:        #050510;
   --color-primary:   #6C63FF;
   --color-secondary: #00D4FF;
   --color-accent:    #FF6B9D;
   --color-fog:       rgba(100, 120, 255, 0.04);
+
+  /* Text hierarchy */
+  --color-text:       #f0f0ff;
+  --color-text-muted: rgba(240, 240, 255, 0.55);
+  --color-text-faint: rgba(240, 240, 255, 0.30);
+
+  /* Surfaces & borders */
+  --color-surface:      rgba(255, 255, 255, 0.04);
+  --color-border:       rgba(255, 255, 255, 0.10);
+  --color-divider:      rgba(255, 255, 255, 0.06);
+
+  /* Component-specific */
+  --color-nav-bg:       rgba(5, 5, 16, 0.85);
+  --color-panel-bg:     rgba(255, 255, 255, 0.03);
+  --color-panel-bg-alt: rgba(108, 99, 255, 0.06);
+  --color-overlay:      rgba(5, 5, 16, 0.75);
 }
 
 html,
 body {
   background-color: var(--color-bg);
-  color: #ffffff;
+  color: var(--color-text);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
