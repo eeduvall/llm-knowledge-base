@@ -140,17 +140,21 @@ export function NodePanel({ modelId, onSelect }: { modelId: string; onSelect: (i
   --color-accent:       #FF6B9D;
   --color-fog:          rgba(100, 120, 255, 0.04);
 
-  /* Semantic surface tokens */
-  --color-text:         #ffffff;
-  --color-text-muted:   rgba(255, 255, 255, 0.50);
-  --color-text-faint:   rgba(255, 255, 255, 0.35);
-  --color-surface:      rgba(255, 255, 255, 0.03);
-  --color-border:       rgba(255, 255, 255, 0.07);
-  --color-divider:      rgba(255, 255, 255, 0.08);
+  /* Text hierarchy */
+  --color-text:         #f0f0ff;
+  --color-text-muted:   rgba(240, 240, 255, 0.55);
+  --color-text-faint:   rgba(240, 240, 255, 0.30);
+
+  /* Surfaces & borders */
+  --color-surface:      rgba(255, 255, 255, 0.04);
+  --color-border:       rgba(255, 255, 255, 0.10);
+  --color-divider:      rgba(255, 255, 255, 0.06);
+
+  /* Component-specific */
   --color-nav-bg:       rgba(5, 5, 16, 0.85);
-  --color-panel-bg:     rgba(5, 5, 16, 0.95);
-  --color-panel-bg-alt: rgba(5, 5, 16, 0.60);
-  --color-overlay:      rgba(5, 5, 16, 0.88);
+  --color-panel-bg:     rgba(255, 255, 255, 0.03);
+  --color-panel-bg-alt: rgba(108, 99, 255, 0.06);
+  --color-overlay:      rgba(5, 5, 16, 0.75);
   --color-input-bg:     rgba(255, 255, 255, 0.05);
   --color-input-border: rgba(255, 255, 255, 0.10);
   --color-pill-bg:      rgba(255, 255, 255, 0.05);
@@ -158,6 +162,26 @@ export function NodePanel({ modelId, onSelect }: { modelId: string; onSelect: (i
   --color-stats-bg:     rgba(255, 255, 255, 0.04);
 }
 ```
+
+All available design-system tokens:
+
+| Token | Purpose |
+|---|---|
+| `--color-bg` | Page background (`#050510`) |
+| `--color-primary` | Electric violet (`#6C63FF`) |
+| `--color-secondary` | Cyan (`#00D4FF`) |
+| `--color-accent` | Hot pink (`#FF6B9D`) |
+| `--color-fog` | Subtle haze (`rgba(100,120,255,0.04)`) |
+| `--color-text` | Primary text |
+| `--color-text-muted` | Secondary / supporting text |
+| `--color-text-faint` | Tertiary / disabled text |
+| `--color-surface` | Card / panel surface |
+| `--color-border` | Default border |
+| `--color-divider` | Divider lines |
+| `--color-nav-bg` | Navigation bar background |
+| `--color-panel-bg` | Side-panel background |
+| `--color-panel-bg-alt` | Alternate panel background |
+| `--color-overlay` | Modal / overlay backdrop |
 
 - **Never hard-code hex values** in component files — reference the CSS variable or the Tailwind config token.
 - Dark mode is the **only** mode. Do not add `dark:` variants; the entire UI is dark-first.
