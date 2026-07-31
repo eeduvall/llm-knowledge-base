@@ -8,12 +8,12 @@ import type { Model } from '@/lib/models'
 // ---------------------------------------------------------------------------
 
 const ModelsResponseSchema = z.object({
-  data: z.array(z.unknown()),
+  models: z.array(z.unknown()),
   count: z.number(),
 })
 
 export type ModelsResponse = {
-  data: Model[]
+  models: Model[]
   count: number
 }
 
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       models = await getAllModels()
     }
 
-    const response: ModelsResponse = { data: models, count: models.length }
+    const response: ModelsResponse = { models, count: models.length }
     // Validate the shape before sending (belt-and-suspenders)
     ModelsResponseSchema.parse(response)
 
