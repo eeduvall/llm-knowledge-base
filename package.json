@@ -9,8 +9,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "db:migrate": "ts-node --project tsconfig.scripts.json scripts/migrate.ts",
-    "todo": "ts-node --project tsconfig.scripts.json scripts/todo.ts"
+    "db:migrate": "ts-node --project tsconfig.scripts.json scripts/migrate.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
