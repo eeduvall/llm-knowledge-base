@@ -9,8 +9,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "db:migrate": "ts-node --project tsconfig.scripts.json scripts/migrate.ts",
-    "todo": "ts-node --project tsconfig.scripts.json scripts/todo.ts"
+    "db:migrate": "ts-node --project tsconfig.scripts.json scripts/migrate.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
@@ -41,7 +40,6 @@
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.6",
-    "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   }
 }
