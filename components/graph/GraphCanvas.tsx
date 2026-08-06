@@ -338,7 +338,7 @@ export function GraphCanvas({
           text,
           bold,
           x: node.x,
-          y: node.y + r + LABEL_OFFSET_Y,
+          y: node.y + r + LABEL_OFFSET_Y + FONT_SIZE / 2,
           w: tw / 2 + LABEL_PAD_X,
           h: FONT_SIZE / 2 + LABEL_PAD_Y,
         })
@@ -374,8 +374,10 @@ export function GraphCanvas({
         ctx.font = `${lbl.bold ? 'bold ' : ''}${FONT_SIZE}px "Inter", sans-serif`
         ctx.fillStyle = isSelected ? '#ffffff' : 'rgba(255,255,255,0.75)'
         ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
         ctx.globalAlpha = 1
         ctx.fillText(lbl.text, lbl.x, lbl.y)
+        ctx.textBaseline = 'alphabetic'
       }
 
       ctx.restore()
