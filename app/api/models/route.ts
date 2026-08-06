@@ -7,8 +7,14 @@ import type { Model } from '@/lib/models'
 // Response type
 // ---------------------------------------------------------------------------
 
+const ModelsResponseSchema = z.object({
+  models: z.array(z.unknown()),
+  count: z.number(),
+})
+
 export type ModelsResponse = {
   models: Model[]
+  count: number
 }
 
 // ---------------------------------------------------------------------------
@@ -55,7 +61,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       models = getAllModels()
     }
 
-    const response: ModelsResponse = { models }
+    const response: ModelsResponse = { models, count: models.length }
+    // Validate the shape before sending (belt-and-suspenders)
+    ModelsResponseSchema.parse(response)
+
     return NextResponse.json(response, {
       headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400' },
     })
