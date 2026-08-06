@@ -1,7 +1,9 @@
-// Database row types — mirror the PostgreSQL schema in lib/db/migrations/001_create_models.sql
+// SQLite row type — mirrors the flat schema created by scripts/migrate.ts.
 // These are raw DB shapes; the app-facing Model type lives in lib/models.ts.
+// Arrays (modalities, capabilities, strengths, weaknesses) are stored as
+// JSON strings and parsed in lib/db/models.ts before being returned.
 
-export type DbModel = {
+export type DbModelRow = {
   id: string
   name: string
   provider: string
@@ -10,49 +12,19 @@ export type DbModel = {
   context_window: number
   license: string
   last_verified: string | null
-  created_at: string
-  updated_at: string
-}
-
-export type DbModelModality = {
-  model_id: string
-  modality: string
-}
-
-export type DbModelCapability = {
-  model_id: string
-  capability: string
-}
-
-export type DbModelPricing = {
-  model_id: string
-  input_price: number | null
-  output_price: number | null
-}
-
-export type DbModelBenchmarks = {
-  model_id: string
-  mmlu: number | null
-  humaneval: number | null
-  mt_bench: number | null
-}
-
-export type DbModelStrength = {
-  id: number
-  model_id: string
-  strength: string
-  sort_order: number
-}
-
-export type DbModelWeakness = {
-  id: number
-  model_id: string
-  weakness: string
-  sort_order: number
-}
-
-export type DbModelLinks = {
-  model_id: string
+  // JSON-encoded arrays
+  modalities: string
+  capabilities: string
+  strengths: string
+  weaknesses: string
+  // Pricing (nullable)
+  pricing_input: number | null
+  pricing_output: number | null
+  // Benchmarks (nullable)
+  benchmark_mmlu: number | null
+  benchmark_humaneval: number | null
+  benchmark_mt_bench: number | null
+  // Links (nullable)
   docs_url: string | null
   paper_url: string | null
 }

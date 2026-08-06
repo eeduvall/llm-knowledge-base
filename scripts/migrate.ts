@@ -1,100 +1,142 @@
 /**
- * scripts/migrate.ts
+ * scripts/migrate.ts  (repurposed as the YAML → SQLite build script)
  *
- * Runs all SQL migration files in lib/db/migrations/ against your Supabase
- * PostgreSQL database in order.
+ * Reads data/models.yaml and writes a flat SQLite database at data/models.db.
+ * The database is the runtime data store; the YAML file remains the
+ * human-editable source of truth.
  *
  * Usage:
  *   npx ts-node --project tsconfig.scripts.json scripts/migrate.ts
+ *   # or via npm:
+ *   npm run db:migrate
  *
- * Required env vars (set in .env.local or export before running):
- *   NEXT_PUBLIC_SUPABASE_URL      — your Supabase project URL
- *   SUPABASE_SERVICE_ROLE_KEY     — service-role key (never expose to browser)
- *
- * The script uses the service-role key so it can bypass RLS and run DDL.
- * Never run this in a browser context.
+ * The script is idempotent — running it again rebuilds the database from
+ * scratch (DROP + CREATE + INSERT).
  */
 
 import * as fs from 'fs'
 import * as path from 'path'
-import { createClient } from '@supabase/supabase-js'
+import * as yaml from 'js-yaml'
+import Database from 'better-sqlite3'
+import type { Model } from '../lib/models'
 
 // ---------------------------------------------------------------------------
-// Env validation
+// Paths
 // ---------------------------------------------------------------------------
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const YAML_PATH = path.join(__dirname, '..', 'data', 'models.yaml')
+const DB_PATH = path.join(__dirname, '..', 'data', 'models.db')
 
-if (!supabaseUrl || !serviceRoleKey) {
-  console.error(
-    '❌  Missing required env vars.\n' +
-      '    Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY\n' +
-      '    in .env.local or export them before running this script.',
+// ---------------------------------------------------------------------------
+// Load & validate YAML
+// ---------------------------------------------------------------------------
+
+console.log('📖  Reading', YAML_PATH)
+const raw = fs.readFileSync(YAML_PATH, 'utf8')
+const models = yaml.load(raw) as Model[]
+
+if (!Array.isArray(models) || models.length === 0) {
+  console.error('❌  models.yaml is empty or not an array')
+  process.exit(1)
+}
+
+console.log(`✅  Loaded ${models.length} models from YAML`)
+
+// ---------------------------------------------------------------------------
+// Open / create SQLite database
+// ---------------------------------------------------------------------------
+
+// Remove existing DB so the script is fully idempotent
+if (fs.existsSync(DB_PATH)) {
+  fs.unlinkSync(DB_PATH)
+  console.log('🗑   Removed existing', DB_PATH)
+}
+
+const db = new Database(DB_PATH)
+console.log('🗄   Created', DB_PATH)
+
+// ---------------------------------------------------------------------------
+// Schema
+// Flat single-table design: arrays are stored as JSON strings.
+// This keeps queries simple and avoids joins for a read-only, small dataset.
+// ---------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS models (
+    id               TEXT    PRIMARY KEY,
+    name             TEXT    NOT NULL,
+    provider         TEXT    NOT NULL,
+    family           TEXT    NOT NULL,
+    release_date     TEXT    NOT NULL,
+    context_window   INTEGER NOT NULL,
+    license          TEXT    NOT NULL,
+    last_verified    TEXT,
+    modalities       TEXT    NOT NULL DEFAULT '[]',
+    capabilities     TEXT    NOT NULL DEFAULT '[]',
+    strengths        TEXT    NOT NULL DEFAULT '[]',
+    weaknesses       TEXT    NOT NULL DEFAULT '[]',
+    pricing_input    REAL,
+    pricing_output   REAL,
+    benchmark_mmlu      REAL,
+    benchmark_humaneval REAL,
+    benchmark_mt_bench  REAL,
+    docs_url         TEXT,
+    paper_url        TEXT
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_models_provider ON models(provider);
+  CREATE INDEX IF NOT EXISTS idx_models_license  ON models(license);
+`)
+
+// ---------------------------------------------------------------------------
+// Insert rows
+// ---------------------------------------------------------------------------
+
+const insert = db.prepare(`
+  INSERT INTO models (
+    id, name, provider, family, release_date, context_window, license,
+    last_verified, modalities, capabilities, strengths, weaknesses,
+    pricing_input, pricing_output,
+    benchmark_mmlu, benchmark_humaneval, benchmark_mt_bench,
+    docs_url, paper_url
+  ) VALUES (
+    @id, @name, @provider, @family, @release_date, @context_window, @license,
+    @last_verified, @modalities, @capabilities, @strengths, @weaknesses,
+    @pricing_input, @pricing_output,
+    @benchmark_mmlu, @benchmark_humaneval, @benchmark_mt_bench,
+    @docs_url, @paper_url
   )
-  process.exit(1)
-}
+`)
 
-// ---------------------------------------------------------------------------
-// Supabase admin client (service-role — server-only)
-// ---------------------------------------------------------------------------
-
-const supabase = createClient(supabaseUrl, serviceRoleKey, {
-  auth: { persistSession: false },
+const insertAll = db.transaction((rows: Model[]) => {
+  for (const m of rows) {
+    insert.run({
+      id: m.id,
+      name: m.name,
+      provider: m.provider,
+      family: m.family,
+      release_date: m.release_date,
+      context_window: m.context_window,
+      license: m.license,
+      last_verified: m.last_verified ?? null,
+      modalities: JSON.stringify(m.modalities ?? []),
+      capabilities: JSON.stringify(m.capabilities ?? []),
+      strengths: JSON.stringify(m.strengths ?? []),
+      weaknesses: JSON.stringify(m.weaknesses ?? []),
+      pricing_input: m.pricing?.input ?? null,
+      pricing_output: m.pricing?.output ?? null,
+      benchmark_mmlu: m.benchmarks?.mmlu ?? null,
+      benchmark_humaneval: m.benchmarks?.humaneval ?? null,
+      benchmark_mt_bench: m.benchmarks?.mt_bench ?? null,
+      docs_url: m.links?.docs ?? null,
+      paper_url: m.links?.paper ?? null,
+    })
+  }
 })
 
-// ---------------------------------------------------------------------------
-// Migration runner
-// ---------------------------------------------------------------------------
+insertAll(models)
 
-const MIGRATIONS_DIR = path.join(__dirname, '..', 'lib', 'db', 'migrations')
+console.log(`✅  Inserted ${models.length} rows into models table`)
+console.log('\n🎉  Database build complete:', DB_PATH)
 
-async function runMigrations(): Promise<void> {
-  const files = fs
-    .readdirSync(MIGRATIONS_DIR)
-    .filter((f) => f.endsWith('.sql'))
-    .sort() // lexicographic order: 001_, 002_, 002b_, …
-
-  if (files.length === 0) {
-    console.log('ℹ️  No migration files found in', MIGRATIONS_DIR)
-    return
-  }
-
-  console.log(`🔍  Found ${files.length} migration file(s):\n`)
-
-  for (const file of files) {
-    const filePath = path.join(MIGRATIONS_DIR, file)
-    const sql = fs.readFileSync(filePath, 'utf8').trim()
-
-    if (!sql) {
-      console.log(`  ⏭  ${file} — empty, skipping`)
-      continue
-    }
-
-    console.log(`  ▶  Running ${file} …`)
-
-    // Supabase JS client does not expose a raw SQL execution method on the
-    // public API.  We use the PostgREST RPC endpoint via the REST API instead.
-    // For DDL migrations the recommended approach is to use the Supabase
-    // Dashboard SQL editor or the Supabase CLI (`supabase db push`).
-    //
-    // Here we call the `exec_sql` RPC function which must be created once in
-    // your Supabase project (see the note below).  If you prefer, replace this
-    // with the Supabase CLI workflow described in the README.
-    const { error } = await supabase.rpc('exec_sql', { sql_text: sql })
-
-    if (error) {
-      console.error(`  ❌  ${file} failed:`, error.message)
-      process.exit(1)
-    }
-
-    console.log(`  ✅  ${file} — done`)
-  }
-
-  console.log('\n🎉  All migrations applied successfully.')
-}
-
-runMigrations().catch((err: unknown) => {
-  console.error('Unexpected error:', err)
-  process.exit(1)
-})
+db.close()
