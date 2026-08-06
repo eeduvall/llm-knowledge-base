@@ -251,7 +251,7 @@ export function GraphExplorer({ initialModels }: Props) {
                 style={{ backgroundColor: color }}
                 aria-hidden="true"
               />
-              <span className="text-xs font-mono capitalize" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              <span className="text-xs font-mono capitalize" style={{ color: 'var(--color-text-faint)' }}>
                 {provider}
               </span>
             </div>

@@ -134,16 +134,16 @@ export function NodePanel({ modelId, onSelect }: { modelId: string; onSelect: (i
 ```css
 :root {
   /* Core palette */
-  --color-bg:        #050510;
-  --color-primary:   #6C63FF;
-  --color-secondary: #00D4FF;
-  --color-accent:    #FF6B9D;
-  --color-fog:       rgba(100, 120, 255, 0.04);
+  --color-bg:           #050510;
+  --color-primary:      #6C63FF;
+  --color-secondary:    #00D4FF;
+  --color-accent:       #FF6B9D;
+  --color-fog:          rgba(100, 120, 255, 0.04);
 
   /* Text hierarchy */
-  --color-text:       #f0f0ff;
-  --color-text-muted: rgba(240, 240, 255, 0.55);
-  --color-text-faint: rgba(240, 240, 255, 0.30);
+  --color-text:         #f0f0ff;
+  --color-text-muted:   rgba(240, 240, 255, 0.55);
+  --color-text-faint:   rgba(240, 240, 255, 0.30);
 
   /* Surfaces & borders */
   --color-surface:      rgba(255, 255, 255, 0.04);
@@ -155,6 +155,11 @@ export function NodePanel({ modelId, onSelect }: { modelId: string; onSelect: (i
   --color-panel-bg:     rgba(255, 255, 255, 0.03);
   --color-panel-bg-alt: rgba(108, 99, 255, 0.06);
   --color-overlay:      rgba(5, 5, 16, 0.75);
+  --color-input-bg:     rgba(255, 255, 255, 0.05);
+  --color-input-border: rgba(255, 255, 255, 0.10);
+  --color-pill-bg:      rgba(255, 255, 255, 0.05);
+  --color-pill-border:  rgba(255, 255, 255, 0.08);
+  --color-stats-bg:     rgba(255, 255, 255, 0.04);
 }
 ```
 

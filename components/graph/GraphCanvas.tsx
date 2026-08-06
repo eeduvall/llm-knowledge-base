@@ -39,27 +39,16 @@ export function GraphCanvas({
   const edgesRef = useRef<GraphEdge[]>(edges)
   const tRef = useRef(0)
   const synapseRef = useRef<{ id: string; t: number } | null>(null)
-  // Track keyboard-focused node index for arrow-key navigation
   const focusIndexRef = useRef<number>(-1)
 
-  // Camera state: current and target for smooth interpolation
   const cameraRef = useRef<Camera>({ x: 0, y: 0, scale: 1 })
   const cameraTargetRef = useRef<Camera>({ x: 0, y: 0, scale: 1 })
 
-  // Keep refs in sync with props
-  useEffect(() => {
-    nodesRef.current = nodes
-  }, [nodes])
+  useEffect(() => { nodesRef.current = nodes }, [nodes])
+  useEffect(() => { edgesRef.current = edges }, [edges])
 
   useEffect(() => {
-    edgesRef.current = edges
-  }, [edges])
-
-  // Trigger synapse animation on hover
-  useEffect(() => {
-    if (hoveredId) {
-      synapseRef.current = { id: hoveredId, t: 0 }
-    }
+    if (hoveredId) synapseRef.current = { id: hoveredId, t: 0 }
   }, [hoveredId])
 
   // Pan camera to the highlighted node after physics has had time to settle.
@@ -86,6 +75,7 @@ export function GraphCanvas({
     const allVisible = nodesRef.current.every((n) => visibleIds.has(n.id))
     if (allVisible) {
       // Reset to default view
+      cameraTargetRef.current = { x: 0, y: 0, scale: 1 }
       return
     }
 
@@ -96,11 +86,7 @@ export function GraphCanvas({
       return
     }
 
-    let minX = Infinity
-    let maxX = -Infinity
-    let minY = Infinity
-    let maxY = -Infinity
-
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity
     for (const n of visibleNodes) {
       minX = Math.min(minX, n.x - n.radius)
       maxX = Math.max(maxX, n.x + n.radius)
@@ -116,7 +102,7 @@ export function GraphCanvas({
 
     const scaleX = w / bboxW
     const scaleY = h / bboxH
-    const scale = Math.min(scaleX, scaleY, 2.5) // cap at 2.5×
+    const scale = Math.min(scaleX, scaleY, 2.5)
 
     // Camera offset: translate so bbox center maps to canvas center
     // After transform: screenX = (worldX - cx) * scale + w/2
@@ -132,7 +118,6 @@ export function GraphCanvas({
     return nodesRef.current.filter((n) => visibleIds.has(n.id))
   }, [visibleIds])
 
-
   const getNodeAt = useCallback(
     (screenX: number, screenY: number): GraphNode | null => {
       const canvas = canvasRef.current
@@ -140,18 +125,13 @@ export function GraphCanvas({
       const w = canvas.width
       const h = canvas.height
       const cam = cameraRef.current
-
-      // Convert screen coords to world coords
       const worldX = (screenX - w / 2) / cam.scale + cam.x
       const worldY = (screenY - h / 2) / cam.scale + cam.y
-
       for (const node of nodesRef.current) {
-        const visible = visibleIds.has(node.id)
-        if (!visible) continue
+        if (!visibleIds.has(node.id)) continue
         const dx = node.x - worldX
         const dy = node.y - worldY
-        if (Math.sqrt(dx * dx + dy * dy) <= node.radius + 6 / cam.scale)
-          return node
+        if (Math.sqrt(dx * dx + dy * dy) <= node.radius + 6 / cam.scale) return node
       }
       return null
     },
@@ -171,7 +151,7 @@ export function GraphCanvas({
     resize()
     window.addEventListener('resize', resize)
 
-    const LERP = 0.08 // smoothing factor per frame
+    const LERP = 0.08
 
     const draw = () => {
       tRef.current += 0.008
@@ -181,16 +161,13 @@ export function GraphCanvas({
       const nodes = nodesRef.current
       const edges = edgesRef.current
 
-      // Advance synapse animation
       if (synapseRef.current) {
         synapseRef.current.t += 0.04
         if (synapseRef.current.t > 1) synapseRef.current = null
       }
 
-      // Run physics
       tickLayout(nodes, edges, w, h)
 
-      // Smooth camera interpolation
       const cam = cameraRef.current
       const target = cameraTargetRef.current
       cam.x += (target.x - cam.x) * LERP
@@ -198,14 +175,11 @@ export function GraphCanvas({
       cam.scale += (target.scale - cam.scale) * LERP
 
       ctx.clearRect(0, 0, w, h)
-
-      // Apply camera transform: translate so world-center maps to canvas-center
       ctx.save()
       ctx.translate(w / 2, h / 2)
       ctx.scale(cam.scale, cam.scale)
       ctx.translate(-cam.x, -cam.y)
 
-      // Draw edges
       for (const edge of edges) {
         const a = nodes.find((n) => n.id === edge.source)
         const b = nodes.find((n) => n.id === edge.target)
@@ -216,14 +190,11 @@ export function GraphCanvas({
         if (!aVisible && !bVisible) continue
 
         const alpha = aVisible && bVisible ? 0.35 : 0.1
-
-        // Synapse glow on hovered node's edges
         let lineWidth = 0.8
         let extraAlpha = 0
         if (
           synapseRef.current &&
-          (edge.source === synapseRef.current.id ||
-            edge.target === synapseRef.current.id)
+          (edge.source === synapseRef.current.id || edge.target === synapseRef.current.id)
         ) {
           const progress = synapseRef.current.t
           extraAlpha = Math.max(0, 0.6 * (1 - progress))
@@ -231,12 +202,8 @@ export function GraphCanvas({
         }
 
         const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y)
-        const aAlpha = Math.round((alpha + extraAlpha) * 255)
-          .toString(16)
-          .padStart(2, '0')
-        const bAlpha = Math.round((alpha + extraAlpha) * 0.6 * 255)
-          .toString(16)
-          .padStart(2, '0')
+        const aAlpha = Math.round((alpha + extraAlpha) * 255).toString(16).padStart(2, '0')
+        const bAlpha = Math.round((alpha + extraAlpha) * 0.6 * 255).toString(16).padStart(2, '0')
         grad.addColorStop(0, a.color + aAlpha)
         grad.addColorStop(1, b.color + bAlpha)
         ctx.beginPath()
@@ -247,7 +214,6 @@ export function GraphCanvas({
         ctx.stroke()
       }
 
-      // Draw nodes
       for (const node of nodes) {
         const visible = visibleIds.has(node.id)
         const isSelected = node.id === selectedId
@@ -256,20 +222,10 @@ export function GraphCanvas({
 
         const pulse = 1 + 0.08 * Math.sin(t * 2 + node.pulseOffset)
         const r = node.radius * pulse * (isSelected ? 1.4 : isHovered ? 1.2 : 1)
-        const globalAlpha = dimmed ? 0.15 : 1
+        ctx.globalAlpha = dimmed ? 0.15 : 1
 
-        ctx.globalAlpha = globalAlpha
-
-        // Outer glow
         const glowR = r * (isSelected ? 5 : isHovered ? 4.5 : 4)
-        const glow = ctx.createRadialGradient(
-          node.x,
-          node.y,
-          0,
-          node.x,
-          node.y,
-          glowR
-        )
+        const glow = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, glowR)
         const glowAlpha = isSelected ? '60' : isHovered ? '50' : '30'
         glow.addColorStop(0, node.color + glowAlpha)
         glow.addColorStop(1, node.color + '00')
@@ -278,15 +234,7 @@ export function GraphCanvas({
         ctx.fillStyle = glow
         ctx.fill()
 
-        // Core sphere
-        const core = ctx.createRadialGradient(
-          node.x - r * 0.3,
-          node.y - r * 0.3,
-          0,
-          node.x,
-          node.y,
-          r
-        )
+        const core = ctx.createRadialGradient(node.x - r * 0.3, node.y - r * 0.3, 0, node.x, node.y, r)
         core.addColorStop(0, '#ffffff')
         core.addColorStop(0.4, node.color)
         core.addColorStop(1, node.color + 'aa')
@@ -295,7 +243,6 @@ export function GraphCanvas({
         ctx.fillStyle = core
         ctx.fill()
 
-        // Selection ring
         if (isSelected) {
           ctx.beginPath()
           ctx.arc(node.x, node.y, r + 4, 0, Math.PI * 2)
@@ -306,7 +253,6 @@ export function GraphCanvas({
 
         ctx.globalAlpha = 1
 
-        // Label
         if (visible && (isSelected || isHovered || node.radius >= 7)) {
           ctx.font = `${isSelected ? 'bold ' : ''}11px "Inter", sans-serif`
           ctx.fillStyle = isSelected ? '#ffffff' : 'rgba(255,255,255,0.75)'
@@ -316,7 +262,6 @@ export function GraphCanvas({
       }
 
       ctx.restore()
-
       animRef.current = requestAnimationFrame(draw)
     }
 
@@ -333,9 +278,7 @@ export function GraphCanvas({
       const canvas = canvasRef.current
       if (!canvas) return
       const rect = canvas.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-      const node = getNodeAt(x, y)
+      const node = getNodeAt(e.clientX - rect.left, e.clientY - rect.top)
       onHoverNode(node ? node.id : null)
       canvas.style.cursor = node ? 'pointer' : 'default'
     },
@@ -347,19 +290,14 @@ export function GraphCanvas({
       const canvas = canvasRef.current
       if (!canvas) return
       const rect = canvas.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-      const node = getNodeAt(x, y)
+      const node = getNodeAt(e.clientX - rect.left, e.clientY - rect.top)
       onSelectNode(node ? node.id : null)
     },
     [getNodeAt, onSelectNode]
   )
 
-  const handleMouseLeave = useCallback(() => {
-    onHoverNode(null)
-  }, [onHoverNode])
+  const handleMouseLeave = useCallback(() => { onHoverNode(null) }, [onHoverNode])
 
-  // Keyboard navigation: Tab focuses canvas, arrow keys cycle nodes, Enter selects
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLCanvasElement>) => {
       const visible = getVisibleNodes()
@@ -368,19 +306,15 @@ export function GraphCanvas({
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault()
         focusIndexRef.current = (focusIndexRef.current + 1) % visible.length
-        const node = visible[focusIndexRef.current]
-        onHoverNode(node.id)
+        onHoverNode(visible[focusIndexRef.current].id)
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault()
-        focusIndexRef.current =
-          (focusIndexRef.current - 1 + visible.length) % visible.length
-        const node = visible[focusIndexRef.current]
-        onHoverNode(node.id)
+        focusIndexRef.current = (focusIndexRef.current - 1 + visible.length) % visible.length
+        onHoverNode(visible[focusIndexRef.current].id)
       } else if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
         if (focusIndexRef.current >= 0 && focusIndexRef.current < visible.length) {
-          const node = visible[focusIndexRef.current]
-          onSelectNode(node.id)
+          onSelectNode(visible[focusIndexRef.current].id)
         }
       } else if (e.key === 'Escape') {
         onSelectNode(null)
@@ -396,7 +330,6 @@ export function GraphCanvas({
     focusIndexRef.current = -1
   }, [onHoverNode])
 
-  // Derive accessible label from hovered/selected node
   const hoveredNode = nodes.find((n) => n.id === hoveredId)
   const selectedNode = nodes.find((n) => n.id === selectedId)
   const ariaLabel = selectedNode
