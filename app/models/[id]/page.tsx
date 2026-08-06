@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Navbar } from '@/components/Navbar'
 import { loadModels } from '@/lib/models-server'
 import { getProviderColor } from '@/lib/models'
+import type { Model } from '@/lib/models'
 import type { Metadata } from 'next'
 
 type Props = {
@@ -35,314 +36,348 @@ function formatPrice(price: number | null): string {
   return `$${price.toFixed(2)}`
 }
 
-function formatBenchmark(value: number | null): string {
-  if (value === null) return '—'
-  return `${value.toFixed(1)}`
+function deriveCostTier(model: Model): { label: string; color: string } {
+  const input = model.pricing.input
+  if (input === null) return { label: 'Open Weights', color: 'var(--color-secondary)' }
+  if (input <= 0.5) return { label: 'Budget', color: 'var(--color-secondary)' }
+  if (input <= 5.0) return { label: 'Mid-range', color: 'var(--color-primary)' }
+  return { label: 'Premium', color: 'var(--color-accent)' }
+}
+
+function computeCostEfficiency(model: Model): string {
+  const { input, output } = model.pricing
+  if (input === null || output === null || input === 0) return '—'
+  const ratio = output / input
+  return `${ratio.toFixed(1)}×`
+}
+
+type BenchmarkEntry = {
+  key: keyof Model['benchmarks']
+  label: string
+  description: string
+  maxScore: number
+}
+
+const BENCHMARK_META: BenchmarkEntry[] = [
+  { key: 'mmlu', label: 'MMLU', description: 'Massive Multitask Language Understanding — 57-subject knowledge test', maxScore: 100 },
+  { key: 'humaneval', label: 'HumanEval', description: 'Code generation pass@1 — 164 Python programming problems', maxScore: 100 },
+  { key: 'mt_bench', label: 'MT-Bench', description: 'Multi-turn conversation quality — GPT-4 judge, scored 1–10', maxScore: 10 },
+]
+
+type BenchmarkStats = {
+  best: number | null
+  worst: number | null
+  rank: number
+  total: number
+}
+
+function computeBenchmarkStats(
+  key: keyof Model['benchmarks'],
+  currentModel: Model,
+  allModels: Model[]
+): BenchmarkStats {
+  const scores = allModels
+    .map((m) => m.benchmarks[key])
+    .filter((v): v is number => v !== null)
+
+  if (scores.length === 0) return { best: null, worst: null, rank: 0, total: 0 }
+
+  const best = Math.max(...scores)
+  const worst = Math.min(...scores)
+  const current = currentModel.benchmarks[key]
+
+  if (current === null) return { best, worst, rank: 0, total: scores.length }
+
+  const sorted = [...scores].sort((a, b) => b - a)
+  const rank = sorted.indexOf(current) + 1
+
+  return { best, worst, rank, total: scores.length }
 }
 
 export default function ModelDetailPage({ params }: Props) {
-  const models = loadModels()
-  const model = models.find((m) => m.id === params.id)
-
+  const allModels = loadModels()
+  const model = allModels.find((m) => m.id === params.id)
   if (!model) notFound()
 
   const providerColor = getProviderColor(model.provider)
+  const costTier = deriveCostTier(model)
+  const costEfficiency = computeCostEfficiency(model)
 
   return (
-    <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
+    <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
       <Navbar />
-
-      <div className="pt-24 pb-16 px-6 max-w-4xl mx-auto">
-        {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="mb-8">
-          <ol className="flex items-center gap-2 text-xs font-mono list-none">
-            <li>
+      <main className="pt-20 pb-16">
+        {/* Hero header with provider accent stripe */}
+        <div className="relative overflow-hidden" style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <div className="absolute inset-0 opacity-10" style={{ background: `linear-gradient(135deg, ${providerColor} 0%, transparent 60%)` }} />
+          <div className="absolute top-0 left-0 right-0 h-1" style={{ background: providerColor }} />
+          <div className="relative max-w-5xl mx-auto px-6 py-12">
+            <div className="flex flex-wrap items-start gap-4 mb-6">
               <Link
                 href="/models"
-                className="transition-colors duration-200 hover:text-white"
-                style={{ color: 'var(--color-text-faint)' }}
+                className="text-sm flex items-center gap-1 transition-colors"
+                style={{ color: 'var(--color-text-muted)' }}
               >
-                Models
+                <span>←</span> All Models
               </Link>
-            </li>
-            <li style={{ color: 'var(--color-text-faint)' }} aria-hidden="true">/</li>
-            <li style={{ color: 'var(--color-text-muted)' }}>{model.name}</li>
-          </ol>
-        </nav>
-
-        {/* Header */}
-        <header className="mb-10">
-          <span
-            className="text-xs font-mono font-medium tracking-widest uppercase"
-            style={{ color: providerColor }}
-          >
-            {model.provider}
-          </span>
-          <h1
-            className="text-4xl font-bold mt-1 mb-2"
-            style={{ color: 'var(--color-text)', fontFamily: 'Syne, sans-serif' }}
-          >
-            {model.name}
-          </h1>
-          <p className="text-sm font-mono" style={{ color: 'var(--color-text-faint)' }}>
-            {model.id}
-          </p>
-        </header>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 mb-3">
+              <span
+                className="text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full"
+                style={{ background: `${providerColor}22`, color: providerColor, border: `1px solid ${providerColor}44` }}
+              >
+                {model.provider}
+              </span>
+              <span
+                className="text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full"
+                style={{ background: `${costTier.color}22`, color: costTier.color, border: `1px solid ${costTier.color}44` }}
+              >
+                {costTier.label}
+              </span>
+              <span
+                className="text-xs px-3 py-1 rounded-full"
+                style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}
+              >
+                {model.license}
+              </span>
+            </div>
+            <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>{model.name}</h1>
+            <p className="text-base" style={{ color: 'var(--color-text-muted)' }}>
+              {model.family} family &middot; Released {model.release_date}
+              {model.last_verified && <span> &middot; Data verified {model.last_verified}</span>}
+            </p>
+          </div>
+        </div>
 
         {/* Stats grid */}
-        <section aria-label="Key statistics" className="mb-8">
-          <dl
-            className="grid grid-cols-2 gap-px rounded-xl overflow-hidden border"
-            style={{
-              borderColor: 'var(--color-border)',
-              backgroundColor: 'var(--color-divider)',
-            }}
-          >
-            {[
-              { label: 'Context window', value: `${formatContextWindow(model.context_window)} tokens` },
-              { label: 'Released', value: model.release_date },
-              { label: 'Input / 1M tokens', value: formatPrice(model.pricing.input) },
-              { label: 'Output / 1M tokens', value: formatPrice(model.pricing.output) },
-              { label: 'License', value: model.license },
-              { label: 'Family', value: model.family },
-            ].map(({ label, value }) => (
-              <div
-                key={label}
-                className="flex flex-col gap-1 p-5"
-                style={{ backgroundColor: 'var(--color-panel-bg)' }}
-              >
-                <dt
-                  className="text-xs font-mono uppercase tracking-wider"
-                  style={{ color: 'var(--color-text-faint)' }}
-                >
-                  {label}
-                </dt>
-                <dd
-                  className="text-sm font-semibold"
-                  style={{ color: 'var(--color-text)' }}
-                >
-                  {value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-
-        {/* Benchmarks */}
-        <section aria-label="Benchmarks" className="mb-8">
-          <h2
-            className="text-xs font-mono font-medium tracking-widest uppercase mb-4"
-            style={{ color: 'var(--color-text-faint)' }}
-          >
-            Benchmarks
-          </h2>
-          <dl className="grid grid-cols-3 gap-4">
-            {[
-              { label: 'MMLU', value: formatBenchmark(model.benchmarks.mmlu) },
-              { label: 'HumanEval', value: formatBenchmark(model.benchmarks.humaneval) },
-              { label: 'MT-Bench', value: formatBenchmark(model.benchmarks.mt_bench) },
-            ].map(({ label, value }) => (
-              <div
-                key={label}
-                className="rounded-lg p-4 border flex flex-col gap-1"
-                style={{
-                  backgroundColor: 'var(--color-surface)',
-                  borderColor: 'var(--color-border)',
-                }}
-              >
-                <dt
-                  className="text-xs font-mono uppercase tracking-wider"
-                  style={{ color: 'var(--color-text-faint)' }}
-                >
-                  {label}
-                </dt>
-                <dd
-                  className="text-2xl font-bold font-mono"
-                  style={{ color: value === '—' ? 'var(--color-text-faint)' : 'var(--color-text)' }}
-                >
-                  {value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-
-        {/* Modalities & Capabilities */}
-        <section aria-label="Modalities and capabilities" className="mb-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <h2
-                className="text-xs font-mono font-medium tracking-widest uppercase mb-3"
-                style={{ color: 'var(--color-text-faint)' }}
-              >
-                Modalities
-              </h2>
-              <ul className="flex flex-wrap gap-2 list-none">
-                {model.modalities.map((m) => (
-                  <li key={m}>
-                    <span
-                      className="px-3 py-1 rounded-full text-xs font-mono font-medium"
-                      style={{
-                        backgroundColor: 'var(--color-secondary-subtle)',
-                        color: 'var(--color-secondary)',
-                        border: '1px solid var(--color-secondary-dim)',
-                      }}
-                    >
-                      {m}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+        <div className="max-w-5xl mx-auto px-6 py-10">
+          <h2 className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: 'var(--color-text-muted)' }}>At a Glance</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
+            {/* Context window */}
+            <div className="col-span-1 rounded-xl p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>Context Window</div>
+              <div className="text-2xl font-bold" style={{ color: 'var(--color-secondary)' }}>{formatContextWindow(model.context_window)}</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>tokens</div>
             </div>
-            <div>
-              <h2
-                className="text-xs font-mono font-medium tracking-widest uppercase mb-3"
-                style={{ color: 'var(--color-text-faint)' }}
-              >
-                Capabilities
-              </h2>
-              <ul className="flex flex-wrap gap-2 list-none">
-                {model.capabilities.map((c) => (
-                  <li key={c}>
-                    <span
-                      className="px-3 py-1 rounded-full text-xs font-mono font-medium"
-                      style={{
-                        backgroundColor: 'var(--color-primary-subtle)',
-                        color: 'var(--color-primary-light)',
-                        border: '1px solid var(--color-primary-dim)',
-                      }}
-                    >
-                      {c}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+            {/* Input price */}
+            <div className="col-span-1 rounded-xl p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>Input Price</div>
+              <div className="text-2xl font-bold" style={{ color: 'var(--color-text)' }}>{formatPrice(model.pricing.input)}</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>per 1M tokens</div>
+            </div>
+            {/* Output price */}
+            <div className="col-span-1 rounded-xl p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>Output Price</div>
+              <div className="text-2xl font-bold" style={{ color: 'var(--color-text)' }}>{formatPrice(model.pricing.output)}</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>per 1M tokens</div>
+            </div>
+            {/* Cost efficiency */}
+            <div className="col-span-1 rounded-xl p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>Output/Input Ratio</div>
+              <div className="text-2xl font-bold" style={{ color: 'var(--color-accent)' }}>{costEfficiency}</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>cost multiplier</div>
+            </div>
+            {/* Modalities */}
+            <div className="col-span-1 rounded-xl p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>Modalities</div>
+              <div className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>{model.modalities.length}</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>{model.modalities.join(', ')}</div>
+            </div>
+            {/* Capabilities */}
+            <div className="col-span-1 rounded-xl p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>Capabilities</div>
+              <div className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>{model.capabilities.length}</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>features</div>
             </div>
           </div>
-        </section>
 
-        {/* Strengths & Weaknesses */}
-        <section aria-label="Strengths and weaknesses" className="mb-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div
-              className="rounded-xl p-5 border"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                borderColor: 'var(--color-border)',
-              }}
-            >
-              <h2
-                className="text-xs font-mono font-medium tracking-widest uppercase mb-4"
-                style={{ color: 'var(--color-text-faint)' }}
-              >
-                Strengths
-              </h2>
-              <ul className="flex flex-col gap-2 list-none">
-                {model.strengths.map((s) => (
-                  <li key={s} className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    <span style={{ color: 'var(--color-secondary)' }} aria-hidden="true">+</span>
+          {/* Two-column layout: benchmarks + capabilities/modalities */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            {/* Benchmarks */}
+            <div className="rounded-xl p-6" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <h2 className="text-sm font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-muted)' }}>Benchmarks</h2>
+              <p className="text-xs mb-6" style={{ color: 'var(--color-text-faint)' }}>Scores compared against all {allModels.length} models in the knowledge base</p>
+              <div className="space-y-6">
+                {BENCHMARK_META.map((bm) => {
+                  const score = model.benchmarks[bm.key]
+                  const stats = computeBenchmarkStats(bm.key, model, allModels)
+                  const pct = score !== null && stats.best !== null ? (score / bm.maxScore) * 100 : 0
+                  const bestPct = stats.best !== null ? (stats.best / bm.maxScore) * 100 : 0
+                  const isFirst = stats.rank === 1 && score !== null
+                  const isLast = stats.rank === stats.total && score !== null && stats.total > 1
+                  return (
+                    <div key={bm.key}>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{bm.label}</span>
+                          {isFirst && <span title="Best in class" className="text-base">👑</span>}
+                          {isLast && <span title="Last among scored models" className="text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(255,107,157,0.15)', color: 'var(--color-accent)' }}>last</span>}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {score !== null ? (
+                            <span className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>{score}</span>
+                          ) : (
+                            <span className="text-sm" style={{ color: 'var(--color-text-faint)' }}>N/A</span>
+                          )}
+                          {score !== null && stats.total > 0 && (
+                            <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>#{stats.rank} of {stats.total}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-xs mb-2" style={{ color: 'var(--color-text-faint)' }}>{bm.description}</div>
+                      {/* Bar track */}
+                      <div className="relative h-2 rounded-full overflow-hidden" style={{ background: 'var(--color-divider)' }}>
+                        {/* Best-in-class marker */}
+                        {stats.best !== null && (
+                          <div
+                            className="absolute top-0 bottom-0 w-0.5 opacity-40"
+                            style={{ left: `${bestPct}%`, background: 'var(--color-text-muted)' }}
+                          />
+                        )}
+                        {/* Score bar */}
+                        {score !== null && (
+                          <div
+                            className="h-full rounded-full transition-all"
+                            style={{
+                              width: `${pct}%`,
+                              background: isFirst
+                                ? 'linear-gradient(90deg, var(--color-secondary), var(--color-primary))'
+                                : isLast
+                                ? 'var(--color-accent)'
+                                : providerColor,
+                            }}
+                          />
+                        )}
+                      </div>
+                      {stats.best !== null && (
+                        <div className="flex justify-between mt-1">
+                          <span className="text-xs" style={{ color: 'var(--color-text-faint)' }}>0</span>
+                          <span className="text-xs" style={{ color: 'var(--color-text-faint)' }}>Best: {stats.best} / {bm.maxScore}</span>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Capabilities & Modalities */}
+            <div className="space-y-6">
+              <div className="rounded-xl p-6" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <h2 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-muted)' }}>Capabilities</h2>
+                <div className="flex flex-wrap gap-2">
+                  {model.capabilities.map((cap) => (
+                    <span
+                      key={cap}
+                      className="text-xs px-3 py-1.5 rounded-full font-medium"
+                      style={{ background: 'var(--color-panel-bg-alt)', color: 'var(--color-primary)', border: '1px solid rgba(108,99,255,0.3)' }}
+                    >
+                      {cap}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-xl p-6" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <h2 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-muted)' }}>Modalities</h2>
+                <div className="flex flex-wrap gap-2">
+                  {model.modalities.map((mod) => (
+                    <span
+                      key={mod}
+                      className="text-xs px-3 py-1.5 rounded-full font-medium"
+                      style={{ background: 'rgba(0,212,255,0.08)', color: 'var(--color-secondary)', border: '1px solid rgba(0,212,255,0.25)' }}
+                    >
+                      {mod}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              {/* Pricing detail */}
+              <div className="rounded-xl p-6" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <h2 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-muted)' }}>Pricing Detail</h2>
+                {model.pricing.input === null ? (
+                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Open weights — pricing depends on your infrastructure.</p>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Input (prompt)</span>
+                      <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{formatPrice(model.pricing.input)} / 1M tokens</span>
+                    </div>
+                    <div className="h-px" style={{ background: 'var(--color-divider)' }} />
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Output (completion)</span>
+                      <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{formatPrice(model.pricing.output)} / 1M tokens</span>
+                    </div>
+                    <div className="h-px" style={{ background: 'var(--color-divider)' }} />
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Output/Input ratio</span>
+                      <span className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>{costEfficiency}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Strengths & Weaknesses */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div className="rounded-xl p-6" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <h2 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-muted)' }}>Strengths</h2>
+              <ul className="space-y-2">
+                {model.strengths.map((s, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-text)' }}>
+                    <span className="mt-0.5 shrink-0" style={{ color: 'var(--color-secondary)' }}>✓</span>
                     {s}
                   </li>
                 ))}
               </ul>
             </div>
-            <div
-              className="rounded-xl p-5 border"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                borderColor: 'var(--color-border)',
-              }}
-            >
-              <h2
-                className="text-xs font-mono font-medium tracking-widest uppercase mb-4"
-                style={{ color: 'var(--color-text-faint)' }}
-              >
-                Weaknesses
-              </h2>
-              <ul className="flex flex-col gap-2 list-none">
-                {model.weaknesses.map((w) => (
-                  <li key={w} className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    <span style={{ color: 'var(--color-accent)' }} aria-hidden="true">−</span>
+            <div className="rounded-xl p-6" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+              <h2 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-muted)' }}>Weaknesses</h2>
+              <ul className="space-y-2">
+                {model.weaknesses.map((w, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-text)' }}>
+                    <span className="mt-0.5 shrink-0" style={{ color: 'var(--color-accent)' }}>✕</span>
                     {w}
                   </li>
                 ))}
               </ul>
             </div>
           </div>
-        </section>
 
-        {/* Links */}
-        {(model.links.docs || model.links.paper) && (
-          <section aria-label="External links" className="mb-8">
-            <h2
-              className="text-xs font-mono font-medium tracking-widest uppercase mb-4"
-              style={{ color: 'var(--color-text-faint)' }}
+          {/* Links & actions */}
+          <div className="flex flex-wrap gap-4 items-center">
+            {model.links.docs && (
+              <a
+                href={model.links.docs}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm px-5 py-2.5 rounded-lg font-medium transition-opacity hover:opacity-80"
+                style={{ background: providerColor, color: 'var(--color-text)' }}
+              >
+                Documentation ↗
+              </a>
+            )}
+            {model.links.paper && (
+              <a
+                href={model.links.paper}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm px-5 py-2.5 rounded-lg font-medium transition-opacity hover:opacity-80"
+                style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid var(--color-border)' }}
+              >
+                Research Paper ↗
+              </a>
+            )}
+            <Link
+              href={`/graph?highlight=${model.id}`}
+              className="text-sm px-5 py-2.5 rounded-lg font-medium transition-opacity hover:opacity-80"
+              style={{ background: 'var(--color-panel-bg-alt)', color: 'var(--color-primary)', border: '1px solid rgba(108,99,255,0.3)' }}
             >
-              Links
-            </h2>
-            <div className="flex gap-4">
-              {model.links.docs && (
-                <a
-                  href={model.links.docs}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium px-4 py-2 rounded-lg border transition-all duration-200 hover:bg-white/5"
-                  style={{
-                    color: 'var(--color-primary)',
-                    borderColor: 'var(--color-primary-border)',
-                  }}
-                  aria-label={`${model.name} documentation (opens in new tab)`}
-                >
-                  Documentation ↗
-                </a>
-              )}
-              {model.links.paper && (
-                <a
-                  href={model.links.paper}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium px-4 py-2 rounded-lg border transition-all duration-200 hover:bg-white/5"
-                  style={{
-                    color: 'var(--color-primary)',
-                    borderColor: 'var(--color-primary-border)',
-                  }}
-                  aria-label={`${model.name} paper (opens in new tab)`}
-                >
-                  Paper ↗
-                </a>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Graph deep-dive link */}
-        <div
-          className="rounded-xl p-5 border flex items-center justify-between"
-          style={{
-            backgroundColor: 'var(--color-panel-bg-alt)',
-            borderColor: 'var(--color-primary-dim)',
-          }}
-        >
-          <div>
-            <p className="text-sm font-semibold mb-1" style={{ color: 'var(--color-text)' }}>
-              Explore in the Knowledge Graph
-            </p>
-            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-              See how {model.name} relates to other models in the 3-D graph.
-            </p>
+              View in Knowledge Graph →
+            </Link>
           </div>
-          <Link
-            href={`/graph?highlight=${model.id}`}
-            className="text-sm font-medium px-4 py-2 rounded-lg border transition-all duration-200 hover:bg-white/5 flex-shrink-0 ml-4"
-            style={{
-              color: 'var(--color-primary)',
-              borderColor: 'var(--color-primary-border)',
-            }}
-          >
-            Open Graph →
-          </Link>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }
