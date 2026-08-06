@@ -4,7 +4,7 @@ import { getAllModels, getModelsByProvider, getModelsByCapability } from '@/lib/
 import type { Model } from '@/lib/models'
 
 // ---------------------------------------------------------------------------
-// Response schema
+// Response type
 // ---------------------------------------------------------------------------
 
 const ModelsResponseSchema = z.object({
@@ -54,18 +54,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     let models: Model[]
 
     if (provider !== undefined) {
-      models = await getModelsByProvider(provider)
+      models = getModelsByProvider(provider)
     } else if (capability !== undefined) {
-      models = await getModelsByCapability(capability)
+      models = getModelsByCapability(capability)
     } else {
-      models = await getAllModels()
+      models = getAllModels()
     }
 
     const response: ModelsResponse = { models, count: models.length }
     // Validate the shape before sending (belt-and-suspenders)
     ModelsResponseSchema.parse(response)
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, {
+      headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400' },
+    })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error'
     return NextResponse.json({ error: message }, { status: 500 })
