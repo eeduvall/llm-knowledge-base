@@ -13,6 +13,8 @@ type Props = {
   visibleIds: Set<string>
   onSelectNode: (id: string | null) => void
   onHoverNode: (id: string | null) => void
+  /** Model id to pan the camera to on mount (from ?highlight query param). */
+  highlightId?: string | null
 }
 
 type Camera = {
@@ -27,6 +29,7 @@ export function GraphCanvas({
   selectedId,
   hoveredId,
   visibleIds,
+  highlightId,
   onSelectNode,
   onHoverNode,
 }: Props) {
@@ -58,6 +61,19 @@ export function GraphCanvas({
       synapseRef.current = { id: hoveredId, t: 0 }
     }
   }, [hoveredId])
+
+  // Pan camera to the highlighted node after physics has had time to settle.
+  // We wait ~1.5 s so the force simulation has moved nodes from their initial
+  // ring positions before we read coordinates.
+  useEffect(() => {
+    if (!highlightId) return
+    const timer = setTimeout(() => {
+      const node = nodesRef.current.find((n) => n.id === highlightId)
+      if (!node) return
+      cameraTargetRef.current = { x: node.x, y: node.y, scale: 2 }
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [highlightId])
 
   // Zoom-to-fit when visible set changes
   useEffect(() => {
