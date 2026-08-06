@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import Link from 'next/link'
 import type { Model } from '@/lib/models'
 
 type Props = {
@@ -49,7 +50,7 @@ export function NodePanel({ model, onClose }: Props) {
         <div className="flex flex-col gap-1">
           <span
             className="text-xs font-mono font-medium tracking-widest uppercase"
-            style={{ color: '#6C63FF' }}
+            style={{ color: 'var(--color-primary)' }}
           >
             {model.provider}
           </span>
@@ -144,7 +145,7 @@ export function NodePanel({ model, onClose }: Props) {
               className="px-2 py-0.5 rounded text-xs font-mono font-medium"
               style={{
                 backgroundColor: 'rgba(0,212,255,0.1)',
-                color: '#00D4FF',
+                color: 'var(--color-secondary)',
                 border: '1px solid rgba(0,212,255,0.2)',
               }}
             >
@@ -181,7 +182,7 @@ export function NodePanel({ model, onClose }: Props) {
           <ul className="flex flex-col gap-1.5">
             {model.strengths.map((s) => (
               <li key={s} className="flex items-start gap-2 text-xs text-white/70">
-                <span style={{ color: '#00D4FF' }} aria-hidden="true">+</span>
+                <span style={{ color: 'var(--color-secondary)' }} aria-hidden="true">+</span>
                 {s}
               </li>
             ))}
@@ -194,7 +195,7 @@ export function NodePanel({ model, onClose }: Props) {
           <ul className="flex flex-col gap-1.5">
             {model.weaknesses.map((w) => (
               <li key={w} className="flex items-start gap-2 text-xs text-white/70">
-                <span style={{ color: '#FF6B9D' }} aria-hidden="true">−</span>
+                <span style={{ color: 'var(--color-accent)' }} aria-hidden="true">−</span>
                 {w}
               </li>
             ))}
@@ -216,7 +217,7 @@ export function NodePanel({ model, onClose }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-medium transition-colors duration-200"
-                style={{ color: '#6C63FF' }}
+                style={{ color: 'var(--color-primary)' }}
                 aria-label={`${model.name} documentation (opens in new tab)`}
               >
                 Docs <span aria-hidden="true">↗</span>
@@ -228,7 +229,7 @@ export function NodePanel({ model, onClose }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-medium transition-colors duration-200"
-                style={{ color: '#6C63FF' }}
+                style={{ color: 'var(--color-primary)' }}
                 aria-label={`${model.name} paper (opens in new tab)`}
               >
                 Paper <span aria-hidden="true">↗</span>
@@ -236,6 +237,19 @@ export function NodePanel({ model, onClose }: Props) {
             )}
           </div>
         )}
+
+        {/* View full profile */}
+        <Link
+          href={`/models/${model.id}`}
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg border text-xs font-semibold font-mono tracking-wide transition-all duration-200 hover:bg-white/5"
+          style={{
+            color: 'var(--color-primary)',
+            borderColor: 'var(--color-border)',
+          }}
+          aria-label={`View full profile for ${model.name}`}
+        >
+          View full profile →
+        </Link>
       </div>
     </aside>
   )
