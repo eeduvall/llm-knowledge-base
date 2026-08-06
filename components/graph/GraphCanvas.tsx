@@ -305,14 +305,77 @@ export function GraphCanvas({
         }
 
         ctx.globalAlpha = 1
+      }
 
-        // Label
-        if (visible && (isSelected || isHovered || node.radius >= 7)) {
-          ctx.font = `${isSelected ? 'bold ' : ''}11px "Inter", sans-serif`
-          ctx.fillStyle = isSelected ? '#ffffff' : 'rgba(255,255,255,0.75)'
-          ctx.textAlign = 'center'
-          ctx.fillText(node.label, node.x, node.y + r + 14)
+      // ── Label pass with collision avoidance ──────────────────────────────
+      // Collect natural label positions (below each node), then iteratively
+      // push overlapping bounding boxes apart so labels don't stack on top of
+      // each other when nodes cluster tightly (e.g. modality grouping).
+      const FONT_SIZE = 11
+      const LABEL_PAD_X = 4   // horizontal padding around text
+      const LABEL_PAD_Y = 2   // vertical padding above/below text
+      const LABEL_GAP = 3     // minimum gap between label boxes
+      const LABEL_OFFSET_Y = 14 // initial offset below node edge
+
+      ctx.font = `${FONT_SIZE}px "Inter", sans-serif`
+
+      const labels: Array<{ node: GraphNode; text: string; bold: boolean; x: number; y: number; w: number; h: number }> = []
+      for (const node of nodes) {
+        if (!visibleIds.has(node.id)) continue
+        const isSelected = node.id === selectedId
+        const isHovered = node.id === hoveredId
+        if (!(isSelected || isHovered || node.radius >= 7)) continue
+
+        const pulse = 1 + 0.08 * Math.sin(t * 2 + node.pulseOffset)
+        const r = node.radius * pulse * (isSelected ? 1.4 : isHovered ? 1.2 : 1)
+
+        const text = node.label
+        const bold = isSelected
+        ctx.font = `${bold ? 'bold ' : ''}${FONT_SIZE}px "Inter", sans-serif`
+        const tw = ctx.measureText(text).width
+        labels.push({
+          node,
+          text,
+          bold,
+          x: node.x,
+          y: node.y + r + LABEL_OFFSET_Y,
+          w: tw / 2 + LABEL_PAD_X,
+          h: FONT_SIZE / 2 + LABEL_PAD_Y,
+        })
+      }
+
+      // Iterative overlap resolution: push label centres apart
+      const ITERS = 20
+      for (let iter = 0; iter < ITERS; iter++) {
+        for (let i = 0; i < labels.length; i++) {
+          for (let j = i + 1; j < labels.length; j++) {
+            const a = labels[i]
+            const b = labels[j]
+            const overlapX = (a.w + b.w + LABEL_GAP) - Math.abs(b.x - a.x)
+            const overlapY = (a.h + b.h + LABEL_GAP) - Math.abs(b.y - a.y)
+            if (overlapX <= 0 || overlapY <= 0) continue
+            // Resolve along the axis of least overlap
+            if (overlapY <= overlapX) {
+              const shift = overlapY / 2
+              if (b.y >= a.y) { a.y -= shift; b.y += shift }
+              else             { a.y += shift; b.y -= shift }
+            } else {
+              const shift = overlapX / 2
+              if (b.x >= a.x) { a.x -= shift; b.x += shift }
+              else             { a.x += shift; b.x -= shift }
+            }
+          }
         }
+      }
+
+      // Draw resolved labels
+      for (const lbl of labels) {
+        const isSelected = lbl.node.id === selectedId
+        ctx.font = `${lbl.bold ? 'bold ' : ''}${FONT_SIZE}px "Inter", sans-serif`
+        ctx.fillStyle = isSelected ? '#ffffff' : 'rgba(255,255,255,0.75)'
+        ctx.textAlign = 'center'
+        ctx.globalAlpha = 1
+        ctx.fillText(lbl.text, lbl.x, lbl.y)
       }
 
       ctx.restore()
