@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import Link from 'next/link'
 import type { Model } from '@/lib/models'
 
 type Props = {
@@ -237,6 +238,19 @@ export function NodePanel({ model, onClose }: Props) {
             )}
           </div>
         )}
+
+        {/* View full profile */}
+        <Link
+          href={`/models/${model.id}`}
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg border text-xs font-semibold font-mono tracking-wide transition-all duration-200 hover:bg-white/5"
+          style={{
+            color: 'var(--color-primary)',
+            borderColor: 'var(--color-border)',
+          }}
+          aria-label={`View full profile for ${model.name}`}
+        >
+          View full profile →
+        </Link>
       </div>
     </aside>
   )
