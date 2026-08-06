@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { loadModels } from '@/lib/models-server'
 import { GraphExplorer } from '@/components/graph/GraphExplorer'
 import { Navbar } from '@/components/Navbar'
@@ -52,7 +53,9 @@ export default function GraphPage() {
         <div className="relative w-full h-full">
           {/* GraphExplorer fetches live data from /api/models via TanStack Query,
               using initialModels as the SSR seed so the graph renders immediately. */}
-          <GraphExplorer initialModels={initialModels} />
+          <Suspense fallback={null}>
+            <GraphExplorer initialModels={initialModels} />
+          </Suspense>
         </div>
 
         {/* No-script fallback */}
