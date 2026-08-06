@@ -39,7 +39,7 @@ function formatPrice(price: number | null): string {
 function deriveCostTier(model: Model): { label: string; color: string } {
   const input = model.pricing.input
   if (input === null) return { label: 'Open Weights', color: 'var(--color-secondary)' }
-  if (input <= 0.5) return { label: 'Budget', color: '#4ade80' }
+  if (input <= 0.5) return { label: 'Budget', color: 'var(--color-secondary)' }
   if (input <= 5.0) return { label: 'Mid-range', color: 'var(--color-primary)' }
   return { label: 'Premium', color: 'var(--color-accent)' }
 }
@@ -352,7 +352,7 @@ export default function ModelDetailPage({ params }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm px-5 py-2.5 rounded-lg font-medium transition-opacity hover:opacity-80"
-                style={{ background: providerColor, color: '#fff' }}
+                style={{ background: providerColor, color: 'var(--color-text)' }}
               >
                 Documentation ↗
               </a>
