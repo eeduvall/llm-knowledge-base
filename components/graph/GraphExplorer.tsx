@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'next/navigation'
 import type { Model, Modality } from '@/lib/models'
 import { getProviderColor } from '@/lib/models'
 import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout'
@@ -64,7 +65,10 @@ function buildMetaMap(models: Model[]): Record<string, NodeMeta> {
 }
 
 export function GraphExplorer({ initialModels }: Props) {
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const highlightId = searchParams.get('highlight') ?? null
+
+  const [selectedId, setSelectedId] = useState<string | null>(highlightId)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [filterProvider, setFilterProvider] = useState<string | null>(null)
   const [activeCapabilities, setActiveCapabilities] = useState<string[]>([])
@@ -72,6 +76,15 @@ export function GraphExplorer({ initialModels }: Props) {
   const [activeLicenses, setActiveLicenses] = useState<string[]>([])
   const [clusterMode, setClusterMode] = useState<ClusterMode>('family')
   const [searchQuery, setSearchQuery] = useState('')
+
+  // When the highlight param changes (e.g. navigating between model pages),
+  // update the selection to match.
+  useEffect(() => {
+    if (highlightId !== null) {
+      setSelectedId(highlightId)
+      setSearchQuery('')
+    }
+  }, [highlightId])
 
   // Fetch models from the API; use the SSR-provided list as initial data so
   // the graph renders immediately without a loading flash.
@@ -213,6 +226,7 @@ export function GraphExplorer({ initialModels }: Props) {
           selectedId={effectiveSelectedId}
           hoveredId={hoveredId}
           visibleIds={visibleIds}
+          highlightId={highlightId}
           onSelectNode={handleSelectNode}
           onHoverNode={setHoveredId}
         />
