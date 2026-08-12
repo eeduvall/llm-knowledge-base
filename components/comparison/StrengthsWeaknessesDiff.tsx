@@ -21,7 +21,7 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
           {sharedStrengths.length > 0 && (
             <div
               className="flex-1 min-w-48 rounded-xl p-4"
-              style={{ background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.18)' }}
+              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-secondary)' }}
             >
               <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--color-secondary)' }}>
                 Shared Strengths
@@ -39,7 +39,7 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
           {sharedWeaknesses.length > 0 && (
             <div
               className="flex-1 min-w-48 rounded-xl p-4"
-              style={{ background: 'rgba(255,107,157,0.06)', border: '1px solid rgba(255,107,157,0.18)' }}
+              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-accent)' }}
             >
               <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--color-accent)' }}>
                 Shared Weaknesses
