@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
+import Link from 'next/link';
 
 /** Inline SVG galaxy logo — tilted elliptical disc with glowing core.
  *  The disc shape reads clearly at 28 × 28 px where spiral arms become
@@ -83,7 +83,7 @@ function GalaxyLogo() {
       {/* Core pinpoint highlight */}
       <circle cx="13.3" cy="13.3" r="0.9" fill="var(--color-text)" opacity="0.95" />
     </svg>
-  )
+  );
 }
 
 export function Navbar() {
@@ -136,5 +136,5 @@ export function Navbar() {
         </Link>
       </div>
     </nav>
-  )
+  );
 }

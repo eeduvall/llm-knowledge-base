@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { GraphAnimation } from './GraphAnimation'
+import Link from 'next/link';
+import { GraphAnimation } from './GraphAnimation';
 
 export function HeroSection() {
   return (
@@ -105,5 +105,5 @@ export function HeroSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

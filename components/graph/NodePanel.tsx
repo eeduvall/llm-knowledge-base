@@ -1,37 +1,37 @@
-'use client'
+'use client';
 
-import { useEffect, useRef } from 'react'
-import Link from 'next/link'
-import type { Model } from '@/lib/models'
+import { useEffect, useRef } from 'react';
+import Link from 'next/link';
+import type { Model } from '@/lib/models';
 
 type Props = {
-  model: Model
-  onClose: () => void
-}
+  model: Model;
+  onClose: () => void;
+};
 
 function formatContextWindow(tokens: number): string {
-  if (tokens >= 1_000_000) return `${(tokens / 1_000_000).toFixed(1)}M`
-  if (tokens >= 1_000) return `${(tokens / 1_000).toFixed(0)}K`
-  return String(tokens)
+  if (tokens >= 1_000_000) return `${(tokens / 1_000_000).toFixed(1)}M`;
+  if (tokens >= 1_000) return `${(tokens / 1_000).toFixed(0)}K`;
+  return String(tokens);
 }
 
 function formatPrice(price: number | null): string {
-  if (price === null) return '—'
-  return `$${price.toFixed(2)}`
+  if (price === null) return '—';
+  return `$${price.toFixed(2)}`;
 }
 
 function formatBenchmark(value: number | null): string {
-  if (value === null) return '—'
-  return `${value.toFixed(1)}`
+  if (value === null) return '—';
+  return `${value.toFixed(1)}`;
 }
 
 export function NodePanel({ model, onClose }: Props) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // Move focus to the close button when the panel opens
   useEffect(() => {
-    closeButtonRef.current?.focus()
-  }, [model.id])
+    closeButtonRef.current?.focus();
+  }, [model.id]);
 
   return (
     <aside
@@ -66,13 +66,7 @@ export function NodePanel({ model, onClose }: Props) {
           style={{ color: 'var(--color-text-faint)' }}
           aria-label={`Close ${model.name} details`}
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            aria-hidden="true"
-          >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path
               d="M2 2l12 12M14 2L2 14"
               stroke="currentColor"
@@ -253,5 +247,5 @@ export function NodePanel({ model, onClose }: Props) {
         </Link>
       </div>
     </aside>
-  )
+  );
 }

@@ -1,36 +1,36 @@
-'use client'
+'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { useSearchParams } from 'next/navigation'
-import type { Model, Modality } from '@/lib/models'
-import { getProviderColor } from '@/lib/models'
-import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout'
-import { buildEdges, deriveCostTier } from '@/lib/graph-layout'
-import { GraphCanvas } from '@/components/graph/GraphCanvas'
-import { NodePanel } from '@/components/graph/NodePanel'
-import { FilterBar } from '@/components/graph/FilterBar'
-import type { ClusterMode } from '@/components/graph/FilterBar'
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
+import type { Model, Modality } from '@/lib/models';
+import { getProviderColor } from '@/lib/models';
+import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout';
+import { buildEdges, deriveCostTier } from '@/lib/graph-layout';
+import { GraphCanvas } from '@/components/graph/GraphCanvas';
+import { NodePanel } from '@/components/graph/NodePanel';
+import { FilterBar } from '@/components/graph/FilterBar';
+import type { ClusterMode } from '@/components/graph/FilterBar';
 
 type Props = {
   /** Initial model list from the server (SSR). TanStack Query will refresh
    *  from /api/models in the background and keep the graph up to date. */
-  initialModels: Model[]
-}
+  initialModels: Model[];
+};
 
 async function fetchModels(): Promise<Model[]> {
-  const res = await fetch('/api/models')
+  const res = await fetch('/api/models');
   if (!res.ok) {
-    throw new Error(`Failed to fetch models: ${res.status} ${res.statusText}`)
+    throw new Error(`Failed to fetch models: ${res.status} ${res.statusText}`);
   }
-  const json = (await res.json()) as { models: Model[] }
-  return json.models
+  const json = (await res.json()) as { models: Model[] };
+  return json.models;
 }
 
 function buildNodes(models: Model[]): GraphNode[] {
   return models.map((model, i) => {
-    const angle = (i / models.length) * Math.PI * 2
-    const radius = 200 + Math.random() * 80
+    const angle = (i / models.length) * Math.PI * 2;
+    const radius = 200 + Math.random() * 80;
     return {
       id: model.id,
       label: model.name,
@@ -46,12 +46,12 @@ function buildNodes(models: Model[]): GraphNode[] {
       vy: 0,
       radius: model.context_window >= 500_000 ? 9 : model.context_window >= 100_000 ? 7 : 5,
       pulseOffset: Math.random() * Math.PI * 2,
-    }
-  })
+    };
+  });
 }
 
 function buildMetaMap(models: Model[]): Record<string, NodeMeta> {
-  const map: Record<string, NodeMeta> = {}
+  const map: Record<string, NodeMeta> = {};
   for (const m of models) {
     map[m.id] = {
       family: m.family,
@@ -59,32 +59,32 @@ function buildMetaMap(models: Model[]): Record<string, NodeMeta> {
       primaryModality: m.modalities[0] ?? 'text',
       costTier: deriveCostTier(m.pricing.input),
       mmlu: m.benchmarks.mmlu,
-    }
+    };
   }
-  return map
+  return map;
 }
 
 export function GraphExplorer({ initialModels }: Props) {
-  const searchParams = useSearchParams()
-  const highlightId = searchParams.get('highlight') ?? null
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get('highlight') ?? null;
 
-  const [selectedId, setSelectedId] = useState<string | null>(highlightId)
-  const [hoveredId, setHoveredId] = useState<string | null>(null)
-  const [filterProvider, setFilterProvider] = useState<string | null>(null)
-  const [activeCapabilities, setActiveCapabilities] = useState<string[]>([])
-  const [activeModalities, setActiveModalities] = useState<Modality[]>([])
-  const [activeLicenses, setActiveLicenses] = useState<string[]>([])
-  const [clusterMode, setClusterMode] = useState<ClusterMode>('family')
-  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedId, setSelectedId] = useState<string | null>(highlightId);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [filterProvider, setFilterProvider] = useState<string | null>(null);
+  const [activeCapabilities, setActiveCapabilities] = useState<string[]>([]);
+  const [activeModalities, setActiveModalities] = useState<Modality[]>([]);
+  const [activeLicenses, setActiveLicenses] = useState<string[]>([]);
+  const [clusterMode, setClusterMode] = useState<ClusterMode>('family');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // When the highlight param changes (e.g. navigating between model pages),
   // update the selection to match.
   useEffect(() => {
     if (highlightId !== null) {
-      setSelectedId(highlightId)
-      setSearchQuery('')
+      setSelectedId(highlightId);
+      setSearchQuery('');
     }
-  }, [highlightId])
+  }, [highlightId]);
 
   // Fetch models from the API; use the SSR-provided list as initial data so
   // the graph renders immediately without a loading flash.
@@ -92,110 +92,109 @@ export function GraphExplorer({ initialModels }: Props) {
     queryKey: ['models'],
     queryFn: fetchModels,
     initialData: initialModels,
-  })
+  });
 
-  const nodes = useMemo(() => buildNodes(models), [models])
+  const nodes = useMemo(() => buildNodes(models), [models]);
 
-  const metaMap = useMemo(() => buildMetaMap(models), [models])
+  const metaMap = useMemo(() => buildMetaMap(models), [models]);
 
   const edges = useMemo<GraphEdge[]>(
     () => buildEdges(nodes, metaMap, clusterMode),
-    [nodes, metaMap, clusterMode]
-  )
+    [nodes, metaMap, clusterMode],
+  );
 
   // Derive unique filter options from model data
   const providers = useMemo(
     () => Array.from(new Set(models.map((m) => m.provider))).sort(),
-    [models]
-  )
+    [models],
+  );
 
   const allCapabilities = useMemo(
     () => Array.from(new Set(models.flatMap((m) => m.capabilities))).sort(),
-    [models]
-  )
+    [models],
+  );
 
   const allModalities = useMemo(
     () => Array.from(new Set(models.flatMap((m) => m.modalities))).sort() as Modality[],
-    [models]
-  )
+    [models],
+  );
 
   const allLicenses = useMemo(
     () => Array.from(new Set(models.map((m) => m.license))).sort(),
-    [models]
-  )
+    [models],
+  );
 
   // Build a set of model ids that pass all active filters
   const visibleIds = useMemo(() => {
     return new Set(
       models
         .filter((m) => {
-          if (filterProvider !== null && m.provider !== filterProvider) return false
+          if (filterProvider !== null && m.provider !== filterProvider) return false;
           if (
             activeCapabilities.length > 0 &&
             !activeCapabilities.every((c) => m.capabilities.includes(c))
           )
-            return false
+            return false;
           if (
             activeModalities.length > 0 &&
             !activeModalities.every((mod) => m.modalities.includes(mod))
           )
-            return false
-          if (activeLicenses.length > 0 && !activeLicenses.includes(m.license))
-            return false
-          return true
+            return false;
+          if (activeLicenses.length > 0 && !activeLicenses.includes(m.license)) return false;
+          return true;
         })
-        .map((m) => m.id)
-    )
-  }, [models, filterProvider, activeCapabilities, activeModalities, activeLicenses])
+        .map((m) => m.id),
+    );
+  }, [models, filterProvider, activeCapabilities, activeModalities, activeLicenses]);
 
   // Apply search: highlight matching node
   const effectiveSelectedId = useMemo(() => {
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase()
+      const q = searchQuery.toLowerCase();
       const match = models.find(
         (m) =>
           m.name.toLowerCase().includes(q) ||
           m.id.toLowerCase().includes(q) ||
-          m.provider.toLowerCase().includes(q)
-      )
-      return match ? match.id : selectedId
+          m.provider.toLowerCase().includes(q),
+      );
+      return match ? match.id : selectedId;
     }
-    return selectedId
-  }, [searchQuery, models, selectedId])
+    return selectedId;
+  }, [searchQuery, models, selectedId]);
 
   const selectedModel = useMemo(
     () => models.find((m) => m.id === effectiveSelectedId) ?? null,
-    [models, effectiveSelectedId]
-  )
+    [models, effectiveSelectedId],
+  );
 
   const handleSelectNode = useCallback((id: string | null) => {
-    setSelectedId(id)
-    setSearchQuery('')
-  }, [])
+    setSelectedId(id);
+    setSearchQuery('');
+  }, []);
 
   const handleClosePanel = useCallback(() => {
-    setSelectedId(null)
-    setSearchQuery('')
-  }, [])
+    setSelectedId(null);
+    setSearchQuery('');
+  }, []);
 
   const handleToggleCapability = useCallback((cap: string) => {
     setActiveCapabilities((prev) =>
-      prev.includes(cap) ? prev.filter((c) => c !== cap) : [...prev, cap]
-    )
-  }, [])
+      prev.includes(cap) ? prev.filter((c) => c !== cap) : [...prev, cap],
+    );
+  }, []);
 
   const handleToggleModality = useCallback((mod: string) => {
     setActiveModalities((prev) => {
-      const m = mod as Modality
-      return prev.includes(m) ? prev.filter((v) => v !== m) : [...prev, m]
-    })
-  }, [])
+      const m = mod as Modality;
+      return prev.includes(m) ? prev.filter((v) => v !== m) : [...prev, m];
+    });
+  }, []);
 
   const handleToggleLicense = useCallback((lic: string) => {
     setActiveLicenses((prev) =>
-      prev.includes(lic) ? prev.filter((l) => l !== lic) : [...prev, lic]
-    )
-  }, [])
+      prev.includes(lic) ? prev.filter((l) => l !== lic) : [...prev, lic],
+    );
+  }, []);
 
   return (
     <div className="relative w-full h-full">
@@ -232,9 +231,7 @@ export function GraphExplorer({ initialModels }: Props) {
         />
       </div>
 
-      {selectedModel && (
-        <NodePanel model={selectedModel} onClose={handleClosePanel} />
-      )}
+      {selectedModel && <NodePanel model={selectedModel} onClose={handleClosePanel} />}
 
       {/* Legend */}
       <div
@@ -243,7 +240,7 @@ export function GraphExplorer({ initialModels }: Props) {
         aria-label="Provider color legend"
       >
         {providers.map((provider) => {
-          const color = getProviderColor(provider)
+          const color = getProviderColor(provider);
           return (
             <div key={provider} className="flex items-center gap-2" role="listitem">
               <div
@@ -251,13 +248,16 @@ export function GraphExplorer({ initialModels }: Props) {
                 style={{ backgroundColor: color }}
                 aria-hidden="true"
               />
-              <span className="text-xs font-mono capitalize" style={{ color: 'var(--color-text-faint)' }}>
+              <span
+                className="text-xs font-mono capitalize"
+                style={{ color: 'var(--color-text-faint)' }}
+              >
                 {provider}
               </span>
             </div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

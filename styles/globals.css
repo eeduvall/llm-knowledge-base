@@ -13,14 +13,14 @@
   --color-fog:       rgba(100, 120, 255, 0.04);
 
   /* Primary tints */
-  --color-primary-light:  #9B8FFF;
-  --color-primary-subtle: rgba(108, 99, 255, 0.10);
-  --color-primary-dim:    rgba(108, 99, 255, 0.20);
+  --color-primary-light: #9b8fff;
+  --color-primary-subtle: rgba(108, 99, 255, 0.1);
+  --color-primary-dim: rgba(108, 99, 255, 0.2);
   --color-primary-border: rgba(108, 99, 255, 0.35);
 
   /* Secondary tints */
-  --color-secondary-subtle: rgba(0, 212, 255, 0.10);
-  --color-secondary-dim:    rgba(0, 212, 255, 0.20);
+  --color-secondary-subtle: rgba(0, 212, 255, 0.1);
+  --color-secondary-dim: rgba(0, 212, 255, 0.2);
 
   /* ── Semantic surface tokens ──────────────────────────────────────────── */
   --color-text:          #f0f0ff;

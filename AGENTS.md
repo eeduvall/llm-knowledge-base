@@ -7,20 +7,21 @@
 
 ## 1. Project Snapshot
 
-| Item | Value |
-|---|---|
-| Repo | `eeduvall/llm-knowledge-base` |
-| Purpose | Interactive explorer + guided picker for LLMs |
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript (strict) |
-| Styling | Tailwind CSS + shadcn/ui |
-| 3-D Engine | Three.js + react-three-fiber + @react-three/drei |
-| State | Zustand |
-| Data Fetching | TanStack Query |
-| Database | PostgreSQL via Supabase |
-| Hosting | Vercel |
+| Item          | Value                                            |
+| ------------- | ------------------------------------------------ |
+| Repo          | `eeduvall/llm-knowledge-base`                    |
+| Purpose       | Interactive explorer + guided picker for LLMs    |
+| Framework     | Next.js 14 (App Router)                          |
+| Language      | TypeScript (strict)                              |
+| Styling       | Tailwind CSS + shadcn/ui                         |
+| 3-D Engine    | Three.js + react-three-fiber + @react-three/drei |
+| State         | Zustand                                          |
+| Data Fetching | TanStack Query                                   |
+| Database      | PostgreSQL via Supabase                          |
+| Hosting       | Vercel                                           |
 
 The two primary user-facing flows are:
+
 1. **Knowledge Graph Explorer** (`/graph`) — 3-D force-directed graph of LLM relationships.
 2. **Q&A Picker Flow** (`/picker`) — conversational wizard that recommends models.
 
@@ -108,12 +109,14 @@ export function NodePanel({ modelId, onSelect }: { modelId: string; onSelect: (i
 ## 5. Component Conventions
 
 ### General
+
 - One component per file. File name = component name in PascalCase (`NodeMesh.tsx`).
 - Use **named exports** everywhere — no default exports except for Next.js page files (`app/**/page.tsx`, `app/**/layout.tsx`).
 - Keep components **pure and presentational** where possible. Side effects belong in hooks (`hooks/use*.ts`).
 - Co-locate a component's custom hook in the same directory: `components/graph/useGraphInteraction.ts`.
 
 ### Three.js / React-Three-Fiber (R3F)
+
 - All R3F components must be **client components** (`"use client"` at the top).
 - Never import Three.js or R3F in a Server Component — it will break SSR.
 - Dispose of Three.js objects (geometries, materials, textures) in `useEffect` cleanup or via `drei`'s `useGLTF.preload` / `useTexture` helpers.
@@ -121,6 +124,7 @@ export function NodePanel({ modelId, onSelect }: { modelId: string; onSelect: (i
 - Target **60 fps on a mid-range laptop GPU**. Profile with `r3f-perf` before merging any graph change.
 
 ### shadcn/ui
+
 - Add new shadcn components via `npx shadcn-ui@latest add <component>` — do not copy-paste component source manually.
 - Do not modify files inside `components/ui/` (the shadcn primitives). Wrap them in a new component if you need custom behaviour.
 
@@ -134,54 +138,54 @@ export function NodePanel({ modelId, onSelect }: { modelId: string; onSelect: (i
 ```css
 :root {
   /* Core palette */
-  --color-bg:           #050510;
-  --color-primary:      #6C63FF;
-  --color-secondary:    #00D4FF;
-  --color-accent:       #FF6B9D;
-  --color-fog:          rgba(100, 120, 255, 0.04);
+  --color-bg: #050510;
+  --color-primary: #6c63ff;
+  --color-secondary: #00d4ff;
+  --color-accent: #ff6b9d;
+  --color-fog: rgba(100, 120, 255, 0.04);
 
   /* Text hierarchy */
-  --color-text:         #f0f0ff;
-  --color-text-muted:   rgba(240, 240, 255, 0.55);
-  --color-text-faint:   rgba(240, 240, 255, 0.30);
+  --color-text: #f0f0ff;
+  --color-text-muted: rgba(240, 240, 255, 0.55);
+  --color-text-faint: rgba(240, 240, 255, 0.3);
 
   /* Surfaces & borders */
-  --color-surface:      rgba(255, 255, 255, 0.04);
-  --color-border:       rgba(255, 255, 255, 0.10);
-  --color-divider:      rgba(255, 255, 255, 0.06);
+  --color-surface: rgba(255, 255, 255, 0.04);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-divider: rgba(255, 255, 255, 0.06);
 
   /* Component-specific */
-  --color-nav-bg:       rgba(5, 5, 16, 0.85);
-  --color-panel-bg:     rgba(255, 255, 255, 0.03);
+  --color-nav-bg: rgba(5, 5, 16, 0.85);
+  --color-panel-bg: rgba(255, 255, 255, 0.03);
   --color-panel-bg-alt: rgba(108, 99, 255, 0.06);
-  --color-overlay:      rgba(5, 5, 16, 0.75);
-  --color-input-bg:     rgba(255, 255, 255, 0.05);
+  --color-overlay: rgba(5, 5, 16, 0.75);
+  --color-input-bg: rgba(255, 255, 255, 0.05);
   --color-input-border: rgba(255, 255, 255, 0.10);
-  --color-pill-bg:      rgba(255, 255, 255, 0.05);
-  --color-pill-border:  rgba(255, 255, 255, 0.08);
-  --color-stats-bg:     rgba(255, 255, 255, 0.04);
+  --color-pill-bg: rgba(255, 255, 255, 0.05);
+  --color-pill-border: rgba(255, 255, 255, 0.08);
+  --color-stats-bg: rgba(255, 255, 255, 0.04);
 }
 ```
 
 All available design-system tokens:
 
-| Token | Purpose |
-|---|---|
-| `--color-bg` | Page background (`#050510`) |
-| `--color-primary` | Electric violet (`#6C63FF`) |
-| `--color-secondary` | Cyan (`#00D4FF`) |
-| `--color-accent` | Hot pink (`#FF6B9D`) |
-| `--color-fog` | Subtle haze (`rgba(100,120,255,0.04)`) |
-| `--color-text` | Primary text |
-| `--color-text-muted` | Secondary / supporting text |
-| `--color-text-faint` | Tertiary / disabled text |
-| `--color-surface` | Card / panel surface |
-| `--color-border` | Default border |
-| `--color-divider` | Divider lines |
-| `--color-nav-bg` | Navigation bar background |
-| `--color-panel-bg` | Side-panel background |
-| `--color-panel-bg-alt` | Alternate panel background |
-| `--color-overlay` | Modal / overlay backdrop |
+| Token                  | Purpose                                |
+| ---------------------- | -------------------------------------- |
+| `--color-bg`           | Page background (`#050510`)            |
+| `--color-primary`      | Electric violet (`#6C63FF`)            |
+| `--color-secondary`    | Cyan (`#00D4FF`)                       |
+| `--color-accent`       | Hot pink (`#FF6B9D`)                   |
+| `--color-fog`          | Subtle haze (`rgba(100,120,255,0.04)`) |
+| `--color-text`         | Primary text                           |
+| `--color-text-muted`   | Secondary / supporting text            |
+| `--color-text-faint`   | Tertiary / disabled text               |
+| `--color-surface`      | Card / panel surface                   |
+| `--color-border`       | Default border                         |
+| `--color-divider`      | Divider lines                          |
+| `--color-nav-bg`       | Navigation bar background              |
+| `--color-panel-bg`     | Side-panel background                  |
+| `--color-panel-bg-alt` | Alternate panel background             |
+| `--color-overlay`      | Modal / overlay backdrop               |
 
 - **Never hard-code hex values** in component files — reference the CSS variable or the Tailwind config token.
 - Dark mode is the **only** mode. Do not add `dark:` variants; the entire UI is dark-first.
@@ -195,36 +199,37 @@ This file is the **single source of truth** for all LLM metadata. Treat it like 
 ### Schema (each entry)
 
 ```yaml
-- id: gpt-4o                      # kebab-case, unique, stable
-  name: "GPT-4o"                  # Display name
-  provider: openai                # lowercase slug
-  family: gpt-4                   # Architecture family
-  release_date: "2024-05-13"      # ISO 8601
-  context_window: 128000          # tokens
-  modalities: [text, image]       # text | image | audio | video | code
-  capabilities:                   # free-form tags
+- id: gpt-4o # kebab-case, unique, stable
+  name: 'GPT-4o' # Display name
+  provider: openai # lowercase slug
+  family: gpt-4 # Architecture family
+  release_date: '2024-05-13' # ISO 8601
+  context_window: 128000 # tokens
+  modalities: [text, image] # text | image | audio | video | code
+  capabilities: # free-form tags
     - reasoning
     - vision
     - tool-use
     - structured-output
-  pricing:                        # USD per 1M tokens, null if unknown
+  pricing: # USD per 1M tokens, null if unknown
     input: 5.00
     output: 15.00
   benchmarks:
-    mmlu: 88.7                    # null if not available
+    mmlu: 88.7 # null if not available
     humaneval: 90.2
     mt_bench: null
   strengths:
-    - "Best-in-class multimodal reasoning"
+    - 'Best-in-class multimodal reasoning'
   weaknesses:
-    - "Higher cost vs. smaller models"
-  license: proprietary            # proprietary | apache-2.0 | mit | llama | etc.
+    - 'Higher cost vs. smaller models'
+  license: proprietary # proprietary | apache-2.0 | mit | llama | etc.
   links:
-    docs: "https://platform.openai.com/docs"
+    docs: 'https://platform.openai.com/docs'
     paper: null
 ```
 
 ### Rules
+
 - **Validate YAML** before committing: `npx js-yaml data/models.yaml` must exit 0.
 - All numeric fields must be numbers, not strings (`128000` not `"128k"`).
 - `id` is immutable once merged — it is used as a foreign key in graph edges and decision-tree logic.
@@ -269,6 +274,7 @@ This file is the **single source of truth** for all LLM metadata. Treat it like 
 ## 11. Git & PR Workflow
 
 ### Branch naming
+
 ```
 feat/<short-description>       # new feature
 fix/<short-description>        # bug fix
@@ -277,6 +283,7 @@ chore/<short-description>      # tooling, deps, config
 ```
 
 ### Commit messages — Conventional Commits
+
 ```
 feat(graph): add synapse-fire hover animation
 fix(picker): correct decision-tree branching for RAG use case
@@ -285,6 +292,7 @@ chore(deps): upgrade three to 0.165.0
 ```
 
 ### PR checklist (every PR)
+
 - [ ] `npm run type-check` passes (zero errors)
 - [ ] `npm run lint` passes (zero warnings)
 - [ ] `npm test` passes
@@ -298,13 +306,13 @@ chore(deps): upgrade three to 0.165.0
 
 ## 12. Performance Budget
 
-| Metric | Target |
-|---|---|
-| Lighthouse Performance (desktop) | ≥ 90 |
-| First Contentful Paint | < 1.5 s |
-| Time to Interactive | < 3 s |
-| 3-D graph frame rate | ≥ 60 fps (mid-range GPU) |
-| JS bundle (initial, gzipped) | < 200 kB |
+| Metric                           | Target                   |
+| -------------------------------- | ------------------------ |
+| Lighthouse Performance (desktop) | ≥ 90                     |
+| First Contentful Paint           | < 1.5 s                  |
+| Time to Interactive              | < 3 s                    |
+| 3-D graph frame rate             | ≥ 60 fps (mid-range GPU) |
+| JS bundle (initial, gzipped)     | < 200 kB                 |
 
 - Three.js and R3F are **lazy-loaded** — never import them in the root layout or landing page.
 - Use `next/dynamic` with `{ ssr: false }` for the `GraphCanvas` component.
@@ -362,4 +370,4 @@ npx shadcn-ui@latest add <component>  # Add a shadcn component
 
 ---
 
-*Last updated: see git log. If you update tooling or add a major dependency, update this file in the same PR.*
+_Last updated: see git log. If you update tooling or add a major dependency, update this file in the same PR._

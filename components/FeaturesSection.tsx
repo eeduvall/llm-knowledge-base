@@ -1,9 +1,9 @@
 type FeatureCard = {
-  number: string
-  tag: string
-  title: string
-  description: string
-}
+  number: string;
+  tag: string;
+  title: string;
+  description: string;
+};
 
 const FEATURES: FeatureCard[] = [
   {
@@ -25,9 +25,9 @@ const FEATURES: FeatureCard[] = [
     tag: 'Picker',
     title: 'A shortlist in two minutes',
     description:
-      'Answer what you\'re building, latency and budget. Get three ranked picks with the reasoning written out.',
+      "Answer what you're building, latency and budget. Get three ranked picks with the reasoning written out.",
   },
-]
+];
 
 export function FeaturesSection() {
   return (
@@ -71,5 +71,5 @@ export function FeaturesSection() {
         ))}
       </div>
     </section>
-  )
+  );
 }

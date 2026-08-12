@@ -1,14 +1,15 @@
-import { Navbar } from '@/components/Navbar'
-import { ModelCard } from '@/components/ModelCard'
-import { loadModels } from '@/lib/models-server'
+import { Navbar } from '@/components/Navbar';
+import { ModelCard } from '@/components/ModelCard';
+import { loadModels } from '@/lib/models-server';
 
 export const metadata = {
   title: 'Models — LLM Knowledge Base',
-  description: 'Browse all LLMs in the knowledge base: context windows, pricing, benchmarks, and capabilities at a glance.',
-}
+  description:
+    'Browse all LLMs in the knowledge base: context windows, pricing, benchmarks, and capabilities at a glance.',
+};
 
 export default function ModelsPage() {
-  const models = loadModels()
+  const models = loadModels();
 
   return (
     <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
@@ -51,5 +52,5 @@ export default function ModelsPage() {
         </section>
       </div>
     </main>
-  )
+  );
 }
