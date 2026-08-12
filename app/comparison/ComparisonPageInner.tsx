@@ -72,13 +72,13 @@ function ComparisonClient({ initialIds }: Props) {
     <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-6 pt-28 pb-24">
-        {/* Page header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-28 pb-24">
+        {/* Page header — responsive text sizing */}
         <div className="mb-10">
-          <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>
+          <h1 className="text-2xl sm:text-4xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>
             Compare Models
           </h1>
-          <p className="text-base" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-sm sm:text-base" style={{ color: 'var(--color-text-muted)' }}>
             Select up to 5 models to compare side-by-side across pricing, context window,
             benchmarks, capabilities, and strengths.
           </p>
@@ -86,7 +86,7 @@ function ComparisonClient({ initialIds }: Props) {
 
         {/* Model selector */}
         <div
-          className="rounded-xl p-6 mb-8"
+          className="rounded-xl p-4 sm:p-6 mb-8"
           style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
         >
           <h2 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-muted)' }}>
@@ -108,7 +108,7 @@ function ComparisonClient({ initialIds }: Props) {
 
         {/* Actions bar */}
         {selectedModels.length > 0 && (
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             {/* Tabs */}
             <div
               className="flex rounded-lg overflow-hidden"
@@ -123,7 +123,7 @@ function ComparisonClient({ initialIds }: Props) {
                   role="tab"
                   aria-selected={activeTab === tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className="px-4 py-2 text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2"
+                  className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2"
                   style={{
                     background: activeTab === tab.id ? 'var(--color-primary)' : 'var(--color-surface)',
                     color: activeTab === tab.id ? '#fff' : 'var(--color-text-muted)',
@@ -148,7 +148,7 @@ function ComparisonClient({ initialIds }: Props) {
         {/* Comparison content */}
         {selectedModels.length === 0 ? (
           <div
-            className="rounded-xl p-16 text-center"
+            className="rounded-xl p-8 sm:p-16 text-center"
             style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
           >
             <p className="text-lg font-medium mb-2" style={{ color: 'var(--color-text-muted)' }}>
