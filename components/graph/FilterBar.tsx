@@ -1,52 +1,52 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { PROVIDER_COLORS } from '@/lib/models'
+import { useState } from 'react';
+import { PROVIDER_COLORS } from '@/lib/models';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type ClusterMode = 'family' | 'provider' | 'cost-tier' | 'modality' | 'benchmark'
+export type ClusterMode = 'family' | 'provider' | 'cost-tier' | 'modality' | 'benchmark';
 
 type SectionProps = {
-  title: string
-  children: React.ReactNode
-  defaultOpen?: boolean
-}
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+};
 
 type Props = {
   // Search
-  searchQuery: string
-  onSearch: (query: string) => void
+  searchQuery: string;
+  onSearch: (query: string) => void;
 
   // Provider filter
-  providers: string[]
-  activeProvider: string | null
-  onSelectProvider: (provider: string | null) => void
+  providers: string[];
+  activeProvider: string | null;
+  onSelectProvider: (provider: string | null) => void;
 
   // Capability filter
-  capabilities: string[]
-  activeCapabilities: string[]
-  onToggleCapability: (cap: string) => void
+  capabilities: string[];
+  activeCapabilities: string[];
+  onToggleCapability: (cap: string) => void;
 
   // Modality filter
-  modalities: string[]
-  activeModalities: string[]
-  onToggleModality: (mod: string) => void
+  modalities: string[];
+  activeModalities: string[];
+  onToggleModality: (mod: string) => void;
 
   // License filter
-  licenses: string[]
-  activeLicenses: string[]
-  onToggleLicense: (lic: string) => void
+  licenses: string[];
+  activeLicenses: string[];
+  onToggleLicense: (lic: string) => void;
 
   // Cluster mode
-  clusterMode: ClusterMode
-  onSetClusterMode: (mode: ClusterMode) => void
-}
+  clusterMode: ClusterMode;
+  onSetClusterMode: (mode: ClusterMode) => void;
+};
 
 // ─── Collapsible section ──────────────────────────────────────────────────────
 
 function Section({ title, children, defaultOpen = true }: SectionProps) {
-  const [open, setOpen] = useState(defaultOpen)
+  const [open, setOpen] = useState(defaultOpen);
 
   return (
     <div className="flex flex-col">
@@ -73,23 +73,29 @@ function Section({ title, children, defaultOpen = true }: SectionProps) {
             color: 'rgba(255,255,255,0.25)',
           }}
         >
-          <path d="M1 3l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M1 3l4 4 4-4"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
 
       {open && <div className="flex flex-col gap-1 mt-1">{children}</div>}
     </div>
-  )
+  );
 }
 
 // ─── Pill button ──────────────────────────────────────────────────────────────
 
 type PillProps = {
-  label: string
-  active: boolean
-  color?: string
-  onClick: () => void
-}
+  label: string;
+  active: boolean;
+  color?: string;
+  onClick: () => void;
+};
 
 function Pill({ label, active, color = '#6C63FF', onClick }: PillProps) {
   return (
@@ -104,37 +110,37 @@ function Pill({ label, active, color = '#6C63FF', onClick }: PillProps) {
     >
       {label}
     </button>
-  )
+  );
 }
 
 // ─── Cluster mode labels ──────────────────────────────────────────────────────
 
 const CLUSTER_OPTIONS: { value: ClusterMode; label: string }[] = [
-  { value: 'family',    label: 'Family' },
-  { value: 'provider',  label: 'Provider' },
+  { value: 'family', label: 'Family' },
+  { value: 'provider', label: 'Provider' },
   { value: 'cost-tier', label: 'Cost tier' },
-  { value: 'modality',  label: 'Modality' },
+  { value: 'modality', label: 'Modality' },
   { value: 'benchmark', label: 'Benchmark' },
-]
+];
 
 // ─── Capability icon hints ────────────────────────────────────────────────────
 
 const CAPABILITY_COLORS: Record<string, string> = {
-  reasoning:         '#6C63FF',
-  vision:            '#00D4FF',
-  'tool-use':        '#FF6B9D',
+  reasoning: '#6C63FF',
+  vision: '#00D4FF',
+  'tool-use': '#FF6B9D',
   'structured-output': '#F7B731',
-  code:              '#9B8FFF',
-  'long-context':    '#00D4FF',
-}
+  code: '#9B8FFF',
+  'long-context': '#00D4FF',
+};
 
 const MODALITY_COLORS: Record<string, string> = {
-  text:  '#6C63FF',
+  text: '#6C63FF',
   image: '#00D4FF',
   audio: '#FF6B9D',
   video: '#F7B731',
-  code:  '#9B8FFF',
-}
+  code: '#9B8FFF',
+};
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
@@ -217,7 +223,7 @@ export function FilterBar({
             onClick={() => onSelectProvider(null)}
           />
           {providers.map((provider) => {
-            const color = PROVIDER_COLORS[provider] ?? '#6C63FF'
+            const color = PROVIDER_COLORS[provider] ?? '#6C63FF';
             return (
               <Pill
                 key={provider}
@@ -226,14 +232,14 @@ export function FilterBar({
                 color={color}
                 onClick={() => onSelectProvider(activeProvider === provider ? null : provider)}
               />
-            )
+            );
           })}
         </Section>
 
         {/* ── Capability ── */}
         <Section title="Capability" defaultOpen={true}>
           {capabilities.map((cap) => {
-            const color = CAPABILITY_COLORS[cap] ?? '#6C63FF'
+            const color = CAPABILITY_COLORS[cap] ?? '#6C63FF';
             return (
               <Pill
                 key={cap}
@@ -242,14 +248,14 @@ export function FilterBar({
                 color={color}
                 onClick={() => onToggleCapability(cap)}
               />
-            )
+            );
           })}
         </Section>
 
         {/* ── Modality ── */}
         <Section title="Modality" defaultOpen={false}>
           {modalities.map((mod) => {
-            const color = MODALITY_COLORS[mod] ?? '#6C63FF'
+            const color = MODALITY_COLORS[mod] ?? '#6C63FF';
             return (
               <Pill
                 key={mod}
@@ -258,7 +264,7 @@ export function FilterBar({
                 color={color}
                 onClick={() => onToggleModality(mod)}
               />
-            )
+            );
           })}
         </Section>
 
@@ -300,10 +306,10 @@ export function FilterBar({
         >
           <button
             onClick={() => {
-              onSelectProvider(null)
-              activeCapabilities.forEach(onToggleCapability)
-              activeModalities.forEach(onToggleModality)
-              activeLicenses.forEach(onToggleLicense)
+              onSelectProvider(null);
+              activeCapabilities.forEach(onToggleCapability);
+              activeModalities.forEach(onToggleModality);
+              activeLicenses.forEach(onToggleLicense);
             }}
             className="text-xs font-mono transition-colors duration-200"
             style={{ color: '#FF6B9D' }}
@@ -313,5 +319,5 @@ export function FilterBar({
         </div>
       )}
     </aside>
-  )
+  );
 }

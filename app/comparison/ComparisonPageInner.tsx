@@ -1,72 +1,76 @@
-'use client'
+'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
-import { Navbar } from '@/components/Navbar'
-import { ComparisonTable } from '@/components/comparison/ComparisonTable'
-import { StrengthsWeaknessesDiff } from '@/components/comparison/StrengthsWeaknessesDiff'
-import { ModelSelector } from '@/components/comparison/ModelSelector'
-import { ExportButton } from '@/components/comparison/ExportButton'
-import { ShareButtons } from '@/components/comparison/ShareButtons'
-import { compareModels } from '@/lib/comparison'
-import type { Model } from '@/lib/models'
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { Navbar } from '@/components/Navbar';
+import { ComparisonTable } from '@/components/comparison/ComparisonTable';
+import { StrengthsWeaknessesDiff } from '@/components/comparison/StrengthsWeaknessesDiff';
+import { ModelSelector } from '@/components/comparison/ModelSelector';
+import { ExportButton } from '@/components/comparison/ExportButton';
+import { ShareButtons } from '@/components/comparison/ShareButtons';
+import { compareModels } from '@/lib/comparison';
+import type { Model } from '@/lib/models';
 
 async function fetchModels(): Promise<Model[]> {
-  const res = await fetch('/api/models')
-  if (!res.ok) throw new Error('Failed to fetch models')
-  const data = (await res.json()) as { models: Model[] }
-  return data.models
+  const res = await fetch('/api/models');
+  if (!res.ok) throw new Error('Failed to fetch models');
+  const data = (await res.json()) as { models: Model[] };
+  return data.models;
 }
 
-type Tab = 'table' | 'strengths'
+type Tab = 'table' | 'strengths';
 
 type Props = {
-  initialIds: string[]
-}
+  initialIds: string[];
+};
 
 function ComparisonClient({ initialIds }: Props) {
-  const router = useRouter()
-  const [selectedIds, setSelectedIds] = useState<string[]>(initialIds)
-  const [activeTab, setActiveTab] = useState<Tab>('table')
-  const isFirstRender = useRef(true)
+  const router = useRouter();
+  const [selectedIds, setSelectedIds] = useState<string[]>(initialIds);
+  const [activeTab, setActiveTab] = useState<Tab>('table');
+  const isFirstRender = useRef(true);
 
-  const { data: allModels = [], isLoading, isError } = useQuery<Model[]>({
+  const {
+    data: allModels = [],
+    isLoading,
+    isError,
+  } = useQuery<Model[]>({
     queryKey: ['models'],
     queryFn: fetchModels,
-  })
+  });
 
   // Sync URL when selectedIds changes (skip first render to avoid double-push)
   useEffect(() => {
     if (isFirstRender.current) {
-      isFirstRender.current = false
-      return
+      isFirstRender.current = false;
+      return;
     }
-    const params = new URLSearchParams()
-    if (selectedIds.length > 0) params.set('models', selectedIds.join(','))
-    router.replace(`/comparison?${params.toString()}`, { scroll: false })
-  }, [selectedIds, router])
+    const params = new URLSearchParams();
+    if (selectedIds.length > 0) params.set('models', selectedIds.join(','));
+    router.replace(`/comparison?${params.toString()}`, { scroll: false });
+  }, [selectedIds, router]);
 
   const handleAdd = useCallback((id: string) => {
-    setSelectedIds((prev) => (prev.includes(id) ? prev : [...prev, id]))
-  }, [])
+    setSelectedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  }, []);
 
   const handleRemove = useCallback((id: string) => {
-    setSelectedIds((prev) => prev.filter((x) => x !== id))
-  }, [])
+    setSelectedIds((prev) => prev.filter((x) => x !== id));
+  }, []);
 
-  const selectedModels = allModels.filter((m) => selectedIds.includes(m.id))
-  const comparison = compareModels(selectedModels)
+  const selectedModels = allModels.filter((m) => selectedIds.includes(m.id));
+  const comparison = compareModels(selectedModels);
 
   const shareUrl =
     typeof window !== 'undefined'
       ? `${window.location.origin}/comparison?models=${selectedIds.join(',')}`
-      : `/comparison?models=${selectedIds.join(',')}`
+      : `/comparison?models=${selectedIds.join(',')}`;
 
   const tabs: { id: Tab; label: string }[] = [
     { id: 'table', label: 'Side-by-side Table' },
     { id: 'strengths', label: 'Strengths & Weaknesses' },
-  ]
+  ];
 
   return (
     <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
@@ -75,7 +79,10 @@ function ComparisonClient({ initialIds }: Props) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-28 pb-24">
         {/* Page header — responsive text sizing */}
         <div className="mb-10">
-          <h1 className="text-2xl sm:text-4xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>
+          <h1
+            className="text-2xl sm:text-4xl font-bold mb-3"
+            style={{ color: 'var(--color-text)' }}
+          >
             Compare Models
           </h1>
           <p className="text-sm sm:text-base" style={{ color: 'var(--color-text-muted)' }}>
@@ -89,13 +96,20 @@ function ComparisonClient({ initialIds }: Props) {
           className="rounded-xl p-4 sm:p-6 mb-8"
           style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
         >
-          <h2 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-text-muted)' }}>
+          <h2
+            className="text-xs font-semibold uppercase tracking-widest mb-4"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
             Select Models
           </h2>
           {isLoading ? (
-            <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>Loading models…</p>
+            <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>
+              Loading models…
+            </p>
           ) : isError ? (
-            <p className="text-sm" style={{ color: 'var(--color-accent)' }}>Failed to load models. Please refresh.</p>
+            <p className="text-sm" style={{ color: 'var(--color-accent)' }}>
+              Failed to load models. Please refresh.
+            </p>
           ) : (
             <ModelSelector
               allModels={allModels}
@@ -125,7 +139,8 @@ function ComparisonClient({ initialIds }: Props) {
                   onClick={() => setActiveTab(tab.id)}
                   className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2"
                   style={{
-                    background: activeTab === tab.id ? 'var(--color-primary)' : 'var(--color-surface)',
+                    background:
+                      activeTab === tab.id ? 'var(--color-primary)' : 'var(--color-surface)',
                     color: activeTab === tab.id ? '#fff' : 'var(--color-text-muted)',
                   }}
                 >
@@ -137,10 +152,7 @@ function ComparisonClient({ initialIds }: Props) {
             {/* Export + Share */}
             <div className="flex items-center gap-2">
               <ExportButton models={selectedModels} />
-              <ShareButtons
-                url={shareUrl}
-                modelNames={selectedModels.map((m) => m.name)}
-              />
+              <ShareButtons url={shareUrl} modelNames={selectedModels.map((m) => m.name)} />
             </div>
           </div>
         )}
@@ -159,7 +171,10 @@ function ComparisonClient({ initialIds }: Props) {
             </p>
           </div>
         ) : (
-          <div role="tabpanel" aria-label={activeTab === 'table' ? 'Side-by-side Table' : 'Strengths & Weaknesses'}>
+          <div
+            role="tabpanel"
+            aria-label={activeTab === 'table' ? 'Side-by-side Table' : 'Strengths & Weaknesses'}
+          >
             {activeTab === 'table' ? (
               <ComparisonTable rows={comparison.rows} />
             ) : (
@@ -169,7 +184,7 @@ function ComparisonClient({ initialIds }: Props) {
         )}
       </div>
     </main>
-  )
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -177,11 +192,14 @@ function ComparisonClient({ initialIds }: Props) {
 // ---------------------------------------------------------------------------
 
 export default function ComparisonPageInner() {
-  const searchParams = useSearchParams()
-  const modelsParam = searchParams.get('models') ?? ''
+  const searchParams = useSearchParams();
+  const modelsParam = searchParams.get('models') ?? '';
   const initialIds = modelsParam
-    ? modelsParam.split(',').map((s) => s.trim()).filter(Boolean)
-    : []
+    ? modelsParam
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
 
-  return <ComparisonClient initialIds={initialIds} />
+  return <ComparisonClient initialIds={initialIds} />;
 }

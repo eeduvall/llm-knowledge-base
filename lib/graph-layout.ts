@@ -2,55 +2,55 @@
 // Uses a simple spring-repulsion simulation (no external dependency needed).
 
 export type GraphNode = {
-  id: string
-  label: string
-  provider: string
-  family: string
-  color: string
-  x: number
-  y: number
-  vx: number
-  vy: number
-  radius: number
-  pulseOffset: number
-}
+  id: string;
+  label: string;
+  provider: string;
+  family: string;
+  color: string;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  radius: number;
+  pulseOffset: number;
+};
 
 export type GraphEdge = {
-  source: string
-  target: string
-  strength: number
-}
+  source: string;
+  target: string;
+  strength: number;
+};
 
 /**
  * Metadata used by buildEdges to determine clustering relationships.
  * All fields are optional so callers can supply only what they have.
  */
 export type NodeMeta = {
-  family: string
-  provider: string
+  family: string;
+  provider: string;
   /** Primary modality (first entry in the model's modalities array). */
-  primaryModality?: string
+  primaryModality?: string;
   /** Cost tier derived from input pricing: 'free' | 'low' | 'mid' | 'high' */
-  costTier?: string
+  costTier?: string;
   /** MMLU benchmark score, used to group by performance band. */
-  mmlu?: number | null
-}
+  mmlu?: number | null;
+};
 
 /**
  * Clustering axis that determines which edges buildEdges creates.
  * Matches the ClusterMode type exported from FilterBar.
  */
-export type ClusterMode = 'family' | 'provider' | 'cost-tier' | 'modality' | 'benchmark'
+export type ClusterMode = 'family' | 'provider' | 'cost-tier' | 'modality' | 'benchmark';
 
 // ---------------------------------------------------------------------------
 // Layout constants
 // ---------------------------------------------------------------------------
 
-const REPULSION = 3500
-const SPRING_LENGTH = 120
-const SPRING_STRENGTH = 0.04
-const DAMPING = 0.88
-const CENTER_GRAVITY = 0.015
+const REPULSION = 3500;
+const SPRING_LENGTH = 120;
+const SPRING_STRENGTH = 0.04;
+const DAMPING = 0.88;
+const CENTER_GRAVITY = 0.015;
 
 // ---------------------------------------------------------------------------
 // Force simulation tick
@@ -63,58 +63,58 @@ export function tickLayout(
   // always world-space origin (0, 0) — the camera transform in GraphCanvas
   // maps (0, 0) to the screen centre.
   _width: number,
-  _height: number
+  _height: number,
 ): void {
   // Repulsion between all node pairs
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
-      const a = nodes[i]
-      const b = nodes[j]
-      const dx = b.x - a.x
-      const dy = b.y - a.y
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1
-      const force = REPULSION / (dist * dist)
-      const fx = (dx / dist) * force
-      const fy = (dy / dist) * force
-      a.vx -= fx
-      a.vy -= fy
-      b.vx += fx
-      b.vy += fy
+      const a = nodes[i];
+      const b = nodes[j];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const force = REPULSION / (dist * dist);
+      const fx = (dx / dist) * force;
+      const fy = (dy / dist) * force;
+      a.vx -= fx;
+      a.vy -= fy;
+      b.vx += fx;
+      b.vy += fy;
     }
   }
 
   // Spring attraction along edges
-  const nodeMap = new Map(nodes.map((n) => [n.id, n]))
+  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
   for (const edge of edges) {
-    const a = nodeMap.get(edge.source)
-    const b = nodeMap.get(edge.target)
-    if (!a || !b) continue
-    const dx = b.x - a.x
-    const dy = b.y - a.y
-    const dist = Math.sqrt(dx * dx + dy * dy) || 1
-    const displacement = dist - SPRING_LENGTH
-    const force = displacement * SPRING_STRENGTH * edge.strength
-    const fx = (dx / dist) * force
-    const fy = (dy / dist) * force
-    a.vx += fx
-    a.vy += fy
-    b.vx -= fx
-    b.vy -= fy
+    const a = nodeMap.get(edge.source);
+    const b = nodeMap.get(edge.target);
+    if (!a || !b) continue;
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const displacement = dist - SPRING_LENGTH;
+    const force = displacement * SPRING_STRENGTH * edge.strength;
+    const fx = (dx / dist) * force;
+    const fy = (dy / dist) * force;
+    a.vx += fx;
+    a.vy += fy;
+    b.vx -= fx;
+    b.vy -= fy;
   }
 
   // Gravity toward world-space origin (0, 0), which the camera maps to the
   // screen centre.
   for (const node of nodes) {
-    node.vx += (0 - node.x) * CENTER_GRAVITY
-    node.vy += (0 - node.y) * CENTER_GRAVITY
+    node.vx += (0 - node.x) * CENTER_GRAVITY;
+    node.vy += (0 - node.y) * CENTER_GRAVITY;
   }
 
   // Integrate velocities
   for (const node of nodes) {
-    node.vx *= DAMPING
-    node.vy *= DAMPING
-    node.x += node.vx
-    node.y += node.vy
+    node.vx *= DAMPING;
+    node.vy *= DAMPING;
+    node.x += node.vx;
+    node.y += node.vy;
   }
 }
 
@@ -127,10 +127,10 @@ export function tickLayout(
  * null / undefined → 'free' (open-weight models with no hosted pricing).
  */
 export function deriveCostTier(inputPrice: number | null | undefined): string {
-  if (inputPrice == null) return 'free'
-  if (inputPrice < 0.5) return 'low'
-  if (inputPrice < 5) return 'mid'
-  return 'high'
+  if (inputPrice == null) return 'free';
+  if (inputPrice < 0.5) return 'low';
+  if (inputPrice < 5) return 'mid';
+  return 'high';
 }
 
 /**
@@ -138,11 +138,11 @@ export function deriveCostTier(inputPrice: number | null | undefined): string {
  * null / undefined → 'unknown'.
  */
 export function deriveBenchmarkBand(mmlu: number | null | undefined): string {
-  if (mmlu == null) return 'unknown'
-  if (mmlu >= 87) return 'frontier'
-  if (mmlu >= 80) return 'strong'
-  if (mmlu >= 70) return 'capable'
-  return 'emerging'
+  if (mmlu == null) return 'unknown';
+  if (mmlu >= 87) return 'frontier';
+  if (mmlu >= 80) return 'strong';
+  if (mmlu >= 70) return 'capable';
+  return 'emerging';
 }
 
 // ---------------------------------------------------------------------------
@@ -163,26 +163,26 @@ export function deriveBenchmarkBand(mmlu: number | null | undefined): string {
 export function buildEdges(
   nodes: GraphNode[],
   metaMap: Record<string, NodeMeta>,
-  clusterMode: ClusterMode = 'family'
+  clusterMode: ClusterMode = 'family',
 ): GraphEdge[] {
-  const edges: GraphEdge[] = []
-  const added = new Set<string>()
+  const edges: GraphEdge[] = [];
+  const added = new Set<string>();
 
   /** Returns the group key for a node under the current cluster mode. */
   function groupKey(nodeId: string): string {
-    const meta = metaMap[nodeId]
-    if (!meta) return nodeId // isolated — no group
+    const meta = metaMap[nodeId];
+    if (!meta) return nodeId; // isolated — no group
     switch (clusterMode) {
       case 'family':
-        return meta.family
+        return meta.family;
       case 'provider':
-        return meta.provider
+        return meta.provider;
       case 'cost-tier':
-        return meta.costTier ?? deriveCostTier(undefined)
+        return meta.costTier ?? deriveCostTier(undefined);
       case 'modality':
-        return meta.primaryModality ?? 'text'
+        return meta.primaryModality ?? 'text';
       case 'benchmark':
-        return deriveBenchmarkBand(meta.mmlu)
+        return deriveBenchmarkBand(meta.mmlu);
     }
   }
 
@@ -190,35 +190,35 @@ export function buildEdges(
    * For 'family' mode we also add a weaker same-provider edge so the graph
    * retains some provider-level structure even when families differ.
    */
-  const addFamilyFallback = clusterMode === 'family'
+  const addFamilyFallback = clusterMode === 'family';
 
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
-      const a = nodes[i]
-      const b = nodes[j]
-      const key = `${a.id}--${b.id}`
-      if (added.has(key)) continue
+      const a = nodes[i];
+      const b = nodes[j];
+      const key = `${a.id}--${b.id}`;
+      if (added.has(key)) continue;
 
-      const gA = groupKey(a.id)
-      const gB = groupKey(b.id)
+      const gA = groupKey(a.id);
+      const gB = groupKey(b.id);
 
       if (gA === gB) {
-        edges.push({ source: a.id, target: b.id, strength: 1.5 })
-        added.add(key)
-        continue
+        edges.push({ source: a.id, target: b.id, strength: 1.5 });
+        added.add(key);
+        continue;
       }
 
       // Family mode: secondary edge for same provider
       if (addFamilyFallback) {
-        const metaA = metaMap[a.id]
-        const metaB = metaMap[b.id]
+        const metaA = metaMap[a.id];
+        const metaB = metaMap[b.id];
         if (metaA && metaB && metaA.provider === metaB.provider) {
-          edges.push({ source: a.id, target: b.id, strength: 0.8 })
-          added.add(key)
+          edges.push({ source: a.id, target: b.id, strength: 0.8 });
+          added.add(key);
         }
       }
     }
   }
 
-  return edges
+  return edges;
 }

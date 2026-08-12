@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { getAllModels, getModelsByProvider, getModelsByCapability } from '@/lib/db/models'
-import type { Model } from '@/lib/models'
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getAllModels, getModelsByProvider, getModelsByCapability } from '@/lib/db/models';
+import type { Model } from '@/lib/models';
 
 // ---------------------------------------------------------------------------
 // Response type
 // ---------------------------------------------------------------------------
 
 export type ModelsResponse = {
-  models: Model[]
-}
+  models: Model[];
+};
 
 // ---------------------------------------------------------------------------
 // Query param schema
@@ -18,7 +18,7 @@ export type ModelsResponse = {
 const QuerySchema = z.object({
   provider: z.string().optional(),
   capability: z.string().optional(),
-})
+});
 
 // ---------------------------------------------------------------------------
 // GET /api/models
@@ -28,39 +28,39 @@ const QuerySchema = z.object({
 // ---------------------------------------------------------------------------
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const { searchParams } = request.nextUrl
+  const { searchParams } = request.nextUrl;
   const rawParams = {
     provider: searchParams.get('provider') ?? undefined,
     capability: searchParams.get('capability') ?? undefined,
-  }
+  };
 
-  const parsed = QuerySchema.safeParse(rawParams)
+  const parsed = QuerySchema.safeParse(rawParams);
   if (!parsed.success) {
     return NextResponse.json(
       { error: 'Invalid query parameters', details: parsed.error.flatten() },
-      { status: 400 }
-    )
+      { status: 400 },
+    );
   }
 
-  const { provider, capability } = parsed.data
+  const { provider, capability } = parsed.data;
 
   try {
-    let models: Model[]
+    let models: Model[];
 
     if (provider !== undefined) {
-      models = getModelsByProvider(provider)
+      models = getModelsByProvider(provider);
     } else if (capability !== undefined) {
-      models = getModelsByCapability(capability)
+      models = getModelsByCapability(capability);
     } else {
-      models = getAllModels()
+      models = getAllModels();
     }
 
-    const response: ModelsResponse = { models }
+    const response: ModelsResponse = { models };
     return NextResponse.json(response, {
       headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400' },
-    })
+    });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Internal server error'
-    return NextResponse.json({ error: message }, { status: 500 })
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
