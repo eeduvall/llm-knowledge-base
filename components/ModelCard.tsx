@@ -1,19 +1,19 @@
-import Link from 'next/link'
-import type { Model } from '@/lib/models'
-import { getProviderColor } from '@/lib/models'
+import Link from 'next/link';
+import type { Model } from '@/lib/models';
+import { getProviderColor } from '@/lib/models';
 
 type Props = {
-  model: Model
-}
+  model: Model;
+};
 
 function formatContextWindow(tokens: number): string {
-  if (tokens >= 1_000_000) return `${(tokens / 1_000_000).toFixed(1)}M`
-  if (tokens >= 1_000) return `${(tokens / 1_000).toFixed(0)}K`
-  return String(tokens)
+  if (tokens >= 1_000_000) return `${(tokens / 1_000_000).toFixed(1)}M`;
+  if (tokens >= 1_000) return `${(tokens / 1_000).toFixed(0)}K`;
+  return String(tokens);
 }
 
 export function ModelCard({ model }: Props) {
-  const providerColor = getProviderColor(model.provider)
+  const providerColor = getProviderColor(model.provider);
 
   return (
     <Link
@@ -52,9 +52,7 @@ export function ModelCard({ model }: Props) {
         {model.pricing.input !== null ? (
           <div className="flex gap-1">
             <dt style={{ color: 'var(--color-text-faint)' }}>Input</dt>
-            <dd style={{ color: 'var(--color-text-muted)' }}>
-              ${model.pricing.input}/M
-            </dd>
+            <dd style={{ color: 'var(--color-text-muted)' }}>${model.pricing.input}/M</dd>
           </div>
         ) : (
           <div className="flex gap-1">
@@ -99,5 +97,5 @@ export function ModelCard({ model }: Props) {
         </div>
       )}
     </Link>
-  )
+  );
 }

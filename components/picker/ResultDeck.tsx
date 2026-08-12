@@ -1,12 +1,12 @@
-"use client"
+'use client';
 
-import Link from 'next/link'
-import type { ScoredModel } from '@/lib/decision-tree'
+import Link from 'next/link';
+import type { ScoredModel } from '@/lib/decision-tree';
 
 type Props = {
-  results: ScoredModel[]
-  onReset: () => void
-}
+  results: ScoredModel[];
+  onReset: () => void;
+};
 
 export function ResultDeck({ results, onReset }: Props) {
   return (
@@ -15,10 +15,7 @@ export function ResultDeck({ results, onReset }: Props) {
       aria-label="Recommended models"
     >
       <div className="flex items-center justify-between">
-        <h2
-          className="text-2xl font-semibold"
-          style={{ color: 'var(--color-text)' }}
-        >
+        <h2 className="text-2xl font-semibold" style={{ color: 'var(--color-text)' }}>
           Your top picks
         </h2>
         <button
@@ -40,14 +37,8 @@ export function ResultDeck({ results, onReset }: Props) {
             key={result.model.id}
             className="rounded-xl p-5 border flex flex-col gap-3"
             style={{
-              backgroundColor:
-                index === 0
-                  ? 'rgba(108,99,255,0.10)'
-                  : 'rgba(255,255,255,0.03)',
-              borderColor:
-                index === 0
-                  ? 'rgba(108,99,255,0.35)'
-                  : 'rgba(255,255,255,0.07)',
+              backgroundColor: index === 0 ? 'rgba(108,99,255,0.10)' : 'rgba(255,255,255,0.03)',
+              borderColor: index === 0 ? 'rgba(108,99,255,0.35)' : 'rgba(255,255,255,0.07)',
             }}
           >
             {/* Rank badge + model name */}
@@ -55,20 +46,14 @@ export function ResultDeck({ results, onReset }: Props) {
               <span
                 className="text-xs font-mono font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
-                  backgroundColor:
-                    index === 0
-                      ? 'var(--color-primary)'
-                      : 'rgba(255,255,255,0.08)',
+                  backgroundColor: index === 0 ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)',
                   color: index === 0 ? '#fff' : 'var(--color-text-muted)',
                 }}
                 aria-label={`Rank ${index + 1}`}
               >
                 {index + 1}
               </span>
-              <h3
-                className="text-lg font-semibold"
-                style={{ color: 'var(--color-text)' }}
-              >
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
                 {result.model.name}
               </h3>
               <span
@@ -83,10 +68,7 @@ export function ResultDeck({ results, onReset }: Props) {
             </div>
 
             {/* Why this model */}
-            <p
-              className="text-sm leading-relaxed"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
               {result.reason}
             </p>
 
@@ -130,5 +112,5 @@ export function ResultDeck({ results, onReset }: Props) {
         ))}
       </ol>
     </section>
-  )
+  );
 }

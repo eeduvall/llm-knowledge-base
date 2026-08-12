@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { GraphAnimation } from './GraphAnimation'
+import Link from 'next/link';
+import { GraphAnimation } from './GraphAnimation';
 
 export function HeroSection() {
   return (
@@ -56,9 +56,9 @@ export function HeroSection() {
 
           {/* Subtext */}
           <p className="text-base text-white/60 max-w-sm leading-relaxed">
-            A living map of the language-model landscape — models pulled
-            together by what they can actually do, not by who markets them
-            hardest. Orbit the graph, or let twelve questions do the work.
+            A living map of the language-model landscape — models pulled together by what they can
+            actually do, not by who markets them hardest. Orbit the graph, or let twelve questions
+            do the work.
           </p>
 
           {/* CTAs */}
@@ -82,17 +82,15 @@ export function HeroSection() {
 
           {/* Provider list */}
           <div className="flex flex-wrap items-center gap-4 mt-4" aria-label="Supported providers">
-            {['OpenAI', 'Anthropic', 'Meta', 'Mistral', 'Google', '+31 OSS'].map(
-              (provider) => (
-                <span
-                  key={provider}
-                  className="text-xs font-mono font-medium tracking-widest uppercase"
-                  style={{ color: 'rgba(255,255,255,0.35)' }}
-                >
-                  {provider}
-                </span>
-              )
-            )}
+            {['OpenAI', 'Anthropic', 'Meta', 'Mistral', 'Google', '+31 OSS'].map((provider) => (
+              <span
+                key={provider}
+                className="text-xs font-mono font-medium tracking-widest uppercase"
+                style={{ color: 'rgba(255,255,255,0.35)' }}
+              >
+                {provider}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -102,5 +100,5 @@ export function HeroSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

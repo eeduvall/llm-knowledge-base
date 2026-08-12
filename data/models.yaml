@@ -4,10 +4,10 @@
 
 # Anthropic
 - id: claude-3-5-sonnet
-  name: "Claude 3.5 Sonnet"
+  name: 'Claude 3.5 Sonnet'
   provider: anthropic
   family: claude-3
-  release_date: "2024-06-20"
+  release_date: '2024-06-20'
   context_window: 200000
   modalities: [text, image]
   capabilities:
@@ -24,23 +24,23 @@
     humaneval: 92.0
     mt_bench: null
   strengths:
-    - "Best-in-class coding and reasoning"
-    - "200K context window"
-    - "Strong instruction following"
+    - 'Best-in-class coding and reasoning'
+    - '200K context window'
+    - 'Strong instruction following'
   weaknesses:
-    - "Higher cost vs. smaller models"
-    - "No audio modality"
+    - 'Higher cost vs. smaller models'
+    - 'No audio modality'
   license: proprietary
   links:
-    docs: "https://docs.anthropic.com/claude/docs"
+    docs: 'https://docs.anthropic.com/claude/docs'
     paper: null
-  last_verified: "2024-07-01"
+  last_verified: '2024-07-01'
 
 - id: claude-3-haiku
-  name: "Claude 3 Haiku"
+  name: 'Claude 3 Haiku'
   provider: anthropic
   family: claude-3
-  release_date: "2024-03-13"
+  release_date: '2024-03-13'
   context_window: 200000
   modalities: [text, image]
   capabilities:
@@ -55,22 +55,22 @@
     humaneval: null
     mt_bench: null
   strengths:
-    - "Fastest and most affordable Claude model"
-    - "Good for high-throughput tasks"
+    - 'Fastest and most affordable Claude model'
+    - 'Good for high-throughput tasks'
   weaknesses:
-    - "Less capable than Sonnet/Opus for complex reasoning"
+    - 'Less capable than Sonnet/Opus for complex reasoning'
   license: proprietary
   links:
-    docs: "https://docs.anthropic.com/claude/docs"
+    docs: 'https://docs.anthropic.com/claude/docs'
     paper: null
-  last_verified: "2024-07-01"
+  last_verified: '2024-07-01'
 
 # Google
 - id: gemini-1-5-flash
-  name: "Gemini 1.5 Flash"
+  name: 'Gemini 1.5 Flash'
   provider: google
   family: gemini-1.5
-  release_date: "2024-05-14"
+  release_date: '2024-05-14'
   context_window: 1000000
   modalities: [text, image, audio, video]
   capabilities:
@@ -87,22 +87,22 @@
     humaneval: null
     mt_bench: null
   strengths:
-    - "1M token context window"
-    - "Multimodal (text, image, audio, video)"
-    - "Fast and cost-effective"
+    - '1M token context window'
+    - 'Multimodal (text, image, audio, video)'
+    - 'Fast and cost-effective'
   weaknesses:
-    - "Less capable than Pro on complex tasks"
+    - 'Less capable than Pro on complex tasks'
   license: proprietary
   links:
-    docs: "https://ai.google.dev/gemini-api/docs"
+    docs: 'https://ai.google.dev/gemini-api/docs'
     paper: null
-  last_verified: "2024-07-01"
+  last_verified: '2024-07-01'
 
 - id: gemini-1-5-pro
-  name: "Gemini 1.5 Pro"
+  name: 'Gemini 1.5 Pro'
   provider: google
   family: gemini-1.5
-  release_date: "2024-02-15"
+  release_date: '2024-02-15'
   context_window: 2000000
   modalities: [text, image, audio, video]
   capabilities:
@@ -120,23 +120,23 @@
     humaneval: 71.9
     mt_bench: null
   strengths:
-    - "2M token context window — largest available"
-    - "Strong multimodal reasoning"
+    - '2M token context window — largest available'
+    - 'Strong multimodal reasoning'
   weaknesses:
-    - "Higher latency on very long contexts"
-    - "Cost scales with context length"
+    - 'Higher latency on very long contexts'
+    - 'Cost scales with context length'
   license: proprietary
   links:
-    docs: "https://ai.google.dev/gemini-api/docs"
+    docs: 'https://ai.google.dev/gemini-api/docs'
     paper: null
-  last_verified: "2024-07-01"
+  last_verified: '2024-07-01'
 
 # Meta
 - id: llama-3-1-405b
-  name: "Llama 3.1 405B"
+  name: 'Llama 3.1 405B'
   provider: meta
   family: llama-3
-  release_date: "2024-07-23"
+  release_date: '2024-07-23'
   context_window: 128000
   modalities: [text]
   capabilities:
@@ -152,23 +152,23 @@
     humaneval: 89.0
     mt_bench: null
   strengths:
-    - "Open weights — fully self-hostable"
-    - "Competitive with GPT-4 class models"
-    - "Strong multilingual support"
+    - 'Open weights — fully self-hostable'
+    - 'Competitive with GPT-4 class models'
+    - 'Strong multilingual support'
   weaknesses:
-    - "Requires significant compute to self-host"
-    - "No vision modality"
+    - 'Requires significant compute to self-host'
+    - 'No vision modality'
   license: llama
   links:
-    docs: "https://llama.meta.com/"
-    paper: "https://arxiv.org/abs/2407.21783"
-  last_verified: "2024-07-23"
+    docs: 'https://llama.meta.com/'
+    paper: 'https://arxiv.org/abs/2407.21783'
+  last_verified: '2024-07-23'
 
 - id: llama-3-1-70b
-  name: "Llama 3.1 70B"
+  name: 'Llama 3.1 70B'
   provider: meta
   family: llama-3
-  release_date: "2024-07-23"
+  release_date: '2024-07-23'
   context_window: 128000
   modalities: [text]
   capabilities:
@@ -184,23 +184,23 @@
     humaneval: 80.5
     mt_bench: null
   strengths:
-    - "Open weights — self-hostable on consumer hardware"
-    - "Strong reasoning for its size"
+    - 'Open weights — self-hostable on consumer hardware'
+    - 'Strong reasoning for its size'
   weaknesses:
-    - "Less capable than 405B on complex tasks"
-    - "No vision modality"
+    - 'Less capable than 405B on complex tasks'
+    - 'No vision modality'
   license: llama
   links:
-    docs: "https://llama.meta.com/"
-    paper: "https://arxiv.org/abs/2407.21783"
-  last_verified: "2024-07-23"
+    docs: 'https://llama.meta.com/'
+    paper: 'https://arxiv.org/abs/2407.21783'
+  last_verified: '2024-07-23'
 
 # Mistral
 - id: mistral-large-2
-  name: "Mistral Large 2"
+  name: 'Mistral Large 2'
   provider: mistral
   family: mistral-large
-  release_date: "2024-07-24"
+  release_date: '2024-07-24'
   context_window: 128000
   modalities: [text]
   capabilities:
@@ -216,23 +216,23 @@
     humaneval: 92.0
     mt_bench: null
   strengths:
-    - "Strong coding performance"
-    - "Multilingual (80+ languages)"
-    - "Competitive pricing"
+    - 'Strong coding performance'
+    - 'Multilingual (80+ languages)'
+    - 'Competitive pricing'
   weaknesses:
-    - "No vision modality"
-    - "Smaller ecosystem than OpenAI/Anthropic"
+    - 'No vision modality'
+    - 'Smaller ecosystem than OpenAI/Anthropic'
   license: mistral
   links:
-    docs: "https://docs.mistral.ai/"
+    docs: 'https://docs.mistral.ai/'
     paper: null
-  last_verified: "2024-07-24"
+  last_verified: '2024-07-24'
 
 - id: mistral-nemo
-  name: "Mistral NeMo"
+  name: 'Mistral NeMo'
   provider: mistral
   family: mistral-nemo
-  release_date: "2024-07-18"
+  release_date: '2024-07-18'
   context_window: 128000
   modalities: [text]
   capabilities:
@@ -247,24 +247,24 @@
     humaneval: null
     mt_bench: null
   strengths:
-    - "12B parameters — efficient and fast"
-    - "Apache 2.0 license"
-    - "Good multilingual support"
+    - '12B parameters — efficient and fast'
+    - 'Apache 2.0 license'
+    - 'Good multilingual support'
   weaknesses:
-    - "Less capable than larger models"
-    - "No vision modality"
+    - 'Less capable than larger models'
+    - 'No vision modality'
   license: apache-2.0
   links:
-    docs: "https://docs.mistral.ai/"
+    docs: 'https://docs.mistral.ai/'
     paper: null
-  last_verified: "2024-07-18"
+  last_verified: '2024-07-18'
 
 # OpenAI
 - id: gpt-4o
-  name: "GPT-4o"
+  name: 'GPT-4o'
   provider: openai
   family: gpt-4
-  release_date: "2024-05-13"
+  release_date: '2024-05-13'
   context_window: 128000
   modalities: [text, image, audio]
   capabilities:
@@ -281,23 +281,23 @@
     humaneval: 90.2
     mt_bench: null
   strengths:
-    - "Best-in-class multimodal reasoning"
-    - "Native audio input/output"
-    - "Strong tool-use and structured output"
+    - 'Best-in-class multimodal reasoning'
+    - 'Native audio input/output'
+    - 'Strong tool-use and structured output'
   weaknesses:
-    - "Higher cost vs. smaller models"
-    - "Context window smaller than Gemini 1.5"
+    - 'Higher cost vs. smaller models'
+    - 'Context window smaller than Gemini 1.5'
   license: proprietary
   links:
-    docs: "https://platform.openai.com/docs"
+    docs: 'https://platform.openai.com/docs'
     paper: null
-  last_verified: "2024-07-01"
+  last_verified: '2024-07-01'
 
 - id: gpt-4o-mini
-  name: "GPT-4o mini"
+  name: 'GPT-4o mini'
   provider: openai
   family: gpt-4
-  release_date: "2024-07-18"
+  release_date: '2024-07-18'
   context_window: 128000
   modalities: [text, image]
   capabilities:
@@ -314,23 +314,23 @@
     humaneval: 87.2
     mt_bench: null
   strengths:
-    - "Very low cost"
-    - "Fast response times"
-    - "Strong performance for its price"
+    - 'Very low cost'
+    - 'Fast response times'
+    - 'Strong performance for its price'
   weaknesses:
-    - "Less capable than GPT-4o on complex tasks"
-    - "No audio modality"
+    - 'Less capable than GPT-4o on complex tasks'
+    - 'No audio modality'
   license: proprietary
   links:
-    docs: "https://platform.openai.com/docs"
+    docs: 'https://platform.openai.com/docs'
     paper: null
-  last_verified: "2024-07-18"
+  last_verified: '2024-07-18'
 
 - id: o1-preview
-  name: "o1-preview"
+  name: 'o1-preview'
   provider: openai
   family: o1
-  release_date: "2024-09-12"
+  release_date: '2024-09-12'
   context_window: 128000
   modalities: [text]
   capabilities:
@@ -345,15 +345,15 @@
     humaneval: 92.4
     mt_bench: null
   strengths:
-    - "Exceptional multi-step reasoning"
-    - "Strong math and science performance"
-    - "Chain-of-thought built in"
+    - 'Exceptional multi-step reasoning'
+    - 'Strong math and science performance'
+    - 'Chain-of-thought built in'
   weaknesses:
-    - "Very high cost"
-    - "Slower than GPT-4o"
-    - "No vision or tool-use in preview"
+    - 'Very high cost'
+    - 'Slower than GPT-4o'
+    - 'No vision or tool-use in preview'
   license: proprietary
   links:
-    docs: "https://platform.openai.com/docs"
+    docs: 'https://platform.openai.com/docs'
     paper: null
-  last_verified: "2024-09-12"
+  last_verified: '2024-09-12'
