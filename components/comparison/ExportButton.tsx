@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { useCallback } from 'react'
-import type { Model } from '@/lib/models'
-import { exportComparisonAsCSV } from '@/lib/export'
+import { useCallback } from 'react';
+import type { Model } from '@/lib/models';
+import { exportComparisonAsCSV } from '@/lib/export';
 
 type Props = {
-  models: Model[]
-  disabled?: boolean
-}
+  models: Model[];
+  disabled?: boolean;
+};
 
 export function ExportButton({ models, disabled = false }: Props) {
   const handleExport = useCallback(() => {
-    if (models.length === 0) return
-    exportComparisonAsCSV(models)
-  }, [models])
+    if (models.length === 0) return;
+    exportComparisonAsCSV(models);
+  }, [models]);
 
   return (
     <button
@@ -39,5 +39,5 @@ export function ExportButton({ models, disabled = false }: Props) {
       </svg>
       Export CSV
     </button>
-  )
+  );
 }

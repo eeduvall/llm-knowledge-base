@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
+import Link from 'next/link';
 import { useTheme } from '@/hooks/useTheme'
 
 /** Inline SVG galaxy logo — tilted elliptical disc with glowing core.
@@ -40,8 +40,10 @@ function GalaxyLogo() {
 
       {/* Galactic disc — outer ring, tilted ~20 ° */}
       <ellipse
-        cx="14" cy="14"
-        rx="11" ry="4.5"
+        cx="14"
+        cy="14"
+        rx="11"
+        ry="4.5"
         stroke="var(--color-primary)"
         strokeWidth="1.4"
         strokeOpacity="0.7"
@@ -51,8 +53,10 @@ function GalaxyLogo() {
 
       {/* Galactic disc — mid ring */}
       <ellipse
-        cx="14" cy="14"
-        rx="7.5" ry="3"
+        cx="14"
+        cy="14"
+        rx="7.5"
+        ry="3"
         stroke="var(--color-secondary)"
         strokeWidth="1.1"
         strokeOpacity="0.65"
@@ -62,8 +66,10 @@ function GalaxyLogo() {
 
       {/* Faint inner disc fill to suggest the bulge */}
       <ellipse
-        cx="14" cy="14"
-        rx="5" ry="2"
+        cx="14"
+        cy="14"
+        rx="5"
+        ry="2"
         fill="var(--color-primary)"
         fillOpacity="0.12"
         transform="rotate(-20 14 14)"
@@ -84,7 +90,7 @@ function GalaxyLogo() {
       {/* Core pinpoint highlight */}
       <circle cx="13.3" cy="13.3" r="0.9" fill="#ffffff" opacity="0.95" />
     </svg>
-  )
+  );
 }
 
 /** Sun icon for light mode */
@@ -173,5 +179,5 @@ export function Navbar() {
         </Link>
       </div>
     </nav>
-  )
+  );
 }

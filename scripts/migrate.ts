@@ -14,33 +14,33 @@
  * scratch (DROP + CREATE + INSERT).
  */
 
-import * as fs from 'fs'
-import * as path from 'path'
-import * as yaml from 'js-yaml'
-import Database from 'better-sqlite3'
-import type { Model } from '../lib/models'
+import * as fs from 'fs';
+import * as path from 'path';
+import * as yaml from 'js-yaml';
+import Database from 'better-sqlite3';
+import type { Model } from '../lib/models';
 
 // ---------------------------------------------------------------------------
 // Paths
 // ---------------------------------------------------------------------------
 
-const YAML_PATH = path.join(__dirname, '..', 'data', 'models.yaml')
-const DB_PATH = path.join(__dirname, '..', 'data', 'models.db')
+const YAML_PATH = path.join(__dirname, '..', 'data', 'models.yaml');
+const DB_PATH = path.join(__dirname, '..', 'data', 'models.db');
 
 // ---------------------------------------------------------------------------
 // Load & validate YAML
 // ---------------------------------------------------------------------------
 
-console.log('📖  Reading', YAML_PATH)
-const raw = fs.readFileSync(YAML_PATH, 'utf8')
-const models = yaml.load(raw) as Model[]
+console.log('📖  Reading', YAML_PATH);
+const raw = fs.readFileSync(YAML_PATH, 'utf8');
+const models = yaml.load(raw) as Model[];
 
 if (!Array.isArray(models) || models.length === 0) {
-  console.error('❌  models.yaml is empty or not an array')
-  process.exit(1)
+  console.error('❌  models.yaml is empty or not an array');
+  process.exit(1);
 }
 
-console.log(`✅  Loaded ${models.length} models from YAML`)
+console.log(`✅  Loaded ${models.length} models from YAML`);
 
 // ---------------------------------------------------------------------------
 // Open / create SQLite database
@@ -48,12 +48,12 @@ console.log(`✅  Loaded ${models.length} models from YAML`)
 
 // Remove existing DB so the script is fully idempotent
 if (fs.existsSync(DB_PATH)) {
-  fs.unlinkSync(DB_PATH)
-  console.log('🗑   Removed existing', DB_PATH)
+  fs.unlinkSync(DB_PATH);
+  console.log('🗑   Removed existing', DB_PATH);
 }
 
-const db = new Database(DB_PATH)
-console.log('🗄   Created', DB_PATH)
+const db = new Database(DB_PATH);
+console.log('🗄   Created', DB_PATH);
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -86,7 +86,7 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_models_provider ON models(provider);
   CREATE INDEX IF NOT EXISTS idx_models_license  ON models(license);
-`)
+`);
 
 // ---------------------------------------------------------------------------
 // Insert rows
@@ -106,7 +106,7 @@ const insert = db.prepare(`
     @benchmark_mmlu, @benchmark_humaneval, @benchmark_mt_bench,
     @docs_url, @paper_url
   )
-`)
+`);
 
 const insertAll = db.transaction((rows: Model[]) => {
   for (const m of rows) {
@@ -130,13 +130,13 @@ const insertAll = db.transaction((rows: Model[]) => {
       benchmark_mt_bench: m.benchmarks?.mt_bench ?? null,
       docs_url: m.links?.docs ?? null,
       paper_url: m.links?.paper ?? null,
-    })
+    });
   }
-})
+});
 
-insertAll(models)
+insertAll(models);
 
-console.log(`✅  Inserted ${models.length} rows into models table`)
-console.log('\n🎉  Database build complete:', DB_PATH)
+console.log(`✅  Inserted ${models.length} rows into models table`);
+console.log('\n🎉  Database build complete:', DB_PATH);
 
-db.close()
+db.close();

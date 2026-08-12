@@ -1,15 +1,15 @@
-"use client"
+'use client';
 
-import { AnswerButton } from './AnswerButton'
-import type { Question, AnswerId } from '@/lib/decision-tree'
+import { AnswerButton } from './AnswerButton';
+import type { Question, AnswerId } from '@/lib/decision-tree';
 
 type Props = {
-  question: Question
-  selectedAnswerId: AnswerId | null
-  onAnswer: (questionId: string, answerId: AnswerId) => void
-  questionNumber: number
-  totalQuestions: number
-}
+  question: Question;
+  selectedAnswerId: AnswerId | null;
+  onAnswer: (questionId: string, answerId: AnswerId) => void;
+  questionNumber: number;
+  totalQuestions: number;
+};
 
 export function QuestionCard({
   question,
@@ -25,16 +25,10 @@ export function QuestionCard({
     >
       {/* Progress */}
       <div className="flex items-center gap-3">
-        <span
-          className="text-xs font-mono"
-          style={{ color: 'var(--color-text-muted)' }}
-        >
+        <span className="text-xs font-mono" style={{ color: 'var(--color-text-muted)' }}>
           {questionNumber} / {totalQuestions}
         </span>
-        <div
-          className="flex-1 h-px"
-          style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
-        >
+        <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}>
           <div
             className="h-px transition-all duration-500"
             style={{
@@ -46,10 +40,7 @@ export function QuestionCard({
       </div>
 
       {/* Question text */}
-      <h2
-        className="text-2xl font-semibold leading-snug"
-        style={{ color: 'var(--color-text)' }}
-      >
+      <h2 className="text-2xl font-semibold leading-snug" style={{ color: 'var(--color-text)' }}>
         {question.text}
       </h2>
 
@@ -65,5 +56,5 @@ export function QuestionCard({
         ))}
       </div>
     </section>
-  )
+  );
 }

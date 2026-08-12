@@ -18,30 +18,30 @@
   --color-fog:       rgba(100, 120, 255, 0.04);
 
   /* Primary tints */
-  --color-primary-light:  #9B8FFF;
-  --color-primary-subtle: rgba(108, 99, 255, 0.10);
-  --color-primary-dim:    rgba(108, 99, 255, 0.20);
+  --color-primary-light: #9b8fff;
+  --color-primary-subtle: rgba(108, 99, 255, 0.1);
+  --color-primary-dim: rgba(108, 99, 255, 0.2);
   --color-primary-border: rgba(108, 99, 255, 0.35);
 
   /* Secondary tints */
-  --color-secondary-subtle: rgba(0, 212, 255, 0.10);
-  --color-secondary-dim:    rgba(0, 212, 255, 0.20);
+  --color-secondary-subtle: rgba(0, 212, 255, 0.1);
+  --color-secondary-dim: rgba(0, 212, 255, 0.2);
 
   /* Text hierarchy */
-  --color-text:       #f0f0ff;
+  --color-text: #f0f0ff;
   --color-text-muted: rgba(240, 240, 255, 0.55);
-  --color-text-faint: rgba(240, 240, 255, 0.30);
+  --color-text-faint: rgba(240, 240, 255, 0.3);
 
   /* Surfaces & borders */
-  --color-surface:      rgba(255, 255, 255, 0.04);
-  --color-border:       rgba(255, 255, 255, 0.10);
-  --color-divider:      rgba(255, 255, 255, 0.06);
+  --color-surface: rgba(255, 255, 255, 0.04);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-divider: rgba(255, 255, 255, 0.06);
 
   /* Component-specific */
-  --color-nav-bg:       rgba(5, 5, 16, 0.85);
-  --color-panel-bg:     rgba(255, 255, 255, 0.03);
+  --color-nav-bg: rgba(5, 5, 16, 0.85);
+  --color-panel-bg: rgba(255, 255, 255, 0.03);
   --color-panel-bg-alt: rgba(108, 99, 255, 0.06);
-  --color-overlay:      rgba(5, 5, 16, 0.75);
+  --color-overlay: rgba(5, 5, 16, 0.75);
 }
 
 /* ── Light mode overrides ────────────────────────────────────────────────── */

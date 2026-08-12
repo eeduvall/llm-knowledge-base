@@ -1,6 +1,6 @@
-import { Navbar } from '@/components/Navbar'
-import { HeroSection } from '@/components/HeroSection'
-import { FeaturesSection } from '@/components/FeaturesSection'
+import { Navbar } from '@/components/Navbar';
+import { HeroSection } from '@/components/HeroSection';
+import { FeaturesSection } from '@/components/FeaturesSection';
 
 export default function HomePage() {
   return (
@@ -9,5 +9,5 @@ export default function HomePage() {
       <HeroSection />
       <FeaturesSection />
     </main>
-  )
+  );
 }
