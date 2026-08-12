@@ -7,11 +7,25 @@ type Props = {
   models: Model[]
 }
 
+/** Map column count → responsive Tailwind grid class.
+ *  Mobile-first: always starts at 1 column, then expands at sm/lg breakpoints.
+ *  Max columns is 3 (enforced by the comparison page's 5-model limit and the
+ *  3-column cap below). All values are static strings so Tailwind can include
+ *  them in the purge-safe class list.
+ */
+const GRID_CLASS: Record<number, string> = {
+  1: 'grid grid-cols-1 gap-4',
+  2: 'grid grid-cols-1 sm:grid-cols-2 gap-4',
+  3: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4',
+}
+
 export function StrengthsWeaknessesDiff({ models }: Props) {
   if (models.length === 0) return null
 
   const sharedStrengths = findSharedStrengths(models)
   const sharedWeaknesses = findSharedWeaknesses(models)
+  const colCount = Math.min(models.length, 3) as 1 | 2 | 3
+  const gridClass = GRID_CLASS[colCount] ?? GRID_CLASS[3]
 
   return (
     <section aria-label="Strengths and weaknesses comparison">
@@ -57,8 +71,8 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
         </div>
       )}
 
-      {/* Per-model cards */}
-      <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${Math.min(models.length, 3)}, minmax(0, 1fr))` }}>
+      {/* Per-model cards — responsive grid (1 col mobile → 2 col sm → 3 col lg) */}
+      <div className={gridClass}>
         {models.map((model) => (
           <div
             key={model.id}
