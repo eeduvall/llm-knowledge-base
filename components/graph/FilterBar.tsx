@@ -64,7 +64,7 @@ function Section({ title, children, defaultOpen = true }: SectionProps) {
       >
         <span
           className="text-xs font-mono font-medium tracking-widest uppercase"
-          style={{ color: 'rgba(255,255,255,0.35)' }}
+          style={{ color: 'var(--color-text-faint)' }}
         >
           {title}
         </span>
@@ -104,7 +104,7 @@ type PillProps = {
   onClick: () => void;
 };
 
-function Pill({ label, active, color = '#6C63FF', onClick }: PillProps) {
+function Pill({ label, active, color = 'var(--color-primary)', onClick }: PillProps) {
   return (
     <button
       onClick={onClick}
@@ -168,7 +168,7 @@ function RangeSlider({
   absoluteMin,
   absoluteMax,
   onChange,
-  color = '#6C63FF',
+  color = 'var(--color-primary)',
 }: RangeSliderProps) {
   const isDefault = min === absoluteMin && max === absoluteMax;
   const pctMin = ((min - absoluteMin) / (absoluteMax - absoluteMin)) * 100;
@@ -179,25 +179,22 @@ function RangeSlider({
       <div className="flex items-center justify-between">
         <span
           className="text-xs font-mono"
-          style={{ color: isDefault ? 'rgba(255,255,255,0.4)' : color }}
+          style={{ color: isDefault ? 'var(--color-text-faint)' : color }}
         >
           {label}
         </span>
-        <span className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <span className="text-xs font-mono" style={{ color: 'var(--color-text-faint)' }}>
           {min.toFixed(0)}&ndash;{max.toFixed(0)}
         </span>
       </div>
       {/* Filled track */}
-      <div
-        className="relative h-1 rounded-full"
-        style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
-      >
+      <div className="relative h-1 rounded-full" style={{ backgroundColor: 'var(--color-border)' }}>
         <div
           className="absolute h-full rounded-full"
           style={{
             left: `${pctMin}%`,
             width: `${pctMax - pctMin}%`,
-            backgroundColor: isDefault ? 'rgba(255,255,255,0.2)' : color,
+            backgroundColor: isDefault ? 'var(--color-surface)' : color,
           }}
         />
       </div>
@@ -233,7 +230,7 @@ function RangeSlider({
         <button
           onClick={() => onChange({ min: absoluteMin, max: absoluteMax })}
           className="text-xs font-mono text-left transition-colors duration-200"
-          style={{ color: '#FF6B9D' }}
+          style={{ color: 'var(--color-accent)' }}
         >
           Reset
         </button>
@@ -323,7 +320,7 @@ export function FilterBar({
           <Pill
             label="All"
             active={activeProvider === null}
-            color="#6C63FF"
+            color="var(--color-primary)"
             onClick={() => onSelectProvider(null)}
           />
           {providers.map((provider) => {
@@ -392,7 +389,7 @@ export function FilterBar({
               key={value}
               label={label}
               active={clusterMode === value}
-              color="#00D4FF"
+              color="var(--color-secondary)"
               onClick={() => onSetClusterMode(value)}
             />
           ))}
@@ -407,7 +404,7 @@ export function FilterBar({
             absoluteMin={60}
             absoluteMax={100}
             onChange={onMmluRangeChange}
-            color="#6C63FF"
+            color="var(--color-primary)"
           />
           <RangeSlider
             label="HumanEval"
@@ -416,7 +413,7 @@ export function FilterBar({
             absoluteMin={60}
             absoluteMax={100}
             onChange={onHumanEvalRangeChange}
-            color="#00D4FF"
+            color="var(--color-secondary)"
           />
         </Section>
       </div>
@@ -444,7 +441,7 @@ export function FilterBar({
               onHumanEvalRangeChange({ min: 60, max: 100 });
             }}
             className="text-xs font-mono transition-colors duration-200"
-            style={{ color: '#FF6B9D' }}
+            style={{ color: 'var(--color-accent)' }}
           >
             Clear all filters
           </button>
