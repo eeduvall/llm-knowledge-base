@@ -4,3 +4,4 @@ node_modules/
 .env*.local
 *.tsbuildinfo
 data/models.db
+test_write.txt
