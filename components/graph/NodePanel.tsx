@@ -1,37 +1,37 @@
-'use client'
+'use client';
 
-import { useEffect, useRef } from 'react'
-import Link from 'next/link'
-import type { Model } from '@/lib/models'
+import { useEffect, useRef } from 'react';
+import Link from 'next/link';
+import type { Model } from '@/lib/models';
 
 type Props = {
-  model: Model
-  onClose: () => void
-}
+  model: Model;
+  onClose: () => void;
+};
 
 function formatContextWindow(tokens: number): string {
-  if (tokens >= 1_000_000) return `${(tokens / 1_000_000).toFixed(1)}M`
-  if (tokens >= 1_000) return `${(tokens / 1_000).toFixed(0)}K`
-  return String(tokens)
+  if (tokens >= 1_000_000) return `${(tokens / 1_000_000).toFixed(1)}M`;
+  if (tokens >= 1_000) return `${(tokens / 1_000).toFixed(0)}K`;
+  return String(tokens);
 }
 
 function formatPrice(price: number | null): string {
-  if (price === null) return '—'
-  return `$${price.toFixed(2)}`
+  if (price === null) return '—';
+  return `$${price.toFixed(2)}`;
 }
 
 function formatBenchmark(value: number | null): string {
-  if (value === null) return '—'
-  return `${value.toFixed(1)}`
+  if (value === null) return '—';
+  return `${value.toFixed(1)}`;
 }
 
 export function NodePanel({ model, onClose }: Props) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // Move focus to the close button when the panel opens
   useEffect(() => {
-    closeButtonRef.current?.focus()
-  }, [model.id])
+    closeButtonRef.current?.focus();
+  }, [model.id]);
 
   return (
     <aside
@@ -54,9 +54,7 @@ export function NodePanel({ model, onClose }: Props) {
           >
             {model.provider}
           </span>
-          <h2 className="text-lg font-bold text-white leading-tight">
-            {model.name}
-          </h2>
+          <h2 className="text-lg font-bold text-white leading-tight">{model.name}</h2>
           <span className="text-xs text-white/40 font-mono">{model.id}</span>
         </div>
         <button
@@ -65,13 +63,7 @@ export function NodePanel({ model, onClose }: Props) {
           className="text-white/40 hover:text-white transition-colors duration-200 mt-1 flex-shrink-0"
           aria-label={`Close ${model.name} details`}
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            aria-hidden="true"
-          >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path
               d="M2 2l12 12M14 2L2 14"
               stroke="currentColor"
@@ -107,10 +99,7 @@ export function NodePanel({ model, onClose }: Props) {
       </div>
 
       {/* Benchmarks */}
-      <div
-        className="p-5 border-b"
-        style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-      >
+      <div className="p-5 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
         <h3 className="text-xs font-mono font-medium tracking-widest uppercase text-white/40 mb-3">
           Benchmarks
         </h3>
@@ -122,19 +111,14 @@ export function NodePanel({ model, onClose }: Props) {
           ].map(({ label, value }) => (
             <div key={label} className="flex items-center justify-between">
               <span className="text-xs text-white/50">{label}</span>
-              <span className="text-xs font-mono font-medium text-white/80">
-                {value}
-              </span>
+              <span className="text-xs font-mono font-medium text-white/80">{value}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Modalities & Capabilities */}
-      <div
-        className="p-5 border-b"
-        style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-      >
+      <div className="p-5 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
         <h3 className="text-xs font-mono font-medium tracking-widest uppercase text-white/40 mb-3">
           Modalities
         </h3>
@@ -182,7 +166,9 @@ export function NodePanel({ model, onClose }: Props) {
           <ul className="flex flex-col gap-1.5">
             {model.strengths.map((s) => (
               <li key={s} className="flex items-start gap-2 text-xs text-white/70">
-                <span style={{ color: 'var(--color-secondary)' }} aria-hidden="true">+</span>
+                <span style={{ color: 'var(--color-secondary)' }} aria-hidden="true">
+                  +
+                </span>
                 {s}
               </li>
             ))}
@@ -195,7 +181,9 @@ export function NodePanel({ model, onClose }: Props) {
           <ul className="flex flex-col gap-1.5">
             {model.weaknesses.map((w) => (
               <li key={w} className="flex items-start gap-2 text-xs text-white/70">
-                <span style={{ color: 'var(--color-accent)' }} aria-hidden="true">−</span>
+                <span style={{ color: 'var(--color-accent)' }} aria-hidden="true">
+                  −
+                </span>
                 {w}
               </li>
             ))}
@@ -203,7 +191,10 @@ export function NodePanel({ model, onClose }: Props) {
         </div>
 
         {/* License */}
-        <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+        <div
+          className="flex items-center justify-between pt-2 border-t"
+          style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+        >
           <span className="text-xs text-white/40 font-mono uppercase tracking-wider">License</span>
           <span className="text-xs font-mono font-medium text-white/70">{model.license}</span>
         </div>
@@ -252,5 +243,5 @@ export function NodePanel({ model, onClose }: Props) {
         </Link>
       </div>
     </aside>
-  )
+  );
 }

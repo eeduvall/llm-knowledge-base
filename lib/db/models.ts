@@ -3,9 +3,9 @@
 // of the app never has to know about the DB row shape.
 // Do NOT import this file in client components.
 
-import { getDb } from './client'
-import type { DbModelRow } from './schema'
-import type { Model, Modality, Capability } from '../models'
+import { getDb } from './client';
+import type { DbModelRow } from './schema';
+import type { Model, Modality, Capability } from '../models';
 
 // ---------------------------------------------------------------------------
 // Internal: assemble a Model from a flat SQLite row
@@ -38,7 +38,7 @@ function rowToModel(row: DbModelRow): Model {
       docs: row.docs_url,
       paper: row.paper_url,
     },
-  }
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -47,41 +47,37 @@ function rowToModel(row: DbModelRow): Model {
 
 /** Return all models, ordered by provider then id. */
 export function getAllModels(): Model[] {
-  const db = getDb()
-  const rows = db
-    .prepare('SELECT * FROM models ORDER BY provider, id')
-    .all() as DbModelRow[]
-  return rows.map(rowToModel)
+  const db = getDb();
+  const rows = db.prepare('SELECT * FROM models ORDER BY provider, id').all() as DbModelRow[];
+  return rows.map(rowToModel);
 }
 
 /** Return a single model by its stable id, or null if not found. */
 export function getModelById(id: string): Model | null {
-  const db = getDb()
-  const row = db
-    .prepare('SELECT * FROM models WHERE id = ?')
-    .get(id) as DbModelRow | undefined
-  return row ? rowToModel(row) : null
+  const db = getDb();
+  const row = db.prepare('SELECT * FROM models WHERE id = ?').get(id) as DbModelRow | undefined;
+  return row ? rowToModel(row) : null;
 }
 
 /** Return all models from a given provider slug (e.g. 'openai'). */
 export function getModelsByProvider(provider: string): Model[] {
-  const db = getDb()
+  const db = getDb();
   const rows = db
     .prepare('SELECT * FROM models WHERE provider = ? ORDER BY id')
-    .all(provider) as DbModelRow[]
-  return rows.map(rowToModel)
+    .all(provider) as DbModelRow[];
+  return rows.map(rowToModel);
 }
 
 /** Return all models that have a given capability tag. */
 export function getModelsByCapability(capability: string): Model[] {
   // capabilities is stored as a JSON array; use json_each to filter
-  const db = getDb()
+  const db = getDb();
   const rows = db
     .prepare(
       `SELECT m.* FROM models m, json_each(m.capabilities) c
        WHERE c.value = ?
-       ORDER BY m.provider, m.id`
+       ORDER BY m.provider, m.id`,
     )
-    .all(capability) as DbModelRow[]
-  return rows.map(rowToModel)
+    .all(capability) as DbModelRow[];
+  return rows.map(rowToModel);
 }

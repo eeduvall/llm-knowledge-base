@@ -4,27 +4,27 @@
 // JSON strings and parsed in lib/db/models.ts before being returned.
 
 export type DbModelRow = {
-  id: string
-  name: string
-  provider: string
-  family: string
-  release_date: string
-  context_window: number
-  license: string
-  last_verified: string | null
+  id: string;
+  name: string;
+  provider: string;
+  family: string;
+  release_date: string;
+  context_window: number;
+  license: string;
+  last_verified: string | null;
   // JSON-encoded arrays
-  modalities: string
-  capabilities: string
-  strengths: string
-  weaknesses: string
+  modalities: string;
+  capabilities: string;
+  strengths: string;
+  weaknesses: string;
   // Pricing (nullable)
-  pricing_input: number | null
-  pricing_output: number | null
+  pricing_input: number | null;
+  pricing_output: number | null;
   // Benchmarks (nullable)
-  benchmark_mmlu: number | null
-  benchmark_humaneval: number | null
-  benchmark_mt_bench: number | null
+  benchmark_mmlu: number | null;
+  benchmark_humaneval: number | null;
+  benchmark_mt_bench: number | null;
   // Links (nullable)
-  docs_url: string | null
-  paper_url: string | null
-}
+  docs_url: string | null;
+  paper_url: string | null;
+};

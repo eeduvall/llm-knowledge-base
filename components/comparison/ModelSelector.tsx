@@ -1,45 +1,45 @@
-'use client'
+'use client';
 
-import { useState, useCallback } from 'react'
-import type { Model } from '@/lib/models'
-import { getProviderColor } from '@/lib/models'
+import { useState, useCallback } from 'react';
+import type { Model } from '@/lib/models';
+import { getProviderColor } from '@/lib/models';
 
-const MAX_MODELS = 5
-const LISTBOX_ID = 'model-selector-listbox'
+const MAX_MODELS = 5;
+const LISTBOX_ID = 'model-selector-listbox';
 
 type Props = {
-  allModels: Model[]
-  selectedIds: string[]
-  onAdd: (id: string) => void
-  onRemove: (id: string) => void
-}
+  allModels: Model[];
+  selectedIds: string[];
+  onAdd: (id: string) => void;
+  onRemove: (id: string) => void;
+};
 
 export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props) {
-  const [query, setQuery] = useState('')
-  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('');
+  const [open, setOpen] = useState(false);
 
   const filtered = allModels.filter((m) => {
-    const q = query.toLowerCase()
+    const q = query.toLowerCase();
     return (
       m.name.toLowerCase().includes(q) ||
       m.provider.toLowerCase().includes(q) ||
       m.family.toLowerCase().includes(q)
-    )
-  })
+    );
+  });
 
-  const selectedModels = allModels.filter((m) => selectedIds.includes(m.id))
-  const atMax = selectedIds.length >= MAX_MODELS
+  const selectedModels = allModels.filter((m) => selectedIds.includes(m.id));
+  const atMax = selectedIds.length >= MAX_MODELS;
 
   const handleSelect = useCallback(
     (id: string) => {
       if (!selectedIds.includes(id) && !atMax) {
-        onAdd(id)
+        onAdd(id);
       }
-      setQuery('')
-      setOpen(false)
+      setQuery('');
+      setOpen(false);
     },
-    [selectedIds, atMax, onAdd]
-  )
+    [selectedIds, atMax, onAdd],
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -47,13 +47,17 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
       {selectedModels.length > 0 && (
         <div className="flex flex-wrap gap-2" role="list" aria-label="Selected models">
           {selectedModels.map((model) => {
-            const color = getProviderColor(model.provider)
+            const color = getProviderColor(model.provider);
             return (
               <div
                 key={model.id}
                 role="listitem"
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm"
-                style={{ background: `${color}18`, border: `1px solid ${color}44`, color: 'var(--color-text)' }}
+                style={{
+                  background: `${color}18`,
+                  border: `1px solid ${color}44`,
+                  color: 'var(--color-text)',
+                }}
               >
                 <span style={{ color }}>{model.provider}</span>
                 <span className="font-medium">{model.name}</span>
@@ -67,7 +71,7 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
                   ×
                 </button>
               </div>
-            )
+            );
           })}
         </div>
       )}
@@ -86,8 +90,8 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
             disabled={atMax}
             value={query}
             onChange={(e) => {
-              setQuery(e.target.value)
-              setOpen(true)
+              setQuery(e.target.value);
+              setOpen(true);
             }}
             onFocus={() => setOpen(true)}
             onBlur={() => setTimeout(() => setOpen(false), 150)}
@@ -121,8 +125,8 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
               </li>
             ) : (
               filtered.map((model) => {
-                const isSelected = selectedIds.includes(model.id)
-                const color = getProviderColor(model.provider)
+                const isSelected = selectedIds.includes(model.id);
+                const color = getProviderColor(model.provider);
                 return (
                   <li key={model.id}>
                     <button
@@ -137,10 +141,13 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
                         color: 'var(--color-text)',
                       }}
                       onMouseEnter={(e) => {
-                        if (!isSelected) (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-surface)'
+                        if (!isSelected)
+                          (e.currentTarget as HTMLButtonElement).style.background =
+                            'var(--color-surface)';
                       }}
                       onMouseLeave={(e) => {
-                        if (!isSelected) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'
+                        if (!isSelected)
+                          (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
                       }}
                     >
                       <span
@@ -150,15 +157,20 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
                         {model.provider}
                       </span>
                       <span className="font-medium text-sm">{model.name}</span>
-                      <span className="ml-auto text-xs" style={{ color: 'var(--color-text-faint)' }}>
+                      <span
+                        className="ml-auto text-xs"
+                        style={{ color: 'var(--color-text-faint)' }}
+                      >
                         {model.family}
                       </span>
                       {isSelected && (
-                        <span className="text-xs" style={{ color: 'var(--color-secondary)' }}>✓</span>
+                        <span className="text-xs" style={{ color: 'var(--color-secondary)' }}>
+                          ✓
+                        </span>
                       )}
                     </button>
                   </li>
-                )
+                );
               })
             )}
           </ul>
@@ -171,5 +183,5 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
         </p>
       )}
     </div>
-  )
+  );
 }

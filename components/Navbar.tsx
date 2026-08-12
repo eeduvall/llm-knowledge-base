@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
+import Link from 'next/link';
 
 /** Inline SVG galaxy logo — tilted elliptical disc with glowing core.
  *  The disc shape reads clearly at 28 × 28 px where spiral arms become
@@ -22,15 +22,15 @@ function GalaxyLogo() {
       <defs>
         {/* Soft outer halo */}
         <radialGradient id="halo" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor="#6C63FF" stopOpacity="0.18" />
-          <stop offset="70%"  stopColor="#00D4FF" stopOpacity="0.06" />
-          <stop offset="100%" stopColor="#050510" stopOpacity="0"    />
+          <stop offset="0%" stopColor="#6C63FF" stopOpacity="0.18" />
+          <stop offset="70%" stopColor="#00D4FF" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="#050510" stopOpacity="0" />
         </radialGradient>
         {/* Bright core glow */}
         <radialGradient id="core" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor="#ffffff"  stopOpacity="1"   />
-          <stop offset="45%"  stopColor="#6C63FF"  stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#050510"  stopOpacity="0"   />
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+          <stop offset="45%" stopColor="#6C63FF" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#050510" stopOpacity="0" />
         </radialGradient>
       </defs>
 
@@ -39,8 +39,10 @@ function GalaxyLogo() {
 
       {/* Galactic disc — outer ring, tilted ~20 ° */}
       <ellipse
-        cx="14" cy="14"
-        rx="11" ry="4.5"
+        cx="14"
+        cy="14"
+        rx="11"
+        ry="4.5"
         stroke="#6C63FF"
         strokeWidth="1.4"
         strokeOpacity="0.7"
@@ -50,8 +52,10 @@ function GalaxyLogo() {
 
       {/* Galactic disc — mid ring */}
       <ellipse
-        cx="14" cy="14"
-        rx="7.5" ry="3"
+        cx="14"
+        cy="14"
+        rx="7.5"
+        ry="3"
         stroke="#00D4FF"
         strokeWidth="1.1"
         strokeOpacity="0.65"
@@ -61,29 +65,31 @@ function GalaxyLogo() {
 
       {/* Faint inner disc fill to suggest the bulge */}
       <ellipse
-        cx="14" cy="14"
-        rx="5" ry="2"
+        cx="14"
+        cy="14"
+        rx="5"
+        ry="2"
         fill="#6C63FF"
         fillOpacity="0.12"
         transform="rotate(-20 14 14)"
       />
 
       {/* Star dots — scattered around the disc plane */}
-      <circle cx="4"  cy="11" r="0.7" fill="#00D4FF" opacity="0.85" />
+      <circle cx="4" cy="11" r="0.7" fill="#00D4FF" opacity="0.85" />
       <circle cx="24" cy="17" r="0.7" fill="#6C63FF" opacity="0.85" />
-      <circle cx="7"  cy="18" r="0.55" fill="#6C63FF" opacity="0.7" />
+      <circle cx="7" cy="18" r="0.55" fill="#6C63FF" opacity="0.7" />
       <circle cx="21" cy="10" r="0.55" fill="#00D4FF" opacity="0.7" />
-      <circle cx="3"  cy="15" r="0.45" fill="#FF6B9D" opacity="0.6" />
+      <circle cx="3" cy="15" r="0.45" fill="#FF6B9D" opacity="0.6" />
       <circle cx="25" cy="13" r="0.45" fill="#FF6B9D" opacity="0.6" />
-      <circle cx="10" cy="6"  r="0.4"  fill="#ffffff"  opacity="0.5" />
-      <circle cx="18" cy="22" r="0.4"  fill="#ffffff"  opacity="0.5" />
+      <circle cx="10" cy="6" r="0.4" fill="#ffffff" opacity="0.5" />
+      <circle cx="18" cy="22" r="0.4" fill="#ffffff" opacity="0.5" />
 
       {/* Bright galactic core */}
       <circle cx="14" cy="14" r="3" fill="url(#core)" />
       {/* Core pinpoint highlight */}
       <circle cx="13.3" cy="13.3" r="0.9" fill="#ffffff" opacity="0.95" />
     </svg>
-  )
+  );
 }
 
 export function Navbar() {
@@ -128,5 +134,5 @@ export function Navbar() {
         </Link>
       </div>
     </nav>
-  )
+  );
 }
