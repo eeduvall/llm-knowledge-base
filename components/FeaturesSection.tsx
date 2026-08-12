@@ -1,9 +1,9 @@
 type FeatureCard = {
-  number: string
-  tag: string
-  title: string
-  description: string
-}
+  number: string;
+  tag: string;
+  title: string;
+  description: string;
+};
 
 const FEATURES: FeatureCard[] = [
   {
@@ -25,9 +25,9 @@ const FEATURES: FeatureCard[] = [
     tag: 'Picker',
     title: 'A shortlist in two minutes',
     description:
-      'Answer what you\'re building, latency and budget. Get three ranked picks with the reasoning written out.',
+      "Answer what you're building, latency and budget. Get three ranked picks with the reasoning written out.",
   },
-]
+];
 
 export function FeaturesSection() {
   return (
@@ -44,10 +44,7 @@ export function FeaturesSection() {
           >
             {/* Number / Tag */}
             <div className="flex items-center gap-2">
-              <span
-                className="text-xs font-mono font-medium"
-                style={{ color: '#6C63FF' }}
-              >
+              <span className="text-xs font-mono font-medium" style={{ color: '#6C63FF' }}>
                 {feature.number} /
               </span>
               <span
@@ -59,17 +56,13 @@ export function FeaturesSection() {
             </div>
 
             {/* Title */}
-            <h3 className="text-xl font-semibold text-white leading-snug">
-              {feature.title}
-            </h3>
+            <h3 className="text-xl font-semibold text-white leading-snug">{feature.title}</h3>
 
             {/* Description */}
-            <p className="text-sm text-white/50 leading-relaxed">
-              {feature.description}
-            </p>
+            <p className="text-sm text-white/50 leading-relaxed">{feature.description}</p>
           </div>
         ))}
       </div>
     </section>
-  )
+  );
 }

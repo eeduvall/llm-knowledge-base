@@ -1,38 +1,36 @@
-'use client'
+'use client';
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback } from 'react';
 
 type Props = {
-  url: string
-  modelNames: string[]
-}
+  url: string;
+  modelNames: string[];
+};
 
 export function ShareButtons({ url, modelNames }: Props) {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback: select a temporary input
-      const input = document.createElement('input')
-      input.value = url
-      document.body.appendChild(input)
-      input.select()
-      document.execCommand('copy')
-      document.body.removeChild(input)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      const input = document.createElement('input');
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
-  }, [url])
+  }, [url]);
 
-  const modelList = modelNames.slice(0, 3).join(', ')
-  const tweetText = encodeURIComponent(
-    `Comparing ${modelList} on LLM Knowledge Base — ${url}`
-  )
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`
+  const modelList = modelNames.slice(0, 3).join(', ');
+  const tweetText = encodeURIComponent(`Comparing ${modelList} on LLM Knowledge Base — ${url}`);
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
 
   return (
     <div className="flex items-center gap-2">
@@ -51,14 +49,28 @@ export function ShareButtons({ url, modelNames }: Props) {
         {copied ? (
           <>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M2 7l3.5 3.5L12 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M2 7l3.5 3.5L12 3"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             Copied!
           </>
         ) : (
           <>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+              <rect
+                x="4"
+                y="4"
+                width="8"
+                height="8"
+                rx="1.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              />
               <path d="M2 10V2h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             Copy link
@@ -85,5 +97,5 @@ export function ShareButtons({ url, modelNames }: Props) {
         Share
       </a>
     </div>
-  )
+  );
 }

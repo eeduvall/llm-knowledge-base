@@ -19,11 +19,12 @@ Whether you're a developer evaluating models for a production app or a researche
 
 ### 1. 🔵 Knowledge Graph Explorer
 
-> *"Like neurons firing in a brain — wrapped in fog."*
+> _"Like neurons firing in a brain — wrapped in fog."_
 
 A full-screen, interactive 3-D force-directed graph where every node is an LLM and every edge represents a meaningful relationship. Models that share architecture families, training approaches, capability profiles, or licensing terms drift into the same gravitational cluster.
 
 **Visual Design**
+
 - Deep dark background (`#050510`) evoking deep space / neural tissue
 - Nodes rendered as glowing, pulsing spheres — color-coded by family (OpenAI, Anthropic, Meta, Mistral, Google, open-source, etc.)
 - Edges rendered as soft bioluminescent filaments that brighten when traversed
@@ -32,6 +33,7 @@ A full-screen, interactive 3-D force-directed graph where every node is an LLM a
 - Clicking a node opens a side-panel with the model's full profile: context window, pricing, benchmarks, strengths, weaknesses, and licensing
 
 **Interaction**
+
 - Orbit, zoom, and pan in 3-D
 - Filter by capability (code, reasoning, vision, tool-use, long-context, …)
 - Search to highlight a specific model and dim everything else
@@ -41,7 +43,7 @@ A full-screen, interactive 3-D force-directed graph where every node is an LLM a
 
 ### 2. 🟣 Q&A Picker Flow
 
-> *"Tell me what you're building — I'll tell you what to use."*
+> _"Tell me what you're building — I'll tell you what to use."_
 
 A sleek, chat-style wizard that starts broad and progressively narrows. Each answer shapes the next question, building a decision tree in real time until a ranked shortlist of models emerges.
 
@@ -68,7 +70,8 @@ What are you building?
 ```
 
 **Output**
-- A ranked card deck of recommended models with a plain-English explanation of *why* each one fits
+
+- A ranked card deck of recommended models with a plain-English explanation of _why_ each one fits
 - Side-by-side comparison table for the top picks
 - One-click deep-dive into the Knowledge Graph, zoomed to the recommended cluster
 
@@ -78,37 +81,37 @@ What are you building?
 
 ### Frontend
 
-| Layer | Choice | Why |
-|---|---|---|
-| Framework | **Next.js 14** (App Router) | File-based routing, RSC, excellent DX |
-| Language | **TypeScript** | Type safety across the whole codebase |
-| Styling | **Tailwind CSS** + **shadcn/ui** | Utility-first, beautiful primitives out of the box |
-| 3-D Graph | **Three.js** + **react-three-fiber** + **@react-three/drei** | Full WebGL control; `drei` helpers for fog, bloom, particles |
-| Force Layout | **d3-force-3d** | Battle-tested physics simulation, 3-D extension |
-| Graph Rendering | **three-forcegraph** | Bridges d3-force-3d and Three.js elegantly |
-| Post-processing | **@react-three/postprocessing** | Bloom, depth-of-field, chromatic aberration for the "neural" glow |
-| Animation | **Framer Motion** | Page transitions and Q&A card animations |
-| State | **Zustand** | Lightweight, no boilerplate |
-| Data Fetching | **TanStack Query** | Caching, background refresh for live model data |
+| Layer           | Choice                                                       | Why                                                               |
+| --------------- | ------------------------------------------------------------ | ----------------------------------------------------------------- |
+| Framework       | **Next.js 14** (App Router)                                  | File-based routing, RSC, excellent DX                             |
+| Language        | **TypeScript**                                               | Type safety across the whole codebase                             |
+| Styling         | **Tailwind CSS** + **shadcn/ui**                             | Utility-first, beautiful primitives out of the box                |
+| 3-D Graph       | **Three.js** + **react-three-fiber** + **@react-three/drei** | Full WebGL control; `drei` helpers for fog, bloom, particles      |
+| Force Layout    | **d3-force-3d**                                              | Battle-tested physics simulation, 3-D extension                   |
+| Graph Rendering | **three-forcegraph**                                         | Bridges d3-force-3d and Three.js elegantly                        |
+| Post-processing | **@react-three/postprocessing**                              | Bloom, depth-of-field, chromatic aberration for the "neural" glow |
+| Animation       | **Framer Motion**                                            | Page transitions and Q&A card animations                          |
+| State           | **Zustand**                                                  | Lightweight, no boilerplate                                       |
+| Data Fetching   | **TanStack Query**                                           | Caching, background refresh for live model data                   |
 
 ### Backend / Data
 
-| Layer | Choice | Why |
-|---|---|---|
-| API | **Next.js Route Handlers** (or **tRPC**) | Co-located, type-safe API layer |
-| Database | **PostgreSQL** (via **Supabase**) | Relational model data + auth out of the box |
-| Graph DB (optional) | **Neo4j Aura** (free tier) | Native graph queries for relationship traversal |
-| Search | **Algolia** or **pgvector** | Semantic search over model descriptions |
-| CMS / Data | **Contentlayer** or plain JSON/YAML | Version-controlled model metadata |
+| Layer               | Choice                                   | Why                                             |
+| ------------------- | ---------------------------------------- | ----------------------------------------------- |
+| API                 | **Next.js Route Handlers** (or **tRPC**) | Co-located, type-safe API layer                 |
+| Database            | **PostgreSQL** (via **Supabase**)        | Relational model data + auth out of the box     |
+| Graph DB (optional) | **Neo4j Aura** (free tier)               | Native graph queries for relationship traversal |
+| Search              | **Algolia** or **pgvector**              | Semantic search over model descriptions         |
+| CMS / Data          | **Contentlayer** or plain JSON/YAML      | Version-controlled model metadata               |
 
 ### Infrastructure
 
-| Layer | Choice | Why |
-|---|---|---|
-| Hosting | **Vercel** | Zero-config Next.js deployment, edge functions |
-| CDN / Assets | **Vercel Edge Network** | Global low-latency for 3-D assets |
-| CI/CD | **GitHub Actions** | Lint, type-check, test on every PR |
-| Monitoring | **Vercel Analytics** + **Sentry** | Real-user metrics and error tracking |
+| Layer        | Choice                            | Why                                            |
+| ------------ | --------------------------------- | ---------------------------------------------- |
+| Hosting      | **Vercel**                        | Zero-config Next.js deployment, edge functions |
+| CDN / Assets | **Vercel Edge Network**           | Global low-latency for 3-D assets              |
+| CI/CD        | **GitHub Actions**                | Lint, type-check, test on every PR             |
+| Monitoring   | **Vercel Analytics** + **Sentry** | Real-user metrics and error tracking           |
 
 ---
 
@@ -207,7 +210,7 @@ llm-knowledge-base/
 
 ---
 
-## 🚀 Getting Started *(future)*
+## 🚀 Getting Started _(future)_
 
 ```bash
 # Clone the repo
@@ -267,23 +270,23 @@ supabase db push
 
 ### 4. Database schema
 
-| Table | Purpose |
-|---|---|
-| `models` | Core model metadata |
-| `model_modalities` | Text, image, audio, video per model |
-| `model_capabilities` | Capability tags |
-| `model_pricing` | Input/output price per 1M tokens |
-| `model_benchmarks` | MMLU, HumanEval, MT-Bench scores |
-| `model_strengths` | Ordered strengths list |
-| `model_weaknesses` | Ordered weaknesses list |
-| `model_links` | Docs and paper URLs |
+| Table                | Purpose                             |
+| -------------------- | ----------------------------------- |
+| `models`             | Core model metadata                 |
+| `model_modalities`   | Text, image, audio, video per model |
+| `model_capabilities` | Capability tags                     |
+| `model_pricing`      | Input/output price per 1M tokens    |
+| `model_benchmarks`   | MMLU, HumanEval, MT-Bench scores    |
+| `model_strengths`    | Ordered strengths list              |
+| `model_weaknesses`   | Ordered weaknesses list             |
+| `model_links`        | Docs and paper URLs                 |
 
 ### 5. API endpoints
 
-| Method | Path | Description |
-|---|---|---|
-| GET | `/api/models` | List all models (`?provider=openai`, `?capability=vision`) |
-| GET | `/api/models/:id` | Get a single model by ID |
+| Method | Path              | Description                                                |
+| ------ | ----------------- | ---------------------------------------------------------- |
+| GET    | `/api/models`     | List all models (`?provider=openai`, `?capability=vision`) |
+| GET    | `/api/models/:id` | Get a single model by ID                                   |
 
 ---
 

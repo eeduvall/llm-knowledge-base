@@ -1,23 +1,23 @@
-import { Suspense } from 'react'
-import { loadModels } from '@/lib/models-server'
-import { GraphExplorer } from '@/components/graph/GraphExplorer'
-import { Navbar } from '@/components/Navbar'
-import type { Model } from '@/lib/models'
+import { Suspense } from 'react';
+import { loadModels } from '@/lib/models-server';
+import { GraphExplorer } from '@/components/graph/GraphExplorer';
+import { Navbar } from '@/components/Navbar';
+import type { Model } from '@/lib/models';
 
 export const metadata = {
   title: 'Knowledge Graph Explorer — LLM Knowledge Base',
   description:
     'Explore the LLM landscape as an interactive force-directed graph. Filter by provider, search models, and click any node for a full profile.',
-}
+};
 
 export default function GraphPage() {
-  let initialModels: Model[] = []
-  let loadError = false
+  let initialModels: Model[] = [];
+  let loadError = false;
 
   try {
-    initialModels = loadModels()
+    initialModels = loadModels();
   } catch {
-    loadError = true
+    loadError = true;
   }
 
   if (loadError) {
@@ -30,7 +30,7 @@ export default function GraphPage() {
           </p>
         </div>
       </main>
-    )
+    );
   }
 
   return (
@@ -62,12 +62,12 @@ export default function GraphPage() {
         <noscript>
           <div className="absolute inset-0 flex items-center justify-center">
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-              JavaScript is required to view the interactive graph. Please
-              enable it in your browser settings.
+              JavaScript is required to view the interactive graph. Please enable it in your browser
+              settings.
             </p>
           </div>
         </noscript>
       </section>
     </main>
-  )
+  );
 }
