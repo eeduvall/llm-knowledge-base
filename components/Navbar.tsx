@@ -134,10 +134,10 @@ export function Navbar() {
       {/* Nav links */}
       <div className="flex items-center gap-4">
         <ul className="hidden md:flex items-center gap-8 list-none">
-          {(['Graph', 'Picker', 'Models', 'Changelog'] as const).map((item) => (
+          {(['Graph', 'Picker', 'Models', 'Compare', 'Changelog'] as const).map((item) => (
             <li key={item}>
               <Link
-                href={`/${item.toLowerCase()}`}
+                href={item === 'Compare' ? '/comparison' : `/${item.toLowerCase()}`}
                 className="text-sm transition-colors duration-200"
                 style={{ color: 'var(--color-text-muted)' }}
               >
