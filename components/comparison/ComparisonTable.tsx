@@ -211,7 +211,7 @@ export function ComparisonTable({ rows }: Props) {
                     <span
                       key={cap}
                       className="text-xs px-2 py-0.5 rounded-full"
-                      style={{ background: 'rgba(108,99,255,0.12)', color: 'var(--color-primary)', border: '1px solid rgba(108,99,255,0.25)' }}
+                      style={{ background: 'var(--color-panel-bg-alt)', color: 'var(--color-primary)', border: '1px solid var(--color-border)' }}
                     >
                       {cap}
                     </span>
