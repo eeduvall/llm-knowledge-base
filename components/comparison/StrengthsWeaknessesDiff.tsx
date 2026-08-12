@@ -7,11 +7,25 @@ type Props = {
   models: Model[]
 }
 
+/** Map column count → responsive Tailwind grid class.
+ *  Mobile-first: always starts at 1 column, then expands at sm/lg breakpoints.
+ *  Max columns is 3 (enforced by the comparison page's 5-model limit and the
+ *  3-column cap below). All values are static strings so Tailwind can include
+ *  them in the purge-safe class list.
+ */
+const GRID_CLASS: Record<number, string> = {
+  1: 'grid grid-cols-1 gap-4',
+  2: 'grid grid-cols-1 sm:grid-cols-2 gap-4',
+  3: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4',
+}
+
 export function StrengthsWeaknessesDiff({ models }: Props) {
   if (models.length === 0) return null
 
   const sharedStrengths = findSharedStrengths(models)
   const sharedWeaknesses = findSharedWeaknesses(models)
+  const colCount = Math.min(models.length, 3) as 1 | 2 | 3
+  const gridClass = GRID_CLASS[colCount] ?? GRID_CLASS[3]
 
   return (
     <section aria-label="Strengths and weaknesses comparison">
@@ -57,71 +71,57 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
         </div>
       )}
 
-      {/* Per-model cards — single column on mobile, up to 3 columns on md+ */}
-      {/*
-        The number of columns is dynamic (depends on models.length), so we use
-        an inline style for gridTemplateColumns on md+ and override to 1 column
-        on mobile via a wrapping class. The outer div forces single-column on
-        small screens; the inner div applies the dynamic multi-column layout
-        only on md and above via a CSS custom property trick.
-      */}
-      <div className="grid grid-cols-1 md:grid-cols-none gap-4" style={{ '--sw-cols': Math.min(models.length, 3) } as React.CSSProperties}>
-        <style>{`
-          @media (min-width: 768px) {
-            .sw-grid { grid-template-columns: repeat(var(--sw-cols), minmax(0, 1fr)); }
-          }
-        `}</style>
-        <div className="sw-grid grid grid-cols-1 gap-4 col-span-full" style={undefined}>
-          {models.map((model) => (
-            <div
-              key={model.id}
-              className="rounded-xl p-5"
-              style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-            >
-              <h3 className="font-semibold text-base mb-4" style={{ color: 'var(--color-text)' }}>
-                {model.name}
-              </h3>
+      {/* Per-model cards — responsive grid (1 col mobile → 2 col sm → 3 col lg) */}
+      <div className={gridClass}>
+        {models.map((model) => (
+          <div
+            key={model.id}
+            className="rounded-xl p-5"
+            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+          >
+            <h3 className="font-semibold text-base mb-4" style={{ color: 'var(--color-text)' }}>
+              {model.name}
+            </h3>
 
-              {/* Strengths */}
-              <div className="mb-4">
-                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--color-secondary)' }}>
-                  Strengths
-                </p>
-                {model.strengths.length > 0 ? (
-                  <ul className="flex flex-col gap-1.5">
-                    {model.strengths.map((s) => (
-                      <li key={s} className="text-sm flex items-start gap-2" style={{ color: 'var(--color-text-muted)' }}>
-                        <span className="mt-0.5 flex-shrink-0" style={{ color: 'var(--color-secondary)' }} aria-hidden="true">✓</span>
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>None listed</p>
-                )}
-              </div>
-
-              {/* Weaknesses */}
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--color-accent)' }}>
-                  Weaknesses
-                </p>
-                {model.weaknesses.length > 0 ? (
-                  <ul className="flex flex-col gap-1.5">
-                    {model.weaknesses.map((w) => (
-                      <li key={w} className="text-sm flex items-start gap-2" style={{ color: 'var(--color-text-muted)' }}>
-                        <span className="mt-0.5 flex-shrink-0" style={{ color: 'var(--color-accent)' }} aria-hidden="true">✗</span>
-                        {w}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>None listed</p>
-                )}
-              </div>
+            {/* Strengths */}
+            <div className="mb-4">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--color-secondary)' }}>
+                Strengths
+              </p>
+              {model.strengths.length > 0 ? (
+                <ul className="flex flex-col gap-1.5">
+                  {model.strengths.map((s) => (
+                    <li key={s} className="text-sm flex items-start gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                      <span className="mt-0.5 flex-shrink-0" style={{ color: 'var(--color-secondary)' }} aria-hidden="true">✓</span>
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>None listed</p>
+              )}
             </div>
-          ))}
-        </div>
+
+            {/* Weaknesses */}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--color-accent)' }}>
+                Weaknesses
+              </p>
+              {model.weaknesses.length > 0 ? (
+                <ul className="flex flex-col gap-1.5">
+                  {model.weaknesses.map((w) => (
+                    <li key={w} className="text-sm flex items-start gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                      <span className="mt-0.5 flex-shrink-0" style={{ color: 'var(--color-accent)' }} aria-hidden="true">✗</span>
+                      {w}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>None listed</p>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   )
