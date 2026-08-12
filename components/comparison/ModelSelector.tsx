@@ -5,6 +5,7 @@ import type { Model } from '@/lib/models'
 import { getProviderColor } from '@/lib/models'
 
 const MAX_MODELS = 5
+const LISTBOX_ID = 'model-selector-listbox'
 
 type Props = {
   allModels: Model[]
@@ -79,6 +80,7 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
             role="combobox"
             aria-expanded={open}
             aria-haspopup="listbox"
+            aria-controls={LISTBOX_ID}
             aria-label="Search models to compare"
             placeholder={atMax ? `Maximum ${MAX_MODELS} models selected` : 'Search models to add…'}
             disabled={atMax}
@@ -107,6 +109,7 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
         {/* Dropdown */}
         {open && !atMax && (
           <ul
+            id={LISTBOX_ID}
             role="listbox"
             aria-label="Model search results"
             className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden shadow-xl max-h-64 overflow-y-auto"
