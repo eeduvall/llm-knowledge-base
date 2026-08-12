@@ -1,3 +1,14 @@
+/**
+ * lib/decision-tree.ts
+ *
+ * Pure logic for the Q&A Picker Flow — no React, no side effects.
+ * This module encodes the entire question funnel, model scoring, and
+ * recommendation ranking.
+ *
+ * ⚠️  AGENTS.md §15.10: "The decision tree is product logic. Changes here
+ * affect recommendations shown to users. Treat it with the same care as a
+ * pricing algorithm — test every branch."
+ */
 import type { Model } from './models';
 
 // ---------------------------------------------------------------------------
