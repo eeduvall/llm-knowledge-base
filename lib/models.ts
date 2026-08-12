@@ -5,7 +5,16 @@
 export type Modality = 'text' | 'image' | 'audio' | 'video' | 'code';
 
 export type Capability =
-  'reasoning' | 'vision' | 'tool-use' | 'structured-output' | 'code' | 'long-context' | string;
+  | 'reasoning'
+  | 'vision'
+  | 'tool-use'
+  | 'structured-output'
+  | 'code'
+  | 'long-context'
+  | 'quantizable'
+  | 'fine-tuning'
+  | 'in-context-learning'
+  | string;
 
 export type Pricing = {
   input: number | null;
