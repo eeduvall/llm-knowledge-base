@@ -42,8 +42,8 @@ export function ShareButtons({ url, modelNames }: Props) {
         onClick={handleCopy}
         className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border focus:outline-none focus-visible:ring-2"
         style={{
-          background: copied ? 'rgba(0,212,255,0.10)' : 'var(--color-surface)',
-          borderColor: copied ? 'rgba(0,212,255,0.35)' : 'var(--color-border)',
+          background: copied ? 'var(--color-panel-bg-alt)' : 'var(--color-surface)',
+          borderColor: copied ? 'var(--color-secondary)' : 'var(--color-border)',
           color: copied ? 'var(--color-secondary)' : 'var(--color-text-muted)',
         }}
         aria-label="Copy shareable link"
