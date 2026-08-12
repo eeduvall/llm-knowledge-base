@@ -1,0 +1,114 @@
+'use client'
+
+import type { Model } from '@/lib/models'
+import { findSharedStrengths, findSharedWeaknesses } from '@/lib/comparison'
+
+type Props = {
+  models: Model[]
+}
+
+export function StrengthsWeaknessesDiff({ models }: Props) {
+  if (models.length === 0) return null
+
+  const sharedStrengths = findSharedStrengths(models)
+  const sharedWeaknesses = findSharedWeaknesses(models)
+
+  return (
+    <section aria-label="Strengths and weaknesses comparison">
+      {/* Shared callouts */}
+      {(sharedStrengths.length > 0 || sharedWeaknesses.length > 0) && (
+        <div className="mb-6 flex flex-wrap gap-4">
+          {sharedStrengths.length > 0 && (
+            <div
+              className="flex-1 min-w-48 rounded-xl p-4"
+              style={{ background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.18)' }}
+            >
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--color-secondary)' }}>
+                Shared Strengths
+              </p>
+              <ul className="flex flex-col gap-1">
+                {sharedStrengths.map((s) => (
+                  <li key={s} className="text-sm flex items-start gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                    <span style={{ color: 'var(--color-secondary)' }} aria-hidden="true">✓</span>
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {sharedWeaknesses.length > 0 && (
+            <div
+              className="flex-1 min-w-48 rounded-xl p-4"
+              style={{ background: 'rgba(255,107,157,0.06)', border: '1px solid rgba(255,107,157,0.18)' }}
+            >
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--color-accent)' }}>
+                Shared Weaknesses
+              </p>
+              <ul className="flex flex-col gap-1">
+                {sharedWeaknesses.map((w) => (
+                  <li key={w} className="text-sm flex items-start gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                    <span style={{ color: 'var(--color-accent)' }} aria-hidden="true">✗</span>
+                    {w}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Per-model cards */}
+      <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${Math.min(models.length, 3)}, minmax(0, 1fr))` }}>
+        {models.map((model) => (
+          <div
+            key={model.id}
+            className="rounded-xl p-5"
+            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+          >
+            <h3 className="font-semibold text-base mb-4" style={{ color: 'var(--color-text)' }}>
+              {model.name}
+            </h3>
+
+            {/* Strengths */}
+            <div className="mb-4">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--color-secondary)' }}>
+                Strengths
+              </p>
+              {model.strengths.length > 0 ? (
+                <ul className="flex flex-col gap-1.5">
+                  {model.strengths.map((s) => (
+                    <li key={s} className="text-sm flex items-start gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                      <span className="mt-0.5 flex-shrink-0" style={{ color: 'var(--color-secondary)' }} aria-hidden="true">✓</span>
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>None listed</p>
+              )}
+            </div>
+
+            {/* Weaknesses */}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--color-accent)' }}>
+                Weaknesses
+              </p>
+              {model.weaknesses.length > 0 ? (
+                <ul className="flex flex-col gap-1.5">
+                  {model.weaknesses.map((w) => (
+                    <li key={w} className="text-sm flex items-start gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                      <span className="mt-0.5 flex-shrink-0" style={{ color: 'var(--color-accent)' }} aria-hidden="true">✗</span>
+                      {w}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>None listed</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
