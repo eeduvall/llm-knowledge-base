@@ -6,6 +6,7 @@ import { PROVIDER_COLORS } from '@/lib/models';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type ClusterMode = 'family' | 'provider' | 'cost-tier' | 'modality' | 'benchmark';
+export type BenchmarkRange = { min: number; max: number };
 
 type SectionProps = {
   title: string;
@@ -41,6 +42,12 @@ type Props = {
   // Cluster mode
   clusterMode: ClusterMode;
   onSetClusterMode: (mode: ClusterMode) => void;
+
+  // Benchmark score range filters
+  mmluRange: BenchmarkRange;
+  onMmluRangeChange: (range: BenchmarkRange) => void;
+  humanEvalRange: BenchmarkRange;
+  onHumanEvalRangeChange: (range: BenchmarkRange) => void;
 };
 
 // ─── Collapsible section ──────────────────────────────────────────────────────
@@ -142,6 +149,99 @@ const MODALITY_COLORS: Record<string, string> = {
   code: '#9B8FFF',
 };
 
+// ─── Range slider ─────────────────────────────────────────────────────────────
+
+type RangeSliderProps = {
+  label: string;
+  min: number;
+  max: number;
+  absoluteMin: number;
+  absoluteMax: number;
+  onChange: (range: BenchmarkRange) => void;
+  color?: string;
+};
+
+function RangeSlider({
+  label,
+  min,
+  max,
+  absoluteMin,
+  absoluteMax,
+  onChange,
+  color = '#6C63FF',
+}: RangeSliderProps) {
+  const isDefault = min === absoluteMin && max === absoluteMax;
+  const pctMin = ((min - absoluteMin) / (absoluteMax - absoluteMin)) * 100;
+  const pctMax = ((max - absoluteMin) / (absoluteMax - absoluteMin)) * 100;
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <span
+          className="text-xs font-mono"
+          style={{ color: isDefault ? 'rgba(255,255,255,0.4)' : color }}
+        >
+          {label}
+        </span>
+        <span className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          {min.toFixed(0)}&ndash;{max.toFixed(0)}
+        </span>
+      </div>
+      {/* Filled track */}
+      <div
+        className="relative h-1 rounded-full"
+        style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+      >
+        <div
+          className="absolute h-full rounded-full"
+          style={{
+            left: `${pctMin}%`,
+            width: `${pctMax - pctMin}%`,
+            backgroundColor: isDefault ? 'rgba(255,255,255,0.2)' : color,
+          }}
+        />
+      </div>
+      {/* Min thumb */}
+      <input
+        type="range"
+        min={absoluteMin}
+        max={absoluteMax}
+        step={0.5}
+        value={min}
+        onChange={(e) => {
+          const v = parseFloat(e.target.value);
+          onChange({ min: Math.min(v, max - 0.5), max });
+        }}
+        className="w-full cursor-pointer"
+        aria-label={`${label} minimum score`}
+      />
+      {/* Max thumb */}
+      <input
+        type="range"
+        min={absoluteMin}
+        max={absoluteMax}
+        step={0.5}
+        value={max}
+        onChange={(e) => {
+          const v = parseFloat(e.target.value);
+          onChange({ min, max: Math.max(v, min + 0.5) });
+        }}
+        className="w-full cursor-pointer"
+        aria-label={`${label} maximum score`}
+      />
+      {!isDefault && (
+        <button
+          onClick={() => onChange({ min: absoluteMin, max: absoluteMax })}
+          className="text-xs font-mono text-left transition-colors duration-200"
+          style={{ color: '#FF6B9D' }}
+        >
+          Reset
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function FilterBar({
@@ -161,6 +261,10 @@ export function FilterBar({
   onToggleLicense,
   clusterMode,
   onSetClusterMode,
+  mmluRange,
+  onMmluRangeChange,
+  humanEvalRange,
+  onHumanEvalRangeChange,
 }: Props) {
   return (
     <aside
@@ -293,13 +397,39 @@ export function FilterBar({
             />
           ))}
         </Section>
+
+        {/* ── Benchmarks ── */}
+        <Section title="Benchmarks" defaultOpen={false}>
+          <RangeSlider
+            label="MMLU"
+            min={mmluRange.min}
+            max={mmluRange.max}
+            absoluteMin={60}
+            absoluteMax={100}
+            onChange={onMmluRangeChange}
+            color="#6C63FF"
+          />
+          <RangeSlider
+            label="HumanEval"
+            min={humanEvalRange.min}
+            max={humanEvalRange.max}
+            absoluteMin={60}
+            absoluteMax={100}
+            onChange={onHumanEvalRangeChange}
+            color="#00D4FF"
+          />
+        </Section>
       </div>
 
       {/* Active filter summary badge */}
       {(activeProvider !== null ||
         activeCapabilities.length > 0 ||
         activeModalities.length > 0 ||
-        activeLicenses.length > 0) && (
+        activeLicenses.length > 0 ||
+        mmluRange.min > 60 ||
+        mmluRange.max < 100 ||
+        humanEvalRange.min > 60 ||
+        humanEvalRange.max < 100) && (
         <div
           className="px-4 py-3 border-t flex-shrink-0"
           style={{ borderColor: 'rgba(255,255,255,0.07)' }}
@@ -310,6 +440,8 @@ export function FilterBar({
               activeCapabilities.forEach(onToggleCapability);
               activeModalities.forEach(onToggleModality);
               activeLicenses.forEach(onToggleLicense);
+              onMmluRangeChange({ min: 60, max: 100 });
+              onHumanEvalRangeChange({ min: 60, max: 100 });
             }}
             className="text-xs font-mono transition-colors duration-200"
             style={{ color: '#FF6B9D' }}

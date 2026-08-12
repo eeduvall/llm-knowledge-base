@@ -10,7 +10,7 @@ import { buildEdges, deriveCostTier } from '@/lib/graph-layout';
 import { GraphCanvas } from '@/components/graph/GraphCanvas';
 import { NodePanel } from '@/components/graph/NodePanel';
 import { FilterBar } from '@/components/graph/FilterBar';
-import type { ClusterMode } from '@/components/graph/FilterBar';
+import type { ClusterMode, BenchmarkRange } from '@/components/graph/FilterBar';
 
 type Props = {
   /** Initial model list from the server (SSR). TanStack Query will refresh
@@ -74,6 +74,8 @@ export function GraphExplorer({ initialModels }: Props) {
   const [activeCapabilities, setActiveCapabilities] = useState<string[]>([]);
   const [activeModalities, setActiveModalities] = useState<Modality[]>([]);
   const [activeLicenses, setActiveLicenses] = useState<string[]>([]);
+  const [mmluRange, setMmluRange] = useState<BenchmarkRange>({ min: 60, max: 100 });
+  const [humanEvalRange, setHumanEvalRange] = useState<BenchmarkRange>({ min: 60, max: 100 });
   const [clusterMode, setClusterMode] = useState<ClusterMode>('family');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -141,26 +143,62 @@ export function GraphExplorer({ initialModels }: Props) {
           )
             return false;
           if (activeLicenses.length > 0 && !activeLicenses.includes(m.license)) return false;
+          // Benchmark range filters — only apply when the model has a score
+          if (m.benchmarks.mmlu !== null) {
+            if (m.benchmarks.mmlu < mmluRange.min || m.benchmarks.mmlu > mmluRange.max)
+              return false;
+          }
+          if (m.benchmarks.humaneval !== null) {
+            if (
+              m.benchmarks.humaneval < humanEvalRange.min ||
+              m.benchmarks.humaneval > humanEvalRange.max
+            )
+              return false;
+          }
           return true;
         })
         .map((m) => m.id),
     );
-  }, [models, filterProvider, activeCapabilities, activeModalities, activeLicenses]);
+  }, [
+    models,
+    filterProvider,
+    activeCapabilities,
+    activeModalities,
+    activeLicenses,
+    mmluRange,
+    humanEvalRange,
+  ]);
 
-  // Apply search: highlight matching node
+  // Apply search: compute set of matching IDs so non-matching nodes are dimmed.
+  // When the query is non-empty, visibleIds is intersected with the match set.
+  const searchMatchIds = useMemo(() => {
+    if (!searchQuery.trim()) return null;
+    const q = searchQuery.toLowerCase();
+    const matches = models.filter(
+      (m) =>
+        m.name.toLowerCase().includes(q) ||
+        m.id.toLowerCase().includes(q) ||
+        m.provider.toLowerCase().includes(q) ||
+        m.capabilities.some((c) => c.toLowerCase().includes(q)) ||
+        m.family.toLowerCase().includes(q),
+    );
+    return new Set(matches.map((m) => m.id));
+  }, [searchQuery, models]);
+
+  // When a search is active, auto-select the first match (if nothing is
+  // explicitly selected) so the NodePanel opens immediately.
   const effectiveSelectedId = useMemo(() => {
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const match = models.find(
-        (m) =>
-          m.name.toLowerCase().includes(q) ||
-          m.id.toLowerCase().includes(q) ||
-          m.provider.toLowerCase().includes(q),
-      );
-      return match ? match.id : selectedId;
+    if (searchMatchIds && searchMatchIds.size > 0 && selectedId === null) {
+      return Array.from(searchMatchIds)[0];
     }
     return selectedId;
-  }, [searchQuery, models, selectedId]);
+  }, [searchMatchIds, selectedId]);
+
+  // When a search is active, dim nodes that don't match the query.
+  const effectiveVisibleIds = useMemo(() => {
+    if (!searchMatchIds) return visibleIds;
+    return new Set([...visibleIds].filter((id) => searchMatchIds.has(id)));
+  }, [visibleIds, searchMatchIds]);
 
   const selectedModel = useMemo(
     () => models.find((m) => m.id === effectiveSelectedId) ?? null,
@@ -215,6 +253,10 @@ export function GraphExplorer({ initialModels }: Props) {
         onToggleLicense={handleToggleLicense}
         clusterMode={clusterMode}
         onSetClusterMode={setClusterMode}
+        mmluRange={mmluRange}
+        onMmluRangeChange={setMmluRange}
+        humanEvalRange={humanEvalRange}
+        onHumanEvalRangeChange={setHumanEvalRange}
       />
 
       {/* Canvas is offset to the right of the filter panel (13rem = 208px) */}
@@ -224,7 +266,7 @@ export function GraphExplorer({ initialModels }: Props) {
           edges={edges}
           selectedId={effectiveSelectedId}
           hoveredId={hoveredId}
-          visibleIds={visibleIds}
+          visibleIds={effectiveVisibleIds}
           highlightId={highlightId}
           onSelectNode={handleSelectNode}
           onHoverNode={setHoveredId}
