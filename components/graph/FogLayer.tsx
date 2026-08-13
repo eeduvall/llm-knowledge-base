@@ -69,9 +69,7 @@ export function FogLayer({ opacity = 1 }: Props) {
     timeRef.current += delta * 0.12; // slow drift
     const t = timeRef.current;
 
-    const posAttr = pointsRef.current.geometry.getAttribute(
-      'position',
-    ) as THREE.BufferAttribute;
+    const posAttr = pointsRef.current.geometry.getAttribute('position') as THREE.BufferAttribute;
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const px = phases[i * 3];
