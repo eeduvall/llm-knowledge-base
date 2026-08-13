@@ -53,7 +53,7 @@ export function ResultDeck({ results, onReset }: Props) {
                 className="text-xs font-mono font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
                   backgroundColor: index === 0 ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)',
-                  color: index === 0 ? '#fff' : 'var(--color-text-muted)',
+                  color: index === 0 ? 'var(--color-text)' : 'var(--color-text-muted)',
                 }}
                 aria-label={`Rank ${index + 1}`}
               >
@@ -169,7 +169,7 @@ export function ResultDeck({ results, onReset }: Props) {
           <Link
             href={`/comparison?models=${topIds}`}
             className="flex-1 text-center py-2.5 rounded-lg text-sm font-semibold transition-colors"
-            style={{ background: 'var(--color-primary)', color: '#fff' }}
+            style={{ background: 'var(--color-primary)', color: 'var(--color-text)' }}
           >
             Compare top picks side-by-side →
           </Link>
