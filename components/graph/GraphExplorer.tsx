@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
@@ -10,7 +10,7 @@ import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout';
 import { buildEdges, deriveCostTier } from '@/lib/graph-layout';
 import { NodePanel } from '@/components/graph/NodePanel';
 import { FilterBar } from '@/components/graph/FilterBar';
-import type { ClusterMode } from '@/components/graph/FilterBar';
+import { useGraphStore } from '@/lib/store/graph-store';
 
 // Lazy-load the R3F canvas — Three.js must never run during SSR.
 const GraphCanvas = dynamic(
@@ -76,23 +76,36 @@ export function GraphExplorer({ initialModels }: Props) {
   const searchParams = useSearchParams();
   const highlightId = searchParams.get('highlight') ?? null;
 
-  const [selectedId, setSelectedId] = useState<string | null>(highlightId);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [filterProvider, setFilterProvider] = useState<string | null>(null);
-  const [activeCapabilities, setActiveCapabilities] = useState<string[]>([]);
-  const [activeModalities, setActiveModalities] = useState<Modality[]>([]);
-  const [activeLicenses, setActiveLicenses] = useState<string[]>([]);
-  const [clusterMode, setClusterMode] = useState<ClusterMode>('family');
-  const [searchQuery, setSearchQuery] = useState('');
+  // ── Zustand store ──────────────────────────────────────────────────────────
+  const {
+    selectedId,
+    hoveredId,
+    filterProvider,
+    activeCapabilities,
+    activeModalities,
+    activeLicenses,
+    clusterMode,
+    searchQuery,
+    setSelectedId,
+    setHoveredId,
+    setFilterProvider,
+    toggleCapability,
+    toggleModality,
+    toggleLicense,
+    setClusterMode,
+    setSearchQuery,
+    setHighlightId,
+    clearAllFilters,
+  } = useGraphStore();
 
-  // When the highlight param changes (e.g. navigating between model pages),
-  // update the selection to match.
+  // Sync the ?highlight query param into the store on mount / param change
   useEffect(() => {
     if (highlightId !== null) {
+      setHighlightId(highlightId);
       setSelectedId(highlightId);
       setSearchQuery('');
     }
-  }, [highlightId]);
+  }, [highlightId, setHighlightId, setSelectedId, setSearchQuery]);
 
   // Fetch models from the API; use the SSR-provided list as initial data so
   // the graph renders immediately without a loading flash.
@@ -192,34 +205,22 @@ export function GraphExplorer({ initialModels }: Props) {
     [models, effectiveSelectedId],
   );
 
-  const handleSelectNode = useCallback((id: string | null) => {
-    setSelectedId(id);
-    setSearchQuery('');
-  }, []);
+  const handleSelectNode = useCallback(
+    (id: string | null) => {
+      setSelectedId(id);
+      setSearchQuery('');
+    },
+    [setSelectedId, setSearchQuery],
+  );
 
   const handleClosePanel = useCallback(() => {
     setSelectedId(null);
     setSearchQuery('');
-  }, []);
+  }, [setSelectedId, setSearchQuery]);
 
-  const handleToggleCapability = useCallback((cap: string) => {
-    setActiveCapabilities((prev) =>
-      prev.includes(cap) ? prev.filter((c) => c !== cap) : [...prev, cap],
-    );
-  }, []);
-
-  const handleToggleModality = useCallback((mod: string) => {
-    setActiveModalities((prev) => {
-      const m = mod as Modality;
-      return prev.includes(m) ? prev.filter((v) => v !== m) : [...prev, m];
-    });
-  }, []);
-
-  const handleToggleLicense = useCallback((lic: string) => {
-    setActiveLicenses((prev) =>
-      prev.includes(lic) ? prev.filter((l) => l !== lic) : [...prev, lic],
-    );
-  }, []);
+  const handleClearAllFilters = useCallback(() => {
+    clearAllFilters();
+  }, [clearAllFilters]);
 
   return (
     <div className="relative w-full h-full">
@@ -231,15 +232,16 @@ export function GraphExplorer({ initialModels }: Props) {
         onSelectProvider={setFilterProvider}
         capabilities={allCapabilities}
         activeCapabilities={activeCapabilities}
-        onToggleCapability={handleToggleCapability}
+        onToggleCapability={toggleCapability}
         modalities={allModalities}
         activeModalities={activeModalities}
-        onToggleModality={handleToggleModality}
+        onToggleModality={toggleModality}
         licenses={allLicenses}
         activeLicenses={activeLicenses}
-        onToggleLicense={handleToggleLicense}
+        onToggleLicense={toggleLicense}
         clusterMode={clusterMode}
         onSetClusterMode={setClusterMode}
+        onClearAllFilters={handleClearAllFilters}
       />
 
       {/* Canvas is offset to the right of the filter panel (13rem = 208px) */}
