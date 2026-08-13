@@ -44,6 +44,7 @@ function allAnswers(overrides: Record<string, string> = {}): UserAnswers {
     compliance: 'none',
     customization: 'prompt_only',
     reasoning_style: 'flexible',
+    cost_sensitivity: 'cost_aware',
   };
   return { ...base, ...overrides };
 }
@@ -53,8 +54,8 @@ function allAnswers(overrides: Record<string, string> = {}): UserAnswers {
 // ---------------------------------------------------------------------------
 
 describe('QUESTIONS', () => {
-  it('has at least 10 questions', () => {
-    expect(QUESTIONS.length).toBeGreaterThanOrEqual(10);
+  it('has at least 11 questions', () => {
+    expect(QUESTIONS.length).toBeGreaterThanOrEqual(11);
   });
 
   it('every question has a non-empty id, text, and at least 2 answers', () => {
@@ -79,7 +80,7 @@ describe('QUESTIONS', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('includes all 10 expected question ids', () => {
+  it('includes all 11 expected question ids', () => {
     const ids = QUESTIONS.map((q) => q.id);
     const expected = [
       'use_case',
@@ -92,6 +93,7 @@ describe('QUESTIONS', () => {
       'compliance',
       'customization',
       'reasoning_style',
+      'cost_sensitivity',
     ];
     for (const id of expected) {
       expect(ids).toContain(id);
@@ -136,7 +138,7 @@ describe('isFunnelComplete', () => {
     expect(isFunnelComplete({ use_case: 'chatbot' })).toBe(false);
   });
 
-  it('returns true when all 10 questions answered', () => {
+  it('returns true when all 11 questions answered', () => {
     expect(isFunnelComplete(allAnswers())).toBe(true);
   });
 
@@ -610,5 +612,55 @@ describe('getRecommendations', () => {
       expect(typeof r.score).toBe('number');
       expect(typeof r.reason).toBe('string');
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// scoreModel — cost_sensitivity dimension
+// ---------------------------------------------------------------------------
+
+describe('scoreModel — cost_sensitivity: cost_critical', () => {
+  it('rewards cheap models', () => {
+    const cheap = makeModel({ pricing: { input: 0.15, output: 0.6 } });
+    const expensive = makeModel({ pricing: { input: 15.0, output: 60.0 } });
+    const answers = allAnswers({ cost_sensitivity: 'cost_critical' });
+    expect(scoreModel(cheap, answers).score).toBeGreaterThan(scoreModel(expensive, answers).score);
+  });
+
+  it('penalises expensive models', () => {
+    const expensive = makeModel({ pricing: { input: 10.0, output: 30.0 } });
+    const neutral = makeModel({ pricing: { input: 2.0, output: 6.0 } });
+    const answers = allAnswers({ cost_sensitivity: 'cost_critical' });
+    expect(scoreModel(expensive, answers).score).toBeLessThan(scoreModel(neutral, answers).score);
+  });
+
+  it('rewards open-weights models', () => {
+    const open = makeModel({ pricing: { input: null, output: null }, license: 'llama' });
+    const paid = makeModel({ pricing: { input: 3.0, output: 9.0 } });
+    const answers = allAnswers({ cost_sensitivity: 'cost_critical' });
+    expect(scoreModel(open, answers).score).toBeGreaterThan(scoreModel(paid, answers).score);
+  });
+});
+
+describe('scoreModel — cost_sensitivity: cost_flexible', () => {
+  it('rewards high-benchmark models', () => {
+    const highBench = makeModel({ benchmarks: { mmlu: 90.0, humaneval: 85.0, mt_bench: null } });
+    const lowBench = makeModel({ benchmarks: { mmlu: 60.0, humaneval: 50.0, mt_bench: null } });
+    const answers = allAnswers({ cost_sensitivity: 'cost_flexible' });
+    expect(scoreModel(highBench, answers).score).toBeGreaterThan(
+      scoreModel(lowBench, answers).score,
+    );
+  });
+});
+
+describe('scoreModel — cost_sensitivity: cost_aware', () => {
+  it('does not apply extra penalty or bonus (neutral)', () => {
+    const model = makeModel({ pricing: { input: 3.0, output: 9.0 } });
+    const costAware = allAnswers({ cost_sensitivity: 'cost_aware' });
+    const costCritical = allAnswers({ cost_sensitivity: 'cost_critical' });
+    // cost_aware should not penalise a mid-priced model the way cost_critical does
+    expect(scoreModel(model, costAware).score).toBeGreaterThanOrEqual(
+      scoreModel(model, costCritical).score,
+    );
   });
 });
