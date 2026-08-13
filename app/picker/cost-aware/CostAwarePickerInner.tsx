@@ -12,7 +12,7 @@ async function fetchModels(): Promise<Model[]> {
   return data.models;
 }
 
-export default function CostAwarePickerPage() {
+export function CostAwarePickerPage() {
   const {
     data: models = [],
     isLoading,
