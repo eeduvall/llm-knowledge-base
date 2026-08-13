@@ -4,7 +4,7 @@ import { useMemo, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
-import type { Model, Modality } from '@/lib/models';
+import type { Model } from '@/lib/models';
 import { getProviderColor } from '@/lib/models';
 import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout';
 import { buildEdges, deriveCostTier } from '@/lib/graph-layout';
@@ -37,9 +37,8 @@ function buildNodes(models: Model[]): GraphNode[] {
   return models.map((model, i) => {
     const angle = (i / models.length) * Math.PI * 2;
     const radius = 200 + Math.random() * 80;
-    // Spread nodes in 3-D: use a spherical distribution
-    const phi = Math.acos(2 * Math.random() - 1); // polar angle
-    const r3d = radius * 0.6; // scale down for 3-D scene units
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r3d = radius * 0.6;
     return {
       id: model.id,
       label: model.name,
@@ -116,9 +115,7 @@ export function GraphExplorer({ initialModels }: Props) {
   });
 
   const nodes = useMemo(() => buildNodes(models), [models]);
-
   const metaMap = useMemo(() => buildMetaMap(models), [models]);
-
   const edges = useMemo<GraphEdge[]>(
     () => buildEdges(nodes, metaMap, clusterMode),
     [nodes, metaMap, clusterMode],
@@ -136,7 +133,7 @@ export function GraphExplorer({ initialModels }: Props) {
   );
 
   const allModalities = useMemo(
-    () => Array.from(new Set(models.flatMap((m) => m.modalities))).sort() as Modality[],
+    () => Array.from(new Set(models.flatMap((m) => m.modalities as string[]))).sort(),
     [models],
   );
 
@@ -158,7 +155,7 @@ export function GraphExplorer({ initialModels }: Props) {
             return false;
           if (
             activeModalities.length > 0 &&
-            !activeModalities.every((mod) => m.modalities.includes(mod))
+            !activeModalities.every((mod) => (m.modalities as string[]).includes(mod))
           )
             return false;
           if (activeLicenses.length > 0 && !activeLicenses.includes(m.license)) return false;
@@ -193,7 +190,6 @@ export function GraphExplorer({ initialModels }: Props) {
 
   const effectiveSelectedId = useMemo(() => {
     if (searchQuery.trim() && searchMatchIds && searchMatchIds.size > 0) {
-      // If current selection is still in the match set, keep it; otherwise pick first match
       if (selectedId && searchMatchIds.has(selectedId)) return selectedId;
       return [...searchMatchIds][0] ?? selectedId;
     }
@@ -218,10 +214,6 @@ export function GraphExplorer({ initialModels }: Props) {
     setSearchQuery('');
   }, [setSelectedId, setSearchQuery]);
 
-  const handleClearAllFilters = useCallback(() => {
-    clearAllFilters();
-  }, [clearAllFilters]);
-
   return (
     <div className="relative w-full h-full">
       <FilterBar
@@ -241,7 +233,7 @@ export function GraphExplorer({ initialModels }: Props) {
         onToggleLicense={toggleLicense}
         clusterMode={clusterMode}
         onSetClusterMode={setClusterMode}
-        onClearAllFilters={handleClearAllFilters}
+        onClearAllFilters={clearAllFilters}
       />
 
       {/* Canvas is offset to the right of the filter panel (13rem = 208px) */}
@@ -260,7 +252,7 @@ export function GraphExplorer({ initialModels }: Props) {
 
       {selectedModel && <NodePanel model={selectedModel} onClose={handleClosePanel} />}
 
-      {/* Legend */}
+      {/* Provider color legend */}
       <div
         className="absolute bottom-4 left-4 flex flex-col gap-1.5 z-10"
         role="list"
