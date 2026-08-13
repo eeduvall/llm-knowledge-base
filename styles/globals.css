@@ -12,6 +12,9 @@
   --color-accent: #ff6b9d;
   --color-fog: rgba(100, 120, 255, 0.04);
 
+  /* Warning / amber */
+  --color-warning: #f7b731;
+
   /* Primary tints */
   --color-primary-light: #9b8fff;
   --color-primary-subtle: rgba(108, 99, 255, 0.1);

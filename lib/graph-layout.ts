@@ -1,4 +1,4 @@
-// Graph layout configuration for the 2-D force-directed graph.
+// Graph layout configuration for the 3-D force-directed graph.
 // Uses a simple spring-repulsion simulation (no external dependency needed).
 
 export type GraphNode = {
@@ -9,8 +9,10 @@ export type GraphNode = {
   color: string;
   x: number;
   y: number;
+  z: number;
   vx: number;
   vy: number;
+  vz: number;
   radius: number;
   pulseOffset: number;
 };
@@ -53,15 +55,14 @@ const DAMPING = 0.88;
 const CENTER_GRAVITY = 0.015;
 
 // ---------------------------------------------------------------------------
-// Force simulation tick
+// Force simulation tick (3-D)
 // ---------------------------------------------------------------------------
 
 export function tickLayout(
   nodes: GraphNode[],
   edges: GraphEdge[],
   // width and height are kept for API compatibility but the gravity center is
-  // always world-space origin (0, 0) — the camera transform in GraphCanvas
-  // maps (0, 0) to the screen centre.
+  // always world-space origin (0, 0, 0).
   _width: number,
   _height: number,
 ): void {
@@ -72,14 +73,18 @@ export function tickLayout(
       const b = nodes[j];
       const dx = b.x - a.x;
       const dy = b.y - a.y;
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const dz = b.z - a.z;
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
       const force = REPULSION / (dist * dist);
       const fx = (dx / dist) * force;
       const fy = (dy / dist) * force;
+      const fz = (dz / dist) * force;
       a.vx -= fx;
       a.vy -= fy;
+      a.vz -= fz;
       b.vx += fx;
       b.vy += fy;
+      b.vz += fz;
     }
   }
 
@@ -91,30 +96,36 @@ export function tickLayout(
     if (!a || !b) continue;
     const dx = b.x - a.x;
     const dy = b.y - a.y;
-    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const dz = b.z - a.z;
+    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
     const displacement = dist - SPRING_LENGTH;
     const force = displacement * SPRING_STRENGTH * edge.strength;
     const fx = (dx / dist) * force;
     const fy = (dy / dist) * force;
+    const fz = (dz / dist) * force;
     a.vx += fx;
     a.vy += fy;
+    a.vz += fz;
     b.vx -= fx;
     b.vy -= fy;
+    b.vz -= fz;
   }
 
-  // Gravity toward world-space origin (0, 0), which the camera maps to the
-  // screen centre.
+  // Gravity toward world-space origin (0, 0, 0)
   for (const node of nodes) {
     node.vx += (0 - node.x) * CENTER_GRAVITY;
     node.vy += (0 - node.y) * CENTER_GRAVITY;
+    node.vz += (0 - node.z) * CENTER_GRAVITY;
   }
 
   // Integrate velocities
   for (const node of nodes) {
     node.vx *= DAMPING;
     node.vy *= DAMPING;
+    node.vz *= DAMPING;
     node.x += node.vx;
     node.y += node.vy;
+    node.z += node.vz;
   }
 }
 
