@@ -128,12 +128,7 @@ function Scene({
 
       {/* Post-processing: Bloom for the neural glow effect */}
       <EffectComposer>
-        <Bloom
-          intensity={1.5}
-          luminanceThreshold={0.2}
-          luminanceSmoothing={0.025}
-          mipmapBlur
-        />
+        <Bloom intensity={1.5} luminanceThreshold={0.2} luminanceSmoothing={0.025} mipmapBlur />
       </EffectComposer>
 
       {/* Orbit controls — mouse drag to rotate, scroll to zoom, right-click to pan */}
@@ -166,9 +161,7 @@ function Labels({ nodes, selectedId, hoveredId, visibleIds }: LabelsProps) {
   const labelNodes = useMemo(
     () =>
       nodes.filter(
-        (n) =>
-          visibleIds.has(n.id) &&
-          (n.id === selectedId || n.id === hoveredId || n.radius >= 7),
+        (n) => visibleIds.has(n.id) && (n.id === selectedId || n.id === hoveredId || n.radius >= 7),
       ),
     [nodes, selectedId, hoveredId, visibleIds],
   );
@@ -327,12 +320,7 @@ export function GraphCanvas({
       </Canvas>
 
       {/* HTML labels overlay */}
-      <Labels
-        nodes={nodes}
-        selectedId={selectedId}
-        hoveredId={hoveredId}
-        visibleIds={visibleIds}
-      />
+      <Labels nodes={nodes} selectedId={selectedId} hoveredId={hoveredId} visibleIds={visibleIds} />
 
       {/* Keyboard navigation overlay */}
       <KeyboardNav

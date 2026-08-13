@@ -116,11 +116,7 @@ export function NodeMesh({
       </mesh>
 
       {/* Outer glow shell */}
-      <mesh
-        ref={glowRef}
-        position={[node.x, node.y, node.z]}
-        material={glowMaterial}
-      >
+      <mesh ref={glowRef} position={[node.x, node.y, node.z]} material={glowMaterial}>
         <icosahedronGeometry args={[r, 2]} />
       </mesh>
     </group>
