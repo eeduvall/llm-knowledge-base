@@ -48,9 +48,17 @@ export const QUESTIONS: Question[] = [
     answers: [
       { id: 'chatbot', label: 'Customer-facing chatbot', hint: 'Conversational assistant' },
       { id: 'code', label: 'Code assistant / copilot', hint: 'Code generation and review' },
-      { id: 'rag', label: 'Document analysis / RAG pipeline', hint: 'Retrieval-augmented generation' },
+      {
+        id: 'rag',
+        label: 'Document analysis / RAG pipeline',
+        hint: 'Retrieval-augmented generation',
+      },
       { id: 'agent', label: 'Autonomous agent / tool-use', hint: 'Multi-step task execution' },
-      { id: 'creative', label: 'Creative / generative content', hint: 'Text, image, or multimodal generation' },
+      {
+        id: 'creative',
+        label: 'Creative / generative content',
+        hint: 'Text, image, or multimodal generation',
+      },
     ],
   },
   {
@@ -69,7 +77,11 @@ export const QUESTIONS: Question[] = [
       { id: 'low', label: 'Low (< $50 / month)', hint: 'Prototype or low-traffic app' },
       { id: 'mid', label: 'Mid ($50–$500 / month)', hint: 'Growing production app' },
       { id: 'high', label: 'High (> $500 / month)', hint: 'Enterprise or high-volume' },
-      { id: 'self_host', label: 'Self-host (no per-token cost)', hint: 'Open-weights on your infra' },
+      {
+        id: 'self_host',
+        label: 'Self-host (no per-token cost)',
+        hint: 'Open-weights on your infra',
+      },
     ],
   },
   {
@@ -88,7 +100,11 @@ export const QUESTIONS: Question[] = [
       { id: 'text_only', label: 'Text only', hint: 'No images or audio needed' },
       { id: 'vision', label: 'Vision (images)', hint: 'Analyse or generate images' },
       { id: 'audio', label: 'Audio / speech', hint: 'Transcription or voice' },
-      { id: 'multimodal', label: 'Multimodal (text + image + audio)', hint: 'Full multimedia pipeline' },
+      {
+        id: 'multimodal',
+        label: 'Multimodal (text + image + audio)',
+        hint: 'Full multimedia pipeline',
+      },
     ],
   },
   {
@@ -103,8 +119,16 @@ export const QUESTIONS: Question[] = [
     id: 'deployment',
     text: 'Where will this run?',
     answers: [
-      { id: 'cloud_api', label: 'Cloud API (managed)', hint: 'OpenAI, Anthropic, Google — no infra to manage' },
-      { id: 'cloud_self', label: 'Cloud (self-hosted)', hint: 'AWS, GCP, or Azure VMs you control' },
+      {
+        id: 'cloud_api',
+        label: 'Cloud API (managed)',
+        hint: 'OpenAI, Anthropic, Google — no infra to manage',
+      },
+      {
+        id: 'cloud_self',
+        label: 'Cloud (self-hosted)',
+        hint: 'AWS, GCP, or Azure VMs you control',
+      },
       { id: 'edge', label: 'Edge / on-device', hint: 'Mobile, browser, or IoT' },
       { id: 'on_prem', label: 'On-premises', hint: 'Private data centre, air-gapped' },
     ],
@@ -114,7 +138,11 @@ export const QUESTIONS: Question[] = [
     text: 'Do you have compliance requirements?',
     answers: [
       { id: 'none', label: 'No special requirements', hint: 'Standard commercial use' },
-      { id: 'data_residency', label: 'Data residency / sovereignty', hint: 'EU, specific region, or country' },
+      {
+        id: 'data_residency',
+        label: 'Data residency / sovereignty',
+        hint: 'EU, specific region, or country',
+      },
       { id: 'hipaa', label: 'HIPAA / healthcare', hint: 'Protected health information' },
       { id: 'pci', label: 'PCI-DSS / financial', hint: 'Payment card data' },
       { id: 'sox', label: 'SOX / enterprise audit', hint: 'Financial reporting compliance' },
@@ -124,7 +152,11 @@ export const QUESTIONS: Question[] = [
     id: 'customization',
     text: 'How much customization do you need?',
     answers: [
-      { id: 'prompt_only', label: 'Prompt engineering only', hint: 'Few-shot examples, system prompts' },
+      {
+        id: 'prompt_only',
+        label: 'Prompt engineering only',
+        hint: 'Few-shot examples, system prompts',
+      },
       { id: 'fine_tune', label: 'Fine-tuning', hint: 'Adapt the model weights to your domain' },
       { id: 'both', label: 'Both prompt + fine-tuning', hint: 'Maximum flexibility' },
     ],
@@ -366,8 +398,7 @@ export function scoreModel(model: Model, answers: UserAnswers): ScoredModel {
     }
   }
 
-  const reason =
-    reasons.slice(0, 3).join('; ') || 'Solid general-purpose model for your use case.';
+  const reason = reasons.slice(0, 3).join('; ') || 'Solid general-purpose model for your use case.';
 
   return { model, score, reason };
 }
@@ -375,9 +406,7 @@ export function scoreModel(model: Model, answers: UserAnswers): ScoredModel {
 export function getRecommendations(models: Model[], answers: UserAnswers): ScoredModel[] {
   if (models.length === 0) return [];
 
-  const scored = models
-    .map((m) => scoreModel(m, answers))
-    .sort((a, b) => b.score - a.score);
+  const scored = models.map((m) => scoreModel(m, answers)).sort((a, b) => b.score - a.score);
 
   const positive = scored.filter((s) => s.score > 0);
   return positive.length >= 3 ? positive : scored.slice(0, 3);
