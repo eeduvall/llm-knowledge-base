@@ -170,6 +170,27 @@ export const QUESTIONS: Question[] = [
       { id: 'flexible', label: 'Flexible (task-dependent)', hint: 'Mix of both as needed' },
     ],
   },
+  {
+    id: 'cost_sensitivity',
+    text: 'How important is minimising cost vs. maximising quality?',
+    answers: [
+      {
+        id: 'cost_critical',
+        label: 'Cost is critical — minimise spend',
+        hint: 'Cheapest option that meets requirements',
+      },
+      {
+        id: 'cost_aware',
+        label: 'Balance cost and quality',
+        hint: 'Good value for money',
+      },
+      {
+        id: 'cost_flexible',
+        label: 'Quality over cost',
+        hint: 'Best performance regardless of price',
+      },
+    ],
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -397,6 +418,26 @@ export function scoreModel(model: Model, answers: UserAnswers): ScoredModel {
       reasons.push('efficient single-turn inference');
     }
   }
+
+  // --- cost_sensitivity ---
+  const costSensitivity = answers['cost_sensitivity'];
+  if (costSensitivity === 'cost_critical') {
+    if (model.pricing.input !== null && model.pricing.input < 1.0) {
+      score += 20;
+      reasons.push('low per-token cost suits cost-critical workloads');
+    } else if (model.pricing.input !== null && model.pricing.input >= 5.0) {
+      score -= 20;
+    } else if (model.pricing.input === null) {
+      score += 15;
+      reasons.push('open weights eliminate per-token API costs');
+    }
+  } else if (costSensitivity === 'cost_flexible') {
+    if (model.benchmarks.mmlu !== null && model.benchmarks.mmlu >= 85) {
+      score += 10;
+      reasons.push('top benchmark scores justify premium pricing');
+    }
+  }
+  // cost_aware: no adjustment — let other dimensions decide
 
   const reason = reasons.slice(0, 3).join('; ') || 'Solid general-purpose model for your use case.';
 
