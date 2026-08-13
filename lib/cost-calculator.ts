@@ -12,12 +12,7 @@ import type { Model } from './models';
 
 /** Task types for cost estimation. */
 export type TaskType =
-  | 'document_analysis'
-  | 'chat_turn'
-  | 'code_review'
-  | 'summarization'
-  | 'classification'
-  | 'custom';
+  'document_analysis' | 'chat_turn' | 'code_review' | 'summarization' | 'classification' | 'custom';
 
 /** Estimated token counts for a single task execution. */
 export type TaskParams = {
@@ -235,9 +230,7 @@ export function calculateROI(
     monthlySavings = baselineSpend.monthlySpend - alternativeSpend.monthlySpend;
     annualSavings = monthlySavings * 12;
     savingsPercent =
-      baselineSpend.monthlySpend > 0
-        ? (monthlySavings / baselineSpend.monthlySpend) * 100
-        : null;
+      baselineSpend.monthlySpend > 0 ? (monthlySavings / baselineSpend.monthlySpend) * 100 : null;
   }
 
   return {
@@ -331,9 +324,7 @@ export function detectOverspend(
         monthlySavings = currentSpend.monthlySpend - altSpend.monthlySpend;
         annualSavings = monthlySavings * 12;
         savingsPercent =
-          currentSpend.monthlySpend > 0
-            ? (monthlySavings / currentSpend.monthlySpend) * 100
-            : null;
+          currentSpend.monthlySpend > 0 ? (monthlySavings / currentSpend.monthlySpend) * 100 : null;
       } else if (currentSpend.monthlySpend !== null && m.pricing.input === null) {
         // Open-weights: savings = full current spend (infra costs aside)
         monthlySavings = currentSpend.monthlySpend;

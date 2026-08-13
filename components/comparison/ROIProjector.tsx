@@ -231,13 +231,7 @@ export function ROIProjector({ models }: Props) {
       ) : (
         <div className="flex flex-col gap-3">
           {alternatives.map((alt) => {
-            const roi = calculateROI(
-              baselineModel,
-              alt,
-              tasksPerMonth,
-              inputTokens,
-              outputTokens,
-            );
+            const roi = calculateROI(baselineModel, alt, tasksPerMonth, inputTokens, outputTokens);
             const hasSavings = roi.monthlySavings !== null;
             const isPositive = (roi.monthlySavings ?? 0) > 0;
 
@@ -258,7 +252,10 @@ export function ROIProjector({ models }: Props) {
                     <span className="mx-2 text-xs" style={{ color: 'var(--color-text-faint)' }}>
                       →
                     </span>
-                    <span className="font-semibold text-sm" style={{ color: 'var(--color-secondary)' }}>
+                    <span
+                      className="font-semibold text-sm"
+                      style={{ color: 'var(--color-secondary)' }}
+                    >
                       {alt.name}
                     </span>
                   </div>
@@ -279,7 +276,9 @@ export function ROIProjector({ models }: Props) {
                       Alternative / mo
                     </span>
                     <span className="font-mono text-sm" style={{ color: 'var(--color-text)' }}>
-                      {alt.pricing.input === null ? 'Self-hosted' : formatLargeCost(roi.alternativeMonthlySpend)}
+                      {alt.pricing.input === null
+                        ? 'Self-hosted'
+                        : formatLargeCost(roi.alternativeMonthlySpend)}
                     </span>
                   </div>
                   <div className="flex flex-col gap-0.5">
@@ -326,7 +325,10 @@ export function ROIProjector({ models }: Props) {
 
                 {/* Capability gaps */}
                 {roi.capabilityGaps.length > 0 && (
-                  <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--color-divider)' }}>
+                  <div
+                    className="mt-3 pt-3"
+                    style={{ borderTop: '1px solid var(--color-divider)' }}
+                  >
                     <span className="text-xs font-medium" style={{ color: 'var(--color-accent)' }}>
                       ⚠ Capability gaps:{' '}
                     </span>

@@ -38,7 +38,11 @@ function makeModel(overrides: Partial<Model> = {}): Model {
   };
 }
 
-const paidModel = makeModel({ id: 'paid', name: 'Paid Model', pricing: { input: 5.0, output: 15.0 } });
+const paidModel = makeModel({
+  id: 'paid',
+  name: 'Paid Model',
+  pricing: { input: 5.0, output: 15.0 },
+});
 const cheapModel = makeModel({
   id: 'cheap',
   name: 'Cheap Model',

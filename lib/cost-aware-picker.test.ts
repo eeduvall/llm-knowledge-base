@@ -31,9 +31,24 @@ function makeModel(overrides: Partial<Model> = {}): Model {
 }
 
 const paidModel = makeModel({ id: 'paid', pricing: { input: 5.0, output: 15.0 } });
-const cheapModel = makeModel({ id: 'cheap', pricing: { input: 0.25, output: 1.25 }, capabilities: ['tool-use'], benchmarks: { mmlu: 70, humaneval: null, mt_bench: null } });
-const openModel = makeModel({ id: 'open', pricing: { input: null, output: null }, license: 'apache-2.0', capabilities: ['reasoning', 'code'] });
-const visionModel = makeModel({ id: 'vision', modalities: ['text', 'image'], capabilities: ['vision', 'reasoning'], pricing: { input: 3.0, output: 9.0 } });
+const cheapModel = makeModel({
+  id: 'cheap',
+  pricing: { input: 0.25, output: 1.25 },
+  capabilities: ['tool-use'],
+  benchmarks: { mmlu: 70, humaneval: null, mt_bench: null },
+});
+const openModel = makeModel({
+  id: 'open',
+  pricing: { input: null, output: null },
+  license: 'apache-2.0',
+  capabilities: ['reasoning', 'code'],
+});
+const visionModel = makeModel({
+  id: 'vision',
+  modalities: ['text', 'image'],
+  capabilities: ['vision', 'reasoning'],
+  pricing: { input: 3.0, output: 9.0 },
+});
 
 const baseConstraints: CostConstraints = {
   maxMonthlyBudget: null,
@@ -84,38 +99,38 @@ describe('checkConstraints', () => {
   it('does not flag budget for open-weights model (null cost)', () => {
     const c: CostConstraints = { ...baseConstraints, maxMonthlyBudget: 1 };
     const violations = checkConstraints(openModel, c);
-    expect(violations.filter(v => v.includes('budget'))).toHaveLength(0);
+    expect(violations.filter((v) => v.includes('budget'))).toHaveLength(0);
   });
 
   it('flags context window violation', () => {
     const c: CostConstraints = { ...baseConstraints, minContextWindow: 500_000 };
     const violations = checkConstraints(paidModel, c);
-    expect(violations.some(v => v.includes('Context window'))).toBe(true);
+    expect(violations.some((v) => v.includes('Context window'))).toBe(true);
   });
 
   it('does not flag context window when model meets requirement', () => {
     const c: CostConstraints = { ...baseConstraints, minContextWindow: 64_000 };
     const violations = checkConstraints(paidModel, c);
-    expect(violations.filter(v => v.includes('Context window'))).toHaveLength(0);
+    expect(violations.filter((v) => v.includes('Context window'))).toHaveLength(0);
   });
 
   it('flags open weights violation for proprietary model', () => {
     const c: CostConstraints = { ...baseConstraints, requireOpenWeights: true };
     const violations = checkConstraints(paidModel, c);
-    expect(violations.some(v => v.includes('open weights'))).toBe(true);
+    expect(violations.some((v) => v.includes('open weights'))).toBe(true);
   });
 
   it('does not flag open weights for apache-2.0 model', () => {
     const c: CostConstraints = { ...baseConstraints, requireOpenWeights: true };
     const violations = checkConstraints(openModel, c);
-    expect(violations.filter(v => v.includes('open weights'))).toHaveLength(0);
+    expect(violations.filter((v) => v.includes('open weights'))).toHaveLength(0);
   });
 
   it('does not flag open weights for llama model', () => {
     const llamaModel = makeModel({ license: 'llama', pricing: { input: null, output: null } });
     const c: CostConstraints = { ...baseConstraints, requireOpenWeights: true };
     const violations = checkConstraints(llamaModel, c);
-    expect(violations.filter(v => v.includes('open weights'))).toHaveLength(0);
+    expect(violations.filter((v) => v.includes('open weights'))).toHaveLength(0);
   });
 });
 
@@ -206,21 +221,36 @@ describe('scoreModelByCost', () => {
   });
 
   it('scores very low cost model at 60 cost points', () => {
-    const c: CostConstraints = { ...baseConstraints, maxMonthlyBudget: 1000, monthlyInputTokens: 100, monthlyOutputTokens: 50 };
+    const c: CostConstraints = {
+      ...baseConstraints,
+      maxMonthlyBudget: 1000,
+      monthlyInputTokens: 100,
+      monthlyOutputTokens: 50,
+    };
     const result = scoreModelByCost(cheapModel, c);
     expect(result.projectedMonthlyCost).not.toBeNull();
     expect(result.score).toBeGreaterThan(0);
   });
 
   it('scores model within budget at moderate cost points', () => {
-    const c: CostConstraints = { ...baseConstraints, maxMonthlyBudget: 20, monthlyInputTokens: 1_000_000, monthlyOutputTokens: 500_000 };
+    const c: CostConstraints = {
+      ...baseConstraints,
+      maxMonthlyBudget: 20,
+      monthlyInputTokens: 1_000_000,
+      monthlyOutputTokens: 500_000,
+    };
     const result = scoreModelByCost(paidModel, c);
     // cost ~12.5, budget 20, ratio ~0.625 => 30 points
     expect(result.score).toBeGreaterThan(0);
   });
 
   it('scores model over budget negatively', () => {
-    const c: CostConstraints = { ...baseConstraints, maxMonthlyBudget: 5, monthlyInputTokens: 1_000_000, monthlyOutputTokens: 500_000 };
+    const c: CostConstraints = {
+      ...baseConstraints,
+      maxMonthlyBudget: 5,
+      monthlyInputTokens: 1_000_000,
+      monthlyOutputTokens: 500_000,
+    };
     const result = scoreModelByCost(paidModel, c);
     // cost ~12.5, budget 5, ratio > 1 => -20 cost points
     expect(result.meetsAllConstraints).toBe(false);
@@ -265,39 +295,49 @@ describe('rankModelsByConstraints', () => {
   it('bestValueCompliant is the highest-scored compliant model', () => {
     const result = rankModelsByConstraints(allModels, baseConstraints);
     expect(result.bestValueCompliant).not.toBeNull();
-    const compliant = result.ranked.filter(r => r.meetsAllConstraints);
+    const compliant = result.ranked.filter((r) => r.meetsAllConstraints);
     expect(result.bestValueCompliant?.model.id).toBe(compliant[0].model.id);
   });
 
   it('generates budget violation when no model fits budget', () => {
-    const c: CostConstraints = { ...baseConstraints, maxMonthlyBudget: 0.01, monthlyInputTokens: 1_000_000, monthlyOutputTokens: 500_000 };
+    const c: CostConstraints = {
+      ...baseConstraints,
+      maxMonthlyBudget: 0.01,
+      monthlyInputTokens: 1_000_000,
+      monthlyOutputTokens: 500_000,
+    };
     const result = rankModelsByConstraints([paidModel, cheapModel], c);
-    expect(result.violations.some(v => v.constraint === 'maxMonthlyBudget')).toBe(true);
+    expect(result.violations.some((v) => v.constraint === 'maxMonthlyBudget')).toBe(true);
   });
 
   it('generates context window violation when no model meets requirement', () => {
     const c: CostConstraints = { ...baseConstraints, minContextWindow: 999_999_999 };
     const result = rankModelsByConstraints(allModels, c);
-    expect(result.violations.some(v => v.constraint === 'minContextWindow')).toBe(true);
+    expect(result.violations.some((v) => v.constraint === 'minContextWindow')).toBe(true);
   });
 
   it('generates capability violation when no model has required capability', () => {
     const c: CostConstraints = { ...baseConstraints, requiredCapabilities: ['nonexistent-cap'] };
     const result = rankModelsByConstraints(allModels, c);
-    expect(result.violations.some(v => v.constraint === 'requiredCapabilities')).toBe(true);
+    expect(result.violations.some((v) => v.constraint === 'requiredCapabilities')).toBe(true);
   });
 
   it('filters compliant models by required capabilities', () => {
     const c: CostConstraints = { ...baseConstraints, requiredCapabilities: ['vision'] };
     const result = rankModelsByConstraints(allModels, c);
-    const compliant = result.ranked.filter(r => r.meetsAllConstraints);
-    expect(compliant.every(r => r.model.capabilities.includes('vision'))).toBe(true);
+    const compliant = result.ranked.filter((r) => r.meetsAllConstraints);
+    expect(compliant.every((r) => r.model.capabilities.includes('vision'))).toBe(true);
   });
 
   it('violations include suggestion text', () => {
-    const c: CostConstraints = { ...baseConstraints, maxMonthlyBudget: 0.01, monthlyInputTokens: 1_000_000, monthlyOutputTokens: 500_000 };
+    const c: CostConstraints = {
+      ...baseConstraints,
+      maxMonthlyBudget: 0.01,
+      monthlyInputTokens: 1_000_000,
+      monthlyOutputTokens: 500_000,
+    };
     const result = rankModelsByConstraints([paidModel, cheapModel], c);
-    const budgetViolation = result.violations.find(v => v.constraint === 'maxMonthlyBudget');
+    const budgetViolation = result.violations.find((v) => v.constraint === 'maxMonthlyBudget');
     expect(budgetViolation?.suggestion.length).toBeGreaterThan(0);
     expect(budgetViolation?.description.length).toBeGreaterThan(0);
   });
@@ -312,7 +352,12 @@ describe('rankModelsByConstraints', () => {
 describe('scoreModelByCost cost ratio tiers', () => {
   it('scores low cost (ratio 0.1-0.3) at 45 points', () => {
     // budget=100, cost ~12.5 => ratio ~0.125 => 45 points
-    const c: CostConstraints = { ...baseConstraints, maxMonthlyBudget: 100, monthlyInputTokens: 1_000_000, monthlyOutputTokens: 500_000 };
+    const c: CostConstraints = {
+      ...baseConstraints,
+      maxMonthlyBudget: 100,
+      monthlyInputTokens: 1_000_000,
+      monthlyOutputTokens: 500_000,
+    };
     const result = scoreModelByCost(paidModel, c);
     // paidModel cost = 5 + 7.5 = 12.5; ratio = 0.125 => 45 pts
     expect(result.score).toBeGreaterThan(0);
@@ -321,14 +366,24 @@ describe('scoreModelByCost cost ratio tiers', () => {
 
   it('scores moderate cost (ratio 0.3-0.6) at 30 points', () => {
     // budget=30, cost ~12.5 => ratio ~0.417 => 30 points
-    const c: CostConstraints = { ...baseConstraints, maxMonthlyBudget: 30, monthlyInputTokens: 1_000_000, monthlyOutputTokens: 500_000 };
+    const c: CostConstraints = {
+      ...baseConstraints,
+      maxMonthlyBudget: 30,
+      monthlyInputTokens: 1_000_000,
+      monthlyOutputTokens: 500_000,
+    };
     const result = scoreModelByCost(paidModel, c);
     expect(result.reason).toContain('moderate cost');
   });
 
   it('scores within budget (ratio 0.6-1.0) at 15 points', () => {
     // budget=15, cost ~12.5 => ratio ~0.833 => 15 points
-    const c: CostConstraints = { ...baseConstraints, maxMonthlyBudget: 15, monthlyInputTokens: 1_000_000, monthlyOutputTokens: 500_000 };
+    const c: CostConstraints = {
+      ...baseConstraints,
+      maxMonthlyBudget: 15,
+      monthlyInputTokens: 1_000_000,
+      monthlyOutputTokens: 500_000,
+    };
     const result = scoreModelByCost(paidModel, c);
     expect(result.reason).toContain('within budget');
   });

@@ -53,19 +53,14 @@ export function CostCalculator({ models }: Props) {
     setOutputTokens(DEFAULT_TASK_TOKENS[t].output);
   }
 
-  const pricedModels = models.filter(
-    (m) => m.pricing.input !== null || m.pricing.output !== null,
-  );
+  const pricedModels = models.filter((m) => m.pricing.input !== null || m.pricing.output !== null);
 
   return (
     <div
       className="rounded-xl p-5 sm:p-6"
       style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
-      <h2
-        className="text-base font-semibold mb-1"
-        style={{ color: 'var(--color-text)' }}
-      >
+      <h2 className="text-base font-semibold mb-1" style={{ color: 'var(--color-text)' }}>
         Cost-Per-Task Calculator
       </h2>
       <p className="text-xs mb-5" style={{ color: 'var(--color-text-muted)' }}>
@@ -181,10 +176,18 @@ export function CostCalculator({ models }: Props) {
           Select models above to see cost estimates.
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-lg" style={{ border: '1px solid var(--color-border)' }}>
+        <div
+          className="overflow-x-auto rounded-lg"
+          style={{ border: '1px solid var(--color-border)' }}
+        >
           <table className="w-full text-sm border-collapse" style={{ minWidth: '560px' }}>
             <thead>
-              <tr style={{ background: 'var(--color-panel-bg-alt)', borderBottom: '1px solid var(--color-border)' }}>
+              <tr
+                style={{
+                  background: 'var(--color-panel-bg-alt)',
+                  borderBottom: '1px solid var(--color-border)',
+                }}
+              >
                 <th
                   className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-widest"
                   style={{ color: 'var(--color-text-muted)' }}
