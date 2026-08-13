@@ -319,7 +319,10 @@ describe('scoreModel — deployment: edge', () => {
   });
 
   it('rewards open-weights models for on-device inference', () => {
-    const openWeights = makeModel({ pricing: { input: null, output: null }, context_window: 16000 });
+    const openWeights = makeModel({
+      pricing: { input: null, output: null },
+      context_window: 16000,
+    });
     const apiOnly = makeModel({ pricing: { input: 1.0, output: 3.0 }, context_window: 16000 });
     const answers = allAnswers({ deployment: 'edge' });
     expect(scoreModel(openWeights, answers).score).toBeGreaterThan(
@@ -352,7 +355,10 @@ describe('scoreModel — deployment: on_prem', () => {
 
 describe('scoreModel — deployment: cloud_self', () => {
   it('rewards open-weights models for self-hosted cloud', () => {
-    const openWeights = makeModel({ pricing: { input: null, output: null }, license: 'apache-2.0' });
+    const openWeights = makeModel({
+      pricing: { input: null, output: null },
+      license: 'apache-2.0',
+    });
     const apiOnly = makeModel({ pricing: { input: 3.0, output: 9.0 }, license: 'proprietary' });
     const answers = allAnswers({ deployment: 'cloud_self' });
     expect(scoreModel(openWeights, answers).score).toBeGreaterThan(
@@ -386,7 +392,10 @@ describe('scoreModel — compliance: data_residency', () => {
 describe('scoreModel — compliance: hipaa', () => {
   it('rewards enterprise providers with compliance certifications', () => {
     const enterprise = makeModel({ provider: 'openai', pricing: { input: 3.0, output: 9.0 } });
-    const unknown = makeModel({ provider: 'unknown-startup', pricing: { input: 3.0, output: 9.0 } });
+    const unknown = makeModel({
+      provider: 'unknown-startup',
+      pricing: { input: 3.0, output: 9.0 },
+    });
     const answers = allAnswers({ compliance: 'hipaa' });
     expect(scoreModel(enterprise, answers).score).toBeGreaterThan(
       scoreModel(unknown, answers).score,
