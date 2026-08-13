@@ -11,6 +11,7 @@ import { ExportButton } from '@/components/comparison/ExportButton';
 import { ShareButtons } from '@/components/comparison/ShareButtons';
 import { CostCalculator } from '@/components/comparison/CostCalculator';
 import { ROIProjector } from '@/components/comparison/ROIProjector';
+import { CapabilityMatrix } from '@/components/comparison/CapabilityMatrix';
 import { compareModels } from '@/lib/comparison';
 import type { Model } from '@/lib/models';
 
@@ -21,7 +22,7 @@ async function fetchModels(): Promise<Model[]> {
   return data.models;
 }
 
-type Tab = 'table' | 'strengths' | 'cost';
+type Tab = 'table' | 'strengths' | 'cost' | 'capabilities';
 
 type Props = {
   initialIds: string[];
@@ -73,7 +74,10 @@ function ComparisonClient({ initialIds }: Props) {
     { id: 'table', label: 'Side-by-side Table' },
     { id: 'strengths', label: 'Strengths & Weaknesses' },
     { id: 'cost', label: 'Cost & ROI' },
+    { id: 'capabilities', label: 'Capabilities' },
   ];
+
+  const tabPanelLabel = tabs.find((t) => t.id === activeTab)?.label ?? '';
 
   return (
     <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
@@ -174,16 +178,7 @@ function ComparisonClient({ initialIds }: Props) {
             </p>
           </div>
         ) : (
-          <div
-            role="tabpanel"
-            aria-label={
-              activeTab === 'table'
-                ? 'Side-by-side Table'
-                : activeTab === 'strengths'
-                  ? 'Strengths & Weaknesses'
-                  : 'Cost & ROI'
-            }
-          >
+          <div role="tabpanel" aria-label={tabPanelLabel}>
             {activeTab === 'table' && <ComparisonTable rows={comparison.rows} />}
             {activeTab === 'strengths' && <StrengthsWeaknessesDiff models={selectedModels} />}
             {activeTab === 'cost' && (
@@ -192,6 +187,7 @@ function ComparisonClient({ initialIds }: Props) {
                 <ROIProjector models={selectedModels} />
               </div>
             )}
+            {activeTab === 'capabilities' && <CapabilityMatrix models={selectedModels} />}
           </div>
         )}
       </div>
