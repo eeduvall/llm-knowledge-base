@@ -1,16 +1,23 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
-import type { Model, Modality } from '@/lib/models';
+import type { Model } from '@/lib/models';
 import { getProviderColor } from '@/lib/models';
 import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout';
 import { buildEdges, deriveCostTier } from '@/lib/graph-layout';
-import { GraphCanvas } from '@/components/graph/GraphCanvas';
 import { NodePanel } from '@/components/graph/NodePanel';
 import { FilterBar } from '@/components/graph/FilterBar';
 import type { ClusterMode, BenchmarkRange } from '@/components/graph/FilterBar';
+import { useGraphStore } from '@/lib/store/graph-store';
+
+// Lazy-load the R3F canvas — Three.js must never run during SSR.
+const GraphCanvas = dynamic(
+  () => import('@/components/graph/GraphCanvas').then((m) => ({ default: m.GraphCanvas })),
+  { ssr: false },
+);
 
 type Props = {
   /** Initial model list from the server (SSR). TanStack Query will refresh
@@ -31,19 +38,20 @@ function buildNodes(models: Model[]): GraphNode[] {
   return models.map((model, i) => {
     const angle = (i / models.length) * Math.PI * 2;
     const radius = 200 + Math.random() * 80;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r3d = radius * 0.6;
     return {
       id: model.id,
       label: model.name,
       provider: model.provider,
       family: model.family,
       color: getProviderColor(model.provider),
-      // Initial positions centered on world-space origin (0, 0) so the camera
-      // transform in GraphCanvas (which maps world origin to screen centre)
-      // starts the nodes in the visible area.
-      x: Math.cos(angle) * radius,
-      y: Math.sin(angle) * radius,
+      x: r3d * Math.sin(phi) * Math.cos(angle),
+      y: r3d * Math.sin(phi) * Math.sin(angle),
+      z: r3d * Math.cos(phi),
       vx: 0,
       vy: 0,
+      vz: 0,
       radius: model.context_window >= 500_000 ? 9 : model.context_window >= 100_000 ? 7 : 5,
       pulseOffset: Math.random() * Math.PI * 2,
     };
@@ -68,25 +76,40 @@ export function GraphExplorer({ initialModels }: Props) {
   const searchParams = useSearchParams();
   const highlightId = searchParams.get('highlight') ?? null;
 
-  const [selectedId, setSelectedId] = useState<string | null>(highlightId);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [filterProvider, setFilterProvider] = useState<string | null>(null);
-  const [activeCapabilities, setActiveCapabilities] = useState<string[]>([]);
-  const [activeModalities, setActiveModalities] = useState<Modality[]>([]);
-  const [activeLicenses, setActiveLicenses] = useState<string[]>([]);
-  const [mmluRange, setMmluRange] = useState<BenchmarkRange>({ min: 60, max: 100 });
-  const [humanEvalRange, setHumanEvalRange] = useState<BenchmarkRange>({ min: 60, max: 100 });
-  const [clusterMode, setClusterMode] = useState<ClusterMode>('family');
-  const [searchQuery, setSearchQuery] = useState('');
+  // ── Zustand store ──────────────────────────────────────────────────────────
+  const {
+    selectedId,
+    hoveredId,
+    filterProvider,
+    activeCapabilities,
+    activeModalities,
+    activeLicenses,
+    clusterMode,
+    searchQuery,
+    mmluRange,
+    humanEvalRange,
+    setSelectedId,
+    setHoveredId,
+    setFilterProvider,
+    toggleCapability,
+    toggleModality,
+    toggleLicense,
+    setClusterMode,
+    setSearchQuery,
+    setHighlightId,
+    setMmluRange,
+    setHumanEvalRange,
+    clearAllFilters,
+  } = useGraphStore();
 
-  // When the highlight param changes (e.g. navigating between model pages),
-  // update the selection to match.
+  // Sync the ?highlight query param into the store on mount / param change
   useEffect(() => {
     if (highlightId !== null) {
+      setHighlightId(highlightId);
       setSelectedId(highlightId);
       setSearchQuery('');
     }
-  }, [highlightId]);
+  }, [highlightId, setHighlightId, setSelectedId, setSearchQuery]);
 
   // Fetch models from the API; use the SSR-provided list as initial data so
   // the graph renders immediately without a loading flash.
@@ -97,9 +120,7 @@ export function GraphExplorer({ initialModels }: Props) {
   });
 
   const nodes = useMemo(() => buildNodes(models), [models]);
-
   const metaMap = useMemo(() => buildMetaMap(models), [models]);
-
   const edges = useMemo<GraphEdge[]>(
     () => buildEdges(nodes, metaMap, clusterMode),
     [nodes, metaMap, clusterMode],
@@ -117,7 +138,7 @@ export function GraphExplorer({ initialModels }: Props) {
   );
 
   const allModalities = useMemo(
-    () => Array.from(new Set(models.flatMap((m) => m.modalities))).sort() as Modality[],
+    () => Array.from(new Set(models.flatMap((m) => m.modalities as string[]))).sort(),
     [models],
   );
 
@@ -139,7 +160,7 @@ export function GraphExplorer({ initialModels }: Props) {
             return false;
           if (
             activeModalities.length > 0 &&
-            !activeModalities.every((mod) => m.modalities.includes(mod))
+            !activeModalities.every((mod) => (m.modalities as string[]).includes(mod))
           )
             return false;
           if (activeLicenses.length > 0 && !activeLicenses.includes(m.license)) return false;
@@ -169,70 +190,54 @@ export function GraphExplorer({ initialModels }: Props) {
     humanEvalRange,
   ]);
 
-  // Apply search: compute set of matching IDs so non-matching nodes are dimmed.
-  // When the query is non-empty, visibleIds is intersected with the match set.
+  // Apply search: highlight matching nodes (all matches, not just first)
   const searchMatchIds = useMemo(() => {
     if (!searchQuery.trim()) return null;
     const q = searchQuery.toLowerCase();
-    const matches = models.filter(
-      (m) =>
-        m.name.toLowerCase().includes(q) ||
-        m.id.toLowerCase().includes(q) ||
-        m.provider.toLowerCase().includes(q) ||
-        m.capabilities.some((c) => c.toLowerCase().includes(q)) ||
-        m.family.toLowerCase().includes(q),
-    );
-    return new Set(matches.map((m) => m.id));
+    const matched = models
+      .filter(
+        (m) =>
+          m.name.toLowerCase().includes(q) ||
+          m.id.toLowerCase().includes(q) ||
+          m.provider.toLowerCase().includes(q) ||
+          m.family.toLowerCase().includes(q) ||
+          m.capabilities.some((c) => c.toLowerCase().includes(q)),
+      )
+      .map((m) => m.id);
+    return new Set(matched);
   }, [searchQuery, models]);
 
-  // When a search is active, auto-select the first match (if nothing is
-  // explicitly selected) so the NodePanel opens immediately.
-  const effectiveSelectedId = useMemo(() => {
-    if (searchMatchIds && searchMatchIds.size > 0 && selectedId === null) {
-      return Array.from(searchMatchIds)[0];
-    }
-    return selectedId;
-  }, [searchMatchIds, selectedId]);
-
-  // When a search is active, dim nodes that don't match the query.
+  // Effective visible set: intersection of filter-based and search-based
   const effectiveVisibleIds = useMemo(() => {
     if (!searchMatchIds) return visibleIds;
     return new Set([...visibleIds].filter((id) => searchMatchIds.has(id)));
   }, [visibleIds, searchMatchIds]);
+
+  const effectiveSelectedId = useMemo(() => {
+    if (searchQuery.trim() && searchMatchIds && searchMatchIds.size > 0) {
+      if (selectedId && searchMatchIds.has(selectedId)) return selectedId;
+      return [...searchMatchIds][0] ?? selectedId;
+    }
+    return selectedId;
+  }, [searchQuery, searchMatchIds, selectedId]);
 
   const selectedModel = useMemo(
     () => models.find((m) => m.id === effectiveSelectedId) ?? null,
     [models, effectiveSelectedId],
   );
 
-  const handleSelectNode = useCallback((id: string | null) => {
-    setSelectedId(id);
-    setSearchQuery('');
-  }, []);
+  const handleSelectNode = useCallback(
+    (id: string | null) => {
+      setSelectedId(id);
+      setSearchQuery('');
+    },
+    [setSelectedId, setSearchQuery],
+  );
 
   const handleClosePanel = useCallback(() => {
     setSelectedId(null);
     setSearchQuery('');
-  }, []);
-
-  const handleToggleCapability = useCallback((cap: string) => {
-    setActiveCapabilities((prev) =>
-      prev.includes(cap) ? prev.filter((c) => c !== cap) : [...prev, cap],
-    );
-  }, []);
-
-  const handleToggleModality = useCallback((mod: string) => {
-    setActiveModalities((prev) => {
-      const m = mod as Modality;
-      return prev.includes(m) ? prev.filter((v) => v !== m) : [...prev, m];
-    });
-  }, []);
-
-  const handleToggleLicense = useCallback((lic: string) => {
-    setActiveLicenses((prev) =>
-      prev.includes(lic) ? prev.filter((l) => l !== lic) : [...prev, lic],
-    );
-  }, []);
+  }, [setSelectedId, setSearchQuery]);
 
   return (
     <div className="relative w-full h-full">
@@ -244,19 +249,20 @@ export function GraphExplorer({ initialModels }: Props) {
         onSelectProvider={setFilterProvider}
         capabilities={allCapabilities}
         activeCapabilities={activeCapabilities}
-        onToggleCapability={handleToggleCapability}
+        onToggleCapability={toggleCapability}
         modalities={allModalities}
         activeModalities={activeModalities}
-        onToggleModality={handleToggleModality}
+        onToggleModality={toggleModality}
         licenses={allLicenses}
         activeLicenses={activeLicenses}
-        onToggleLicense={handleToggleLicense}
+        onToggleLicense={toggleLicense}
         clusterMode={clusterMode}
         onSetClusterMode={setClusterMode}
         mmluRange={mmluRange}
         onMmluRangeChange={setMmluRange}
         humanEvalRange={humanEvalRange}
         onHumanEvalRangeChange={setHumanEvalRange}
+        onClearAllFilters={clearAllFilters}
       />
 
       {/* Canvas is offset to the right of the filter panel (13rem = 208px) */}
@@ -275,7 +281,7 @@ export function GraphExplorer({ initialModels }: Props) {
 
       {selectedModel && <NodePanel model={selectedModel} onClose={handleClosePanel} />}
 
-      {/* Legend */}
+      {/* Provider color legend */}
       <div
         className="absolute bottom-4 left-4 flex flex-col gap-1.5 z-10"
         role="list"
