@@ -1,16 +1,22 @@
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import type { Model, Modality } from '@/lib/models';
 import { getProviderColor } from '@/lib/models';
 import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout';
 import { buildEdges, deriveCostTier } from '@/lib/graph-layout';
-import { GraphCanvas } from '@/components/graph/GraphCanvas';
 import { NodePanel } from '@/components/graph/NodePanel';
 import { FilterBar } from '@/components/graph/FilterBar';
 import type { ClusterMode } from '@/components/graph/FilterBar';
+
+// Lazy-load the R3F canvas — Three.js must never run during SSR.
+const GraphCanvas = dynamic(
+  () => import('@/components/graph/GraphCanvas').then((m) => ({ default: m.GraphCanvas })),
+  { ssr: false },
+);
 
 type Props = {
   /** Initial model list from the server (SSR). TanStack Query will refresh
@@ -31,19 +37,21 @@ function buildNodes(models: Model[]): GraphNode[] {
   return models.map((model, i) => {
     const angle = (i / models.length) * Math.PI * 2;
     const radius = 200 + Math.random() * 80;
+    // Spread nodes in 3-D: use a spherical distribution
+    const phi = Math.acos(2 * Math.random() - 1); // polar angle
+    const r3d = radius * 0.6; // scale down for 3-D scene units
     return {
       id: model.id,
       label: model.name,
       provider: model.provider,
       family: model.family,
       color: getProviderColor(model.provider),
-      // Initial positions centered on world-space origin (0, 0) so the camera
-      // transform in GraphCanvas (which maps world origin to screen centre)
-      // starts the nodes in the visible area.
-      x: Math.cos(angle) * radius,
-      y: Math.sin(angle) * radius,
+      x: r3d * Math.sin(phi) * Math.cos(angle),
+      y: r3d * Math.sin(phi) * Math.sin(angle),
+      z: r3d * Math.cos(phi),
       vx: 0,
       vy: 0,
+      vz: 0,
       radius: model.context_window >= 500_000 ? 9 : model.context_window >= 100_000 ? 7 : 5,
       pulseOffset: Math.random() * Math.PI * 2,
     };
@@ -147,20 +155,37 @@ export function GraphExplorer({ initialModels }: Props) {
     );
   }, [models, filterProvider, activeCapabilities, activeModalities, activeLicenses]);
 
-  // Apply search: highlight matching node
-  const effectiveSelectedId = useMemo(() => {
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const match = models.find(
+  // Apply search: highlight matching nodes (all matches, not just first)
+  const searchMatchIds = useMemo(() => {
+    if (!searchQuery.trim()) return null;
+    const q = searchQuery.toLowerCase();
+    const matched = models
+      .filter(
         (m) =>
           m.name.toLowerCase().includes(q) ||
           m.id.toLowerCase().includes(q) ||
-          m.provider.toLowerCase().includes(q),
-      );
-      return match ? match.id : selectedId;
+          m.provider.toLowerCase().includes(q) ||
+          m.family.toLowerCase().includes(q) ||
+          m.capabilities.some((c) => c.toLowerCase().includes(q)),
+      )
+      .map((m) => m.id);
+    return new Set(matched);
+  }, [searchQuery, models]);
+
+  // Effective visible set: intersection of filter-based and search-based
+  const effectiveVisibleIds = useMemo(() => {
+    if (!searchMatchIds) return visibleIds;
+    return new Set([...visibleIds].filter((id) => searchMatchIds.has(id)));
+  }, [visibleIds, searchMatchIds]);
+
+  const effectiveSelectedId = useMemo(() => {
+    if (searchQuery.trim() && searchMatchIds && searchMatchIds.size > 0) {
+      // If current selection is still in the match set, keep it; otherwise pick first match
+      if (selectedId && searchMatchIds.has(selectedId)) return selectedId;
+      return [...searchMatchIds][0] ?? selectedId;
     }
     return selectedId;
-  }, [searchQuery, models, selectedId]);
+  }, [searchQuery, searchMatchIds, selectedId]);
 
   const selectedModel = useMemo(
     () => models.find((m) => m.id === effectiveSelectedId) ?? null,
@@ -224,7 +249,7 @@ export function GraphExplorer({ initialModels }: Props) {
           edges={edges}
           selectedId={effectiveSelectedId}
           hoveredId={hoveredId}
-          visibleIds={visibleIds}
+          visibleIds={effectiveVisibleIds}
           highlightId={highlightId}
           onSelectNode={handleSelectNode}
           onHoverNode={setHoveredId}
