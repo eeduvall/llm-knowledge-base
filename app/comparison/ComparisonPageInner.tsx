@@ -83,11 +83,11 @@ function ComparisonClient({ initialIds }: Props) {
     <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-28 pb-24">
+      <div className="mx-auto max-w-7xl px-4 pb-24 pt-28 sm:px-6">
         {/* Page header — responsive text sizing */}
         <div className="mb-10">
           <h1
-            className="text-2xl sm:text-4xl font-bold mb-3"
+            className="mb-3 text-2xl font-bold sm:text-4xl"
             style={{ color: 'var(--color-text)' }}
           >
             Compare Models
@@ -100,11 +100,11 @@ function ComparisonClient({ initialIds }: Props) {
 
         {/* Model selector */}
         <div
-          className="rounded-xl p-4 sm:p-6 mb-8"
+          className="mb-8 rounded-xl p-4 sm:p-6"
           style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
         >
           <h2
-            className="text-xs font-semibold uppercase tracking-widest mb-4"
+            className="mb-4 text-xs font-semibold uppercase tracking-widest"
             style={{ color: 'var(--color-text-muted)' }}
           >
             Select Models
@@ -129,10 +129,10 @@ function ComparisonClient({ initialIds }: Props) {
 
         {/* Actions bar */}
         {selectedModels.length > 0 && (
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             {/* Tabs */}
             <div
-              className="flex rounded-lg overflow-hidden"
+              className="flex overflow-hidden rounded-lg"
               role="tablist"
               aria-label="Comparison view"
               style={{ border: '1px solid var(--color-border)' }}
@@ -144,7 +144,7 @@ function ComparisonClient({ initialIds }: Props) {
                   role="tab"
                   aria-selected={activeTab === tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2"
+                  className="px-3 py-2 text-xs font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 sm:px-4 sm:text-sm"
                   style={{
                     background:
                       activeTab === tab.id ? 'var(--color-primary)' : 'var(--color-surface)',
@@ -167,10 +167,10 @@ function ComparisonClient({ initialIds }: Props) {
         {/* Comparison content */}
         {selectedModels.length === 0 ? (
           <div
-            className="rounded-xl p-8 sm:p-16 text-center"
+            className="rounded-xl p-8 text-center sm:p-16"
             style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
           >
-            <p className="text-lg font-medium mb-2" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="mb-2 text-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>
               No models selected
             </p>
             <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>

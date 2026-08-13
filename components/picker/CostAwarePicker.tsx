@@ -49,13 +49,13 @@ function ConstraintViolationCard({ violations }: ConstraintViolationCardProps) {
   if (violations.length === 0) return null;
   return (
     <div
-      className="rounded-xl p-5 mb-6"
+      className="mb-6 rounded-xl p-5"
       style={{
         background: 'rgba(255,107,157,0.06)',
         border: '1px solid rgba(255,107,157,0.25)',
       }}
     >
-      <p className="text-sm font-semibold mb-3" style={{ color: 'var(--color-accent)' }}>
+      <p className="mb-3 text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>
         ⚠ No models meet all your constraints
       </p>
       <ul className="flex flex-col gap-3">
@@ -64,7 +64,7 @@ function ConstraintViolationCard({ violations }: ConstraintViolationCardProps) {
             <p className="text-sm" style={{ color: 'var(--color-text)' }}>
               {v.description}
             </p>
-            <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="mt-0.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
               💡 {v.suggestion}
             </p>
           </li>
@@ -95,7 +95,7 @@ function ResultCard({ result, rank, isCheapest, isBestValue }: ResultCardProps) 
 
   return (
     <div
-      className="rounded-xl p-5 flex flex-col gap-3"
+      className="flex flex-col gap-3 rounded-xl p-5"
       style={{
         background: meetsAllConstraints ? 'rgba(108,99,255,0.06)' : 'var(--color-surface)',
         border: `1px solid ${meetsAllConstraints ? 'rgba(108,99,255,0.3)' : 'var(--color-border)'}`,
@@ -105,7 +105,7 @@ function ResultCard({ result, rank, isCheapest, isBestValue }: ResultCardProps) 
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <span
-            className="text-xs font-mono w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+            className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full font-mono text-xs"
             style={{ background: 'var(--color-panel-bg-alt)', color: 'var(--color-text-muted)' }}
           >
             {rank}
@@ -122,7 +122,7 @@ function ResultCard({ result, rank, isCheapest, isBestValue }: ResultCardProps) 
         <div className="flex flex-col items-end gap-1">
           {badge && (
             <span
-              className="text-xs px-2 py-0.5 rounded font-medium"
+              className="rounded px-2 py-0.5 text-xs font-medium"
               style={{
                 background: isBestValue ? 'rgba(108,99,255,0.2)' : 'rgba(0,212,255,0.15)',
                 color: isBestValue ? 'var(--color-primary)' : 'var(--color-secondary)',
@@ -132,7 +132,7 @@ function ResultCard({ result, rank, isCheapest, isBestValue }: ResultCardProps) 
             </span>
           )}
           <span
-            className="text-sm font-mono font-semibold"
+            className="font-mono text-sm font-semibold"
             style={{ color: 'var(--color-secondary)' }}
           >
             {formatCost(projectedMonthlyCost)}
@@ -149,14 +149,14 @@ function ResultCard({ result, rank, isCheapest, isBestValue }: ResultCardProps) 
 
       {(missingCapabilities.length > 0 || missingModalities.length > 0) && (
         <div>
-          <p className="text-xs font-medium mb-1" style={{ color: 'var(--color-accent)' }}>
+          <p className="mb-1 text-xs font-medium" style={{ color: 'var(--color-accent)' }}>
             Missing:
           </p>
           <div className="flex flex-wrap gap-1">
             {[...missingCapabilities, ...missingModalities].map((item) => (
               <span
                 key={item}
-                className="text-xs px-2 py-0.5 rounded"
+                className="rounded px-2 py-0.5 text-xs"
                 style={{ background: 'rgba(255,107,157,0.12)', color: 'var(--color-accent)' }}
               >
                 {item}
@@ -166,17 +166,17 @@ function ResultCard({ result, rank, isCheapest, isBestValue }: ResultCardProps) 
         </div>
       )}
 
-      <div className="flex gap-2 mt-1">
+      <div className="mt-1 flex gap-2">
         <Link
           href={`/models/${model.id}`}
-          className="text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+          className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
           style={{ background: 'var(--color-panel-bg-alt)', color: 'var(--color-primary)' }}
         >
           View profile
         </Link>
         <Link
           href={`/comparison?models=${model.id}`}
-          className="text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+          className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
           style={{
             background: 'var(--color-surface)',
             color: 'var(--color-text-muted)',
@@ -248,14 +248,14 @@ export function CostAwarePicker({ models }: Props) {
       : null;
 
   return (
-    <div className="w-full max-w-2xl flex flex-col gap-6">
+    <div className="flex w-full max-w-2xl flex-col gap-6">
       {/* Constraints form */}
       <div
         className="rounded-xl p-5 sm:p-6"
         style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
       >
         <h2
-          className="text-sm font-semibold uppercase tracking-widest mb-5"
+          className="mb-5 text-sm font-semibold uppercase tracking-widest"
           style={{ color: 'var(--color-text-muted)' }}
         >
           Your Constraints
@@ -278,7 +278,7 @@ export function CostAwarePicker({ models }: Props) {
               placeholder="e.g. 100"
               value={maxMonthlyBudget}
               onChange={(e) => setMaxMonthlyBudget(e.target.value)}
-              className="rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus-visible:ring-2"
+              className="rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus-visible:ring-2"
               style={{
                 background: 'var(--color-panel-bg)',
                 border: '1px solid var(--color-border)',
@@ -303,7 +303,7 @@ export function CostAwarePicker({ models }: Props) {
                 min={1}
                 value={monthlyInputTokens}
                 onChange={(e) => setMonthlyInputTokens(Math.max(1, Number(e.target.value)))}
-                className="rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus-visible:ring-2"
+                className="rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus-visible:ring-2"
                 style={{
                   background: 'var(--color-panel-bg)',
                   border: '1px solid var(--color-border)',
@@ -325,7 +325,7 @@ export function CostAwarePicker({ models }: Props) {
                 min={1}
                 value={monthlyOutputTokens}
                 onChange={(e) => setMonthlyOutputTokens(Math.max(1, Number(e.target.value)))}
-                className="rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus-visible:ring-2"
+                className="rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus-visible:ring-2"
                 style={{
                   background: 'var(--color-panel-bg)',
                   border: '1px solid var(--color-border)',
@@ -346,7 +346,7 @@ export function CostAwarePicker({ models }: Props) {
                   key={opt.label}
                   type="button"
                   onClick={() => setMinContextWindow(opt.value)}
-                  className="text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+                  className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
                   style={{
                     background:
                       minContextWindow === opt.value
@@ -376,7 +376,7 @@ export function CostAwarePicker({ models }: Props) {
                   key={cap}
                   type="button"
                   onClick={() => toggleCapability(cap)}
-                  className="text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+                  className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
                   style={{
                     background: requiredCapabilities.includes(cap)
                       ? 'var(--color-primary)'
@@ -404,7 +404,7 @@ export function CostAwarePicker({ models }: Props) {
                   key={mod}
                   type="button"
                   onClick={() => toggleModality(mod)}
-                  className="text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+                  className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
                   style={{
                     background: requiredModalities.includes(mod)
                       ? 'var(--color-primary)'
@@ -422,12 +422,12 @@ export function CostAwarePicker({ models }: Props) {
           </div>
 
           {/* Open weights toggle */}
-          <label className="flex items-center gap-3 cursor-pointer">
+          <label className="flex cursor-pointer items-center gap-3">
             <input
               type="checkbox"
               checked={requireOpenWeights}
               onChange={(e) => setRequireOpenWeights(e.target.checked)}
-              className="w-4 h-4 rounded"
+              className="h-4 w-4 rounded"
             />
             <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
               Open weights only (Apache-2.0, MIT, Llama)
@@ -439,7 +439,7 @@ export function CostAwarePicker({ models }: Props) {
             <button
               type="button"
               onClick={handleSearch}
-              className="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+              className="flex-1 rounded-lg py-2.5 text-sm font-semibold transition-colors"
               style={{ background: 'var(--color-primary)', color: 'var(--color-text)' }}
             >
               Find cheapest model
@@ -448,7 +448,7 @@ export function CostAwarePicker({ models }: Props) {
               <button
                 type="button"
                 onClick={handleReset}
-                className="px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                className="rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
                 style={{
                   background: 'var(--color-surface)',
                   color: 'var(--color-text-muted)',
@@ -498,7 +498,7 @@ export function CostAwarePicker({ models }: Props) {
                 baselineForSavings.model.id !== result.cheapestCompliant.model.id && (
                   <div className="mt-2">
                     <h2
-                      className="text-sm font-semibold uppercase tracking-widest mb-3"
+                      className="mb-3 text-sm font-semibold uppercase tracking-widest"
                       style={{ color: 'var(--color-text-muted)' }}
                     >
                       Potential savings
@@ -512,7 +512,7 @@ export function CostAwarePicker({ models }: Props) {
 
               {/* Link to full comparison */}
               {result.ranked.filter((r) => r.meetsAllConstraints).length >= 2 && (
-                <div className="text-center pt-2">
+                <div className="pt-2 text-center">
                   <a
                     href={`/comparison?models=${result.ranked
                       .filter((r) => r.meetsAllConstraints)

@@ -28,7 +28,7 @@ function Cell({ state }: { state: CellState }) {
   if (state === 'yes') {
     return (
       <span
-        className="inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-bold"
+        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold"
         style={{ background: 'rgba(0,212,255,0.15)', color: 'var(--color-secondary)' }}
         aria-label="Supported"
       >
@@ -38,7 +38,7 @@ function Cell({ state }: { state: CellState }) {
   }
   return (
     <span
-      className="inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-bold"
+      className="inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold"
       style={{ background: 'rgba(255,107,157,0.10)', color: 'var(--color-text-faint)' }}
       aria-label="Not supported"
     >
@@ -80,14 +80,14 @@ export function CapabilityMatrix({ models }: Props) {
   };
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
+    <div className="overflow-hidden rounded-xl" style={{ border: '1px solid var(--color-border)' }}>
       <div className="overflow-x-auto">
         <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
           <thead>
             <tr>
               {/* Feature label column */}
               <th
-                className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-widest w-48"
+                className="w-48 px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest"
                 style={headerStyle}
               >
                 Feature
@@ -100,7 +100,7 @@ export function CapabilityMatrix({ models }: Props) {
                 >
                   <div style={{ color: 'var(--color-text)' }}>{m.name}</div>
                   <div
-                    className="text-xs font-normal mt-0.5"
+                    className="mt-0.5 text-xs font-normal"
                     style={{ color: 'var(--color-text-faint)' }}
                   >
                     {m.provider}
@@ -171,7 +171,7 @@ export function CapabilityMatrix({ models }: Props) {
               {models.map((m) => (
                 <td key={m.id} className="px-4 py-3 text-center">
                   <span
-                    className="inline-block px-2 py-0.5 rounded text-xs font-medium"
+                    className="inline-block rounded px-2 py-0.5 text-xs font-medium"
                     style={{
                       background:
                         m.license === 'proprietary'

@@ -57,7 +57,7 @@ function BenchmarkBar({
         {isBest && <span className="ml-1 text-xs">👑</span>}
       </span>
       <div
-        className="h-1.5 rounded-full overflow-hidden"
+        className="h-1.5 overflow-hidden rounded-full"
         style={{ background: 'var(--color-border)', width: '100%' }}
       >
         <div
@@ -72,7 +72,7 @@ function BenchmarkBar({
 export function ComparisonTable({ rows }: Props) {
   if (rows.length === 0) {
     return (
-      <p className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>
+      <p className="py-12 text-center" style={{ color: 'var(--color-text-muted)' }}>
         Select at least one model to compare.
       </p>
     );
@@ -98,7 +98,7 @@ export function ComparisonTable({ rows }: Props) {
           >
             {/* Row label column */}
             <th
-              className="text-left px-5 py-4 font-semibold text-xs uppercase tracking-widest sticky left-0 z-10"
+              className="sticky left-0 z-10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-widest"
               style={{
                 color: 'var(--color-text-muted)',
                 background: 'var(--color-surface)',
@@ -117,7 +117,7 @@ export function ComparisonTable({ rows }: Props) {
                 >
                   <div className="flex flex-col gap-1">
                     <span
-                      className="text-xs font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full self-start"
+                      className="self-start rounded-full px-2 py-0.5 text-xs font-semibold uppercase tracking-widest"
                       style={{
                         background: `${providerColor}22`,
                         color: providerColor,
@@ -126,7 +126,7 @@ export function ComparisonTable({ rows }: Props) {
                     >
                       {model.provider}
                     </span>
-                    <span className="font-bold text-base" style={{ color: 'var(--color-text)' }}>
+                    <span className="text-base font-bold" style={{ color: 'var(--color-text)' }}>
                       {model.name}
                     </span>
                     <span className="text-xs" style={{ color: 'var(--color-text-faint)' }}>
@@ -178,7 +178,7 @@ export function ComparisonTable({ rows }: Props) {
                   {model.modalities.map((mod) => (
                     <span
                       key={mod}
-                      className="text-xs px-2 py-0.5 rounded-full"
+                      className="rounded-full px-2 py-0.5 text-xs"
                       style={{
                         background: 'var(--color-surface)',
                         color: 'var(--color-text-muted)',
@@ -299,7 +299,7 @@ export function ComparisonTable({ rows }: Props) {
                   {model.capabilities.map((cap) => (
                     <span
                       key={cap}
-                      className="text-xs px-2 py-0.5 rounded-full"
+                      className="rounded-full px-2 py-0.5 text-xs"
                       style={{
                         background: 'var(--color-panel-bg-alt)',
                         color: 'var(--color-primary)',
@@ -336,7 +336,7 @@ function SectionHeader({ label, colCount }: SectionHeaderProps) {
     >
       <td
         colSpan={colCount + 1}
-        className="px-5 py-2 text-xs font-semibold uppercase tracking-widest sticky left-0"
+        className="sticky left-0 px-5 py-2 text-xs font-semibold uppercase tracking-widest"
         style={{ color: 'var(--color-primary)', background: 'var(--color-panel-bg-alt)' }}
       >
         {label}
@@ -351,7 +351,7 @@ function TableRow({ label, children }: TableRowProps) {
   return (
     <tr style={{ borderBottom: '1px solid var(--color-divider)' }}>
       <td
-        className="px-5 py-3 text-xs font-medium sticky left-0 z-10"
+        className="sticky left-0 z-10 px-5 py-3 text-xs font-medium"
         style={{
           color: 'var(--color-text-muted)',
           background: 'var(--color-bg)',

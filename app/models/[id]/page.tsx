@@ -119,7 +119,7 @@ export default function ModelDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
       <Navbar />
-      <main className="pt-20 pb-16">
+      <main className="pb-16 pt-20">
         {/* Hero header with provider accent stripe */}
         <div
           className="relative overflow-hidden"
@@ -130,22 +130,22 @@ export default function ModelDetailPage({ params }: Props) {
             style={{ background: `linear-gradient(135deg, ${providerColor} 0%, transparent 60%)` }}
           />
           <div
-            className="absolute top-0 left-0 right-0 h-1"
+            className="absolute left-0 right-0 top-0 h-1"
             style={{ background: providerColor }}
           />
-          <div className="relative max-w-5xl mx-auto px-6 py-12">
-            <div className="flex flex-wrap items-start gap-4 mb-6">
+          <div className="relative mx-auto max-w-5xl px-6 py-12">
+            <div className="mb-6 flex flex-wrap items-start gap-4">
               <Link
                 href="/models"
-                className="text-sm flex items-center gap-1 transition-colors"
+                className="flex items-center gap-1 text-sm transition-colors"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 <span>←</span> All Models
               </Link>
             </div>
-            <div className="flex flex-wrap items-center gap-3 mb-3">
+            <div className="mb-3 flex flex-wrap items-center gap-3">
               <span
-                className="text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full"
+                className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest"
                 style={{
                   background: `${providerColor}22`,
                   color: providerColor,
@@ -155,7 +155,7 @@ export default function ModelDetailPage({ params }: Props) {
                 {model.provider}
               </span>
               <span
-                className="text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full"
+                className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest"
                 style={{
                   background: `${costTier.color}22`,
                   color: costTier.color,
@@ -165,7 +165,7 @@ export default function ModelDetailPage({ params }: Props) {
                 {costTier.label}
               </span>
               <span
-                className="text-xs px-3 py-1 rounded-full"
+                className="rounded-full px-3 py-1 text-xs"
                 style={{
                   background: 'var(--color-surface)',
                   color: 'var(--color-text-muted)',
@@ -175,7 +175,7 @@ export default function ModelDetailPage({ params }: Props) {
                 {model.license}
               </span>
             </div>
-            <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>
+            <h1 className="mb-2 text-4xl font-bold" style={{ color: 'var(--color-text)' }}>
               {model.name}
             </h1>
             <p className="text-base" style={{ color: 'var(--color-text-muted)' }}>
@@ -186,14 +186,14 @@ export default function ModelDetailPage({ params }: Props) {
         </div>
 
         {/* Stats grid */}
-        <div className="max-w-5xl mx-auto px-6 py-10">
+        <div className="mx-auto max-w-5xl px-6 py-10">
           <h2
-            className="text-xs font-semibold uppercase tracking-widest mb-5"
+            className="mb-5 text-xs font-semibold uppercase tracking-widest"
             style={{ color: 'var(--color-text-muted)' }}
           >
             At a Glance
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
+          <div className="mb-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {/* Context window */}
             <div
               className="col-span-1 rounded-xl p-4"
@@ -202,13 +202,13 @@ export default function ModelDetailPage({ params }: Props) {
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>
+              <div className="mb-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 Context Window
               </div>
               <div className="text-2xl font-bold" style={{ color: 'var(--color-secondary)' }}>
                 {formatContextWindow(model.context_window)}
               </div>
-              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>
+              <div className="mt-1 text-xs" style={{ color: 'var(--color-text-faint)' }}>
                 tokens
               </div>
             </div>
@@ -220,13 +220,13 @@ export default function ModelDetailPage({ params }: Props) {
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>
+              <div className="mb-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 Input Price
               </div>
               <div className="text-2xl font-bold" style={{ color: 'var(--color-text)' }}>
                 {formatPrice(model.pricing.input)}
               </div>
-              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>
+              <div className="mt-1 text-xs" style={{ color: 'var(--color-text-faint)' }}>
                 per 1M tokens
               </div>
             </div>
@@ -238,13 +238,13 @@ export default function ModelDetailPage({ params }: Props) {
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>
+              <div className="mb-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 Output Price
               </div>
               <div className="text-2xl font-bold" style={{ color: 'var(--color-text)' }}>
                 {formatPrice(model.pricing.output)}
               </div>
-              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>
+              <div className="mt-1 text-xs" style={{ color: 'var(--color-text-faint)' }}>
                 per 1M tokens
               </div>
             </div>
@@ -256,13 +256,13 @@ export default function ModelDetailPage({ params }: Props) {
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>
+              <div className="mb-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 Output/Input Ratio
               </div>
               <div className="text-2xl font-bold" style={{ color: 'var(--color-accent)' }}>
                 {costEfficiency}
               </div>
-              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>
+              <div className="mt-1 text-xs" style={{ color: 'var(--color-text-faint)' }}>
                 cost multiplier
               </div>
             </div>
@@ -274,13 +274,13 @@ export default function ModelDetailPage({ params }: Props) {
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>
+              <div className="mb-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 Modalities
               </div>
               <div className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>
                 {model.modalities.length}
               </div>
-              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>
+              <div className="mt-1 text-xs" style={{ color: 'var(--color-text-faint)' }}>
                 {model.modalities.join(', ')}
               </div>
             </div>
@@ -292,20 +292,20 @@ export default function ModelDetailPage({ params }: Props) {
                 border: '1px solid var(--color-border)',
               }}
             >
-              <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>
+              <div className="mb-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 Capabilities
               </div>
               <div className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>
                 {model.capabilities.length}
               </div>
-              <div className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>
+              <div className="mt-1 text-xs" style={{ color: 'var(--color-text-faint)' }}>
                 features
               </div>
             </div>
           </div>
 
           {/* Two-column layout: benchmarks + capabilities/modalities */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
             {/* Benchmarks */}
             <div
               className="rounded-xl p-6"
@@ -315,12 +315,12 @@ export default function ModelDetailPage({ params }: Props) {
               }}
             >
               <h2
-                className="text-sm font-semibold uppercase tracking-widest mb-1"
+                className="mb-1 text-sm font-semibold uppercase tracking-widest"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 Benchmarks
               </h2>
-              <p className="text-xs mb-6" style={{ color: 'var(--color-text-faint)' }}>
+              <p className="mb-6 text-xs" style={{ color: 'var(--color-text-faint)' }}>
                 Scores compared against all {allModels.length} models in the knowledge base
               </p>
               <div className="space-y-6">
@@ -334,7 +334,7 @@ export default function ModelDetailPage({ params }: Props) {
                   const isLast = stats.rank === stats.total && score !== null && stats.total > 1;
                   return (
                     <div key={bm.key}>
-                      <div className="flex items-center justify-between mb-1">
+                      <div className="mb-1 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span
                             className="text-sm font-semibold"
@@ -350,7 +350,7 @@ export default function ModelDetailPage({ params }: Props) {
                           {isLast && (
                             <span
                               title="Last among scored models"
-                              className="text-xs px-2 py-0.5 rounded"
+                              className="rounded px-2 py-0.5 text-xs"
                               style={{
                                 background: 'rgba(255,107,157,0.15)',
                                 color: 'var(--color-accent)',
@@ -380,18 +380,18 @@ export default function ModelDetailPage({ params }: Props) {
                           )}
                         </div>
                       </div>
-                      <div className="text-xs mb-2" style={{ color: 'var(--color-text-faint)' }}>
+                      <div className="mb-2 text-xs" style={{ color: 'var(--color-text-faint)' }}>
                         {bm.description}
                       </div>
                       {/* Bar track */}
                       <div
-                        className="relative h-2 rounded-full overflow-hidden"
+                        className="relative h-2 overflow-hidden rounded-full"
                         style={{ background: 'var(--color-divider)' }}
                       >
                         {/* Best-in-class marker */}
                         {stats.best !== null && (
                           <div
-                            className="absolute top-0 bottom-0 w-0.5 opacity-40"
+                            className="absolute bottom-0 top-0 w-0.5 opacity-40"
                             style={{ left: `${bestPct}%`, background: 'var(--color-text-muted)' }}
                           />
                         )}
@@ -411,7 +411,7 @@ export default function ModelDetailPage({ params }: Props) {
                         )}
                       </div>
                       {stats.best !== null && (
-                        <div className="flex justify-between mt-1">
+                        <div className="mt-1 flex justify-between">
                           <span className="text-xs" style={{ color: 'var(--color-text-faint)' }}>
                             0
                           </span>
@@ -436,7 +436,7 @@ export default function ModelDetailPage({ params }: Props) {
                 }}
               >
                 <h2
-                  className="text-sm font-semibold uppercase tracking-widest mb-4"
+                  className="mb-4 text-sm font-semibold uppercase tracking-widest"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   Capabilities
@@ -445,7 +445,7 @@ export default function ModelDetailPage({ params }: Props) {
                   {model.capabilities.map((cap) => (
                     <span
                       key={cap}
-                      className="text-xs px-3 py-1.5 rounded-full font-medium"
+                      className="rounded-full px-3 py-1.5 text-xs font-medium"
                       style={{
                         background: 'var(--color-panel-bg-alt)',
                         color: 'var(--color-primary)',
@@ -465,7 +465,7 @@ export default function ModelDetailPage({ params }: Props) {
                 }}
               >
                 <h2
-                  className="text-sm font-semibold uppercase tracking-widest mb-4"
+                  className="mb-4 text-sm font-semibold uppercase tracking-widest"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   Modalities
@@ -474,7 +474,7 @@ export default function ModelDetailPage({ params }: Props) {
                   {model.modalities.map((mod) => (
                     <span
                       key={mod}
-                      className="text-xs px-3 py-1.5 rounded-full font-medium"
+                      className="rounded-full px-3 py-1.5 text-xs font-medium"
                       style={{
                         background: 'rgba(0,212,255,0.08)',
                         color: 'var(--color-secondary)',
@@ -495,7 +495,7 @@ export default function ModelDetailPage({ params }: Props) {
                 }}
               >
                 <h2
-                  className="text-sm font-semibold uppercase tracking-widest mb-4"
+                  className="mb-4 text-sm font-semibold uppercase tracking-widest"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   Pricing Detail
@@ -506,7 +506,7 @@ export default function ModelDetailPage({ params }: Props) {
                   </p>
                 ) : (
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                         Input (prompt)
                       </span>
@@ -518,7 +518,7 @@ export default function ModelDetailPage({ params }: Props) {
                       </span>
                     </div>
                     <div className="h-px" style={{ background: 'var(--color-divider)' }} />
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                         Output (completion)
                       </span>
@@ -530,7 +530,7 @@ export default function ModelDetailPage({ params }: Props) {
                       </span>
                     </div>
                     <div className="h-px" style={{ background: 'var(--color-divider)' }} />
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                         Output/Input ratio
                       </span>
@@ -548,7 +548,7 @@ export default function ModelDetailPage({ params }: Props) {
           </div>
 
           {/* Strengths & Weaknesses */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2">
             <div
               className="rounded-xl p-6"
               style={{
@@ -557,7 +557,7 @@ export default function ModelDetailPage({ params }: Props) {
               }}
             >
               <h2
-                className="text-sm font-semibold uppercase tracking-widest mb-4"
+                className="mb-4 text-sm font-semibold uppercase tracking-widest"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 Strengths
@@ -585,7 +585,7 @@ export default function ModelDetailPage({ params }: Props) {
               }}
             >
               <h2
-                className="text-sm font-semibold uppercase tracking-widest mb-4"
+                className="mb-4 text-sm font-semibold uppercase tracking-widest"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 Weaknesses
@@ -608,13 +608,13 @@ export default function ModelDetailPage({ params }: Props) {
           </div>
 
           {/* Links & actions */}
-          <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex flex-wrap items-center gap-4">
             {model.links.docs && (
               <a
                 href={model.links.docs}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm px-5 py-2.5 rounded-lg font-medium transition-opacity hover:opacity-80"
+                className="rounded-lg px-5 py-2.5 text-sm font-medium transition-opacity hover:opacity-80"
                 style={{ background: providerColor, color: 'var(--color-text)' }}
               >
                 Documentation ↗
@@ -625,7 +625,7 @@ export default function ModelDetailPage({ params }: Props) {
                 href={model.links.paper}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm px-5 py-2.5 rounded-lg font-medium transition-opacity hover:opacity-80"
+                className="rounded-lg px-5 py-2.5 text-sm font-medium transition-opacity hover:opacity-80"
                 style={{
                   background: 'var(--color-surface)',
                   color: 'var(--color-text)',
@@ -637,7 +637,7 @@ export default function ModelDetailPage({ params }: Props) {
             )}
             <Link
               href={`/graph?highlight=${model.id}`}
-              className="text-sm px-5 py-2.5 rounded-lg font-medium transition-opacity hover:opacity-80"
+              className="rounded-lg px-5 py-2.5 text-sm font-medium transition-opacity hover:opacity-80"
               style={{
                 background: 'var(--color-panel-bg-alt)',
                 color: 'var(--color-primary)',

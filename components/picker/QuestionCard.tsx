@@ -20,15 +20,15 @@ export function QuestionCard({
 }: Props) {
   return (
     <section
-      className="w-full max-w-xl mx-auto flex flex-col gap-6"
+      className="mx-auto flex w-full max-w-xl flex-col gap-6"
       aria-label={`Question ${questionNumber} of ${totalQuestions}`}
     >
       {/* Progress */}
       <div className="flex items-center gap-3">
-        <span className="text-xs font-mono" style={{ color: 'var(--color-text-muted)' }}>
+        <span className="font-mono text-xs" style={{ color: 'var(--color-text-muted)' }}>
           {questionNumber} / {totalQuestions}
         </span>
-        <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}>
+        <div className="h-px flex-1" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}>
           <div
             className="h-px transition-all duration-500"
             style={{

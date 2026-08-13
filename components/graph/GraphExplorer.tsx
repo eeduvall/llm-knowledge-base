@@ -215,7 +215,7 @@ export function GraphExplorer({ initialModels }: Props) {
   }, [setSelectedId, setSearchQuery]);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative h-full w-full">
       <FilterBar
         searchQuery={searchQuery}
         onSearch={setSearchQuery}
@@ -237,7 +237,7 @@ export function GraphExplorer({ initialModels }: Props) {
       />
 
       {/* Canvas is offset to the right of the filter panel (13rem = 208px) */}
-      <div className="absolute top-0 right-0 bottom-0" style={{ left: '13rem' }}>
+      <div className="absolute bottom-0 right-0 top-0" style={{ left: '13rem' }}>
         <GraphCanvas
           nodes={nodes}
           edges={edges}
@@ -254,7 +254,7 @@ export function GraphExplorer({ initialModels }: Props) {
 
       {/* Provider color legend */}
       <div
-        className="absolute bottom-4 left-4 flex flex-col gap-1.5 z-10"
+        className="absolute bottom-4 left-4 z-10 flex flex-col gap-1.5"
         role="list"
         aria-label="Provider color legend"
       >
@@ -263,12 +263,12 @@ export function GraphExplorer({ initialModels }: Props) {
           return (
             <div key={provider} className="flex items-center gap-2" role="listitem">
               <div
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
                 style={{ backgroundColor: color }}
                 aria-hidden="true"
               />
               <span
-                className="text-xs font-mono capitalize"
+                className="font-mono text-xs capitalize"
                 style={{ color: 'rgba(255,255,255,0.45)' }}
               >
                 {provider}

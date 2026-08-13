@@ -34,14 +34,14 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
         <div className="mb-6 flex flex-wrap gap-4">
           {sharedStrengths.length > 0 && (
             <div
-              className="flex-1 min-w-48 rounded-xl p-4"
+              className="min-w-48 flex-1 rounded-xl p-4"
               style={{
                 background: 'var(--color-surface)',
                 border: '1px solid var(--color-secondary)',
               }}
             >
               <p
-                className="text-xs font-semibold uppercase tracking-widest mb-2"
+                className="mb-2 text-xs font-semibold uppercase tracking-widest"
                 style={{ color: 'var(--color-secondary)' }}
               >
                 Shared Strengths
@@ -50,7 +50,7 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
                 {sharedStrengths.map((s) => (
                   <li
                     key={s}
-                    className="text-sm flex items-start gap-2"
+                    className="flex items-start gap-2 text-sm"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     <span style={{ color: 'var(--color-secondary)' }} aria-hidden="true">
@@ -64,14 +64,14 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
           )}
           {sharedWeaknesses.length > 0 && (
             <div
-              className="flex-1 min-w-48 rounded-xl p-4"
+              className="min-w-48 flex-1 rounded-xl p-4"
               style={{
                 background: 'var(--color-surface)',
                 border: '1px solid var(--color-accent)',
               }}
             >
               <p
-                className="text-xs font-semibold uppercase tracking-widest mb-2"
+                className="mb-2 text-xs font-semibold uppercase tracking-widest"
                 style={{ color: 'var(--color-accent)' }}
               >
                 Shared Weaknesses
@@ -80,7 +80,7 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
                 {sharedWeaknesses.map((w) => (
                   <li
                     key={w}
-                    className="text-sm flex items-start gap-2"
+                    className="flex items-start gap-2 text-sm"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     <span style={{ color: 'var(--color-accent)' }} aria-hidden="true">
@@ -103,14 +103,14 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
             className="rounded-xl p-5"
             style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
           >
-            <h3 className="font-semibold text-base mb-4" style={{ color: 'var(--color-text)' }}>
+            <h3 className="mb-4 text-base font-semibold" style={{ color: 'var(--color-text)' }}>
               {model.name}
             </h3>
 
             {/* Strengths */}
             <div className="mb-4">
               <p
-                className="text-xs font-semibold uppercase tracking-widest mb-2"
+                className="mb-2 text-xs font-semibold uppercase tracking-widest"
                 style={{ color: 'var(--color-secondary)' }}
               >
                 Strengths
@@ -120,7 +120,7 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
                   {model.strengths.map((s) => (
                     <li
                       key={s}
-                      className="text-sm flex items-start gap-2"
+                      className="flex items-start gap-2 text-sm"
                       style={{ color: 'var(--color-text-muted)' }}
                     >
                       <span
@@ -144,7 +144,7 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
             {/* Weaknesses */}
             <div>
               <p
-                className="text-xs font-semibold uppercase tracking-widest mb-2"
+                className="mb-2 text-xs font-semibold uppercase tracking-widest"
                 style={{ color: 'var(--color-accent)' }}
               >
                 Weaknesses
@@ -154,7 +154,7 @@ export function StrengthsWeaknessesDiff({ models }: Props) {
                   {model.weaknesses.map((w) => (
                     <li
                       key={w}
-                      className="text-sm flex items-start gap-2"
+                      className="flex items-start gap-2 text-sm"
                       style={{ color: 'var(--color-text-muted)' }}
                     >
                       <span

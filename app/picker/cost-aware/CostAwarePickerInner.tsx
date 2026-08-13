@@ -25,9 +25,9 @@ export function CostAwarePickerPage() {
   return (
     <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
       <Navbar />
-      <div className="flex flex-col items-center px-6 pt-28 pb-24">
-        <div className="w-full max-w-2xl mb-10 text-center">
-          <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--color-text)' }}>
+      <div className="flex flex-col items-center px-6 pb-24 pt-28">
+        <div className="mb-10 w-full max-w-2xl text-center">
+          <h1 className="mb-3 text-4xl font-bold" style={{ color: 'var(--color-text)' }}>
             Cost-Aware Model Picker
           </h1>
           <p className="text-base" style={{ color: 'var(--color-text-muted)' }}>

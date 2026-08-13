@@ -17,7 +17,7 @@ export function ResultDeck({ results, onReset }: Props) {
 
   return (
     <section
-      className="w-full max-w-2xl mx-auto flex flex-col gap-6"
+      className="mx-auto flex w-full max-w-2xl flex-col gap-6"
       aria-label="Recommended models"
     >
       <div className="flex items-center justify-between">
@@ -27,7 +27,7 @@ export function ResultDeck({ results, onReset }: Props) {
         <button
           type="button"
           onClick={onReset}
-          className="text-sm px-4 py-2 rounded-lg border transition-colors duration-200 focus:outline-none focus-visible:ring-2"
+          className="rounded-lg border px-4 py-2 text-sm transition-colors duration-200 focus:outline-none focus-visible:ring-2"
           style={{
             borderColor: 'rgba(255,255,255,0.12)',
             color: 'var(--color-text-muted)',
@@ -41,7 +41,7 @@ export function ResultDeck({ results, onReset }: Props) {
         {results.map((result, index) => (
           <li
             key={result.model.id}
-            className="rounded-xl p-5 border flex flex-col gap-3"
+            className="flex flex-col gap-3 rounded-xl border p-5"
             style={{
               backgroundColor: index === 0 ? 'rgba(108,99,255,0.10)' : 'rgba(255,255,255,0.03)',
               borderColor: index === 0 ? 'rgba(108,99,255,0.35)' : 'rgba(255,255,255,0.07)',
@@ -50,7 +50,7 @@ export function ResultDeck({ results, onReset }: Props) {
             {/* Rank badge + model name */}
             <div className="flex items-center gap-3">
               <span
-                className="text-xs font-mono font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full font-mono text-xs font-bold"
                 style={{
                   backgroundColor: index === 0 ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)',
                   color: index === 0 ? 'var(--color-text)' : 'var(--color-text-muted)',
@@ -63,7 +63,7 @@ export function ResultDeck({ results, onReset }: Props) {
                 {result.model.name}
               </h3>
               <span
-                className="ml-auto text-xs font-mono px-2 py-0.5 rounded"
+                className="ml-auto rounded px-2 py-0.5 font-mono text-xs"
                 style={{
                   backgroundColor: 'rgba(255,255,255,0.06)',
                   color: 'var(--color-text-muted)',
@@ -109,7 +109,7 @@ export function ResultDeck({ results, onReset }: Props) {
             {/* Deep-dive link */}
             <Link
               href={`/graph?highlight=${result.model.id}`}
-              className="self-start text-xs font-medium underline-offset-2 hover:underline transition-colors duration-150"
+              className="self-start text-xs font-medium underline-offset-2 transition-colors duration-150 hover:underline"
               style={{ color: 'var(--color-primary)' }}
             >
               View in Knowledge Graph →
@@ -141,13 +141,13 @@ export function ResultDeck({ results, onReset }: Props) {
           if (saving <= 0) return null;
           return (
             <div
-              className="rounded-xl p-4 border"
+              className="rounded-xl border p-4"
               style={{
                 background: 'rgba(0,212,255,0.05)',
                 borderColor: 'rgba(0,212,255,0.2)',
               }}
             >
-              <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-secondary)' }}>
+              <p className="mb-1 text-sm font-medium" style={{ color: 'var(--color-secondary)' }}>
                 💡 Savings Insight
               </p>
               <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
@@ -165,17 +165,17 @@ export function ResultDeck({ results, onReset }: Props) {
         })()}
       {/* Compare top picks CTA */}
       {results.length >= 2 && (
-        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+        <div className="flex flex-col gap-3 pt-2 sm:flex-row">
           <Link
             href={`/comparison?models=${topIds}`}
-            className="flex-1 text-center py-2.5 rounded-lg text-sm font-semibold transition-colors"
+            className="flex-1 rounded-lg py-2.5 text-center text-sm font-semibold transition-colors"
             style={{ background: 'var(--color-primary)', color: 'var(--color-text)' }}
           >
             Compare top picks side-by-side →
           </Link>
           <Link
             href="/picker/cost-aware"
-            className="flex-1 text-center py-2.5 rounded-lg text-sm font-medium transition-colors"
+            className="flex-1 rounded-lg py-2.5 text-center text-sm font-medium transition-colors"
             style={{
               background: 'var(--color-surface)',
               color: 'var(--color-text-muted)',

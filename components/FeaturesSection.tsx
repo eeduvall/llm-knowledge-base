@@ -31,12 +31,12 @@ const FEATURES: FeatureCard[] = [
 
 export function FeaturesSection() {
   return (
-    <section className="w-full max-w-7xl mx-auto px-6 pb-24">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <section className="mx-auto w-full max-w-7xl px-6 pb-24">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {FEATURES.map((feature) => (
           <div
             key={feature.number}
-            className="rounded-xl p-6 flex flex-col gap-3 border transition-all duration-300 hover:border-white/15 group"
+            className="group flex flex-col gap-3 rounded-xl border p-6 transition-all duration-300 hover:border-white/15"
             style={{
               backgroundColor: 'rgba(255,255,255,0.03)',
               borderColor: 'rgba(255,255,255,0.07)',
@@ -44,11 +44,11 @@ export function FeaturesSection() {
           >
             {/* Number / Tag */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-medium" style={{ color: '#6C63FF' }}>
+              <span className="font-mono text-xs font-medium" style={{ color: '#6C63FF' }}>
                 {feature.number} /
               </span>
               <span
-                className="text-xs font-mono font-medium tracking-widest uppercase"
+                className="font-mono text-xs font-medium uppercase tracking-widest"
                 style={{ color: '#6C63FF' }}
               >
                 {feature.tag}
@@ -56,10 +56,10 @@ export function FeaturesSection() {
             </div>
 
             {/* Title */}
-            <h3 className="text-xl font-semibold text-white leading-snug">{feature.title}</h3>
+            <h3 className="text-xl font-semibold leading-snug text-white">{feature.title}</h3>
 
             {/* Description */}
-            <p className="text-sm text-white/50 leading-relaxed">{feature.description}</p>
+            <p className="text-sm leading-relaxed text-white/50">{feature.description}</p>
           </div>
         ))}
       </div>

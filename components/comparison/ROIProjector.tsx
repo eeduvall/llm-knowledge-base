@@ -30,7 +30,7 @@ function SavingsBadge({ percent }: { percent: number | null }) {
   const isPositive = percent > 0;
   return (
     <span
-      className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full ml-2"
+      className="ml-2 inline-block rounded-full px-2 py-0.5 text-xs font-semibold"
       style={{
         background: isPositive ? 'rgba(0,212,255,0.12)' : 'rgba(255,107,157,0.12)',
         color: isPositive ? 'var(--color-secondary)' : 'var(--color-accent)',
@@ -70,10 +70,10 @@ export function ROIProjector({ models }: Props) {
         className="rounded-xl p-5 sm:p-6"
         style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
       >
-        <h2 className="text-base font-semibold mb-1" style={{ color: 'var(--color-text)' }}>
+        <h2 className="mb-1 text-base font-semibold" style={{ color: 'var(--color-text)' }}>
           ROI Projector
         </h2>
-        <p className="text-sm py-4 text-center" style={{ color: 'var(--color-text-faint)' }}>
+        <p className="py-4 text-center text-sm" style={{ color: 'var(--color-text-faint)' }}>
           Select at least 2 models to project ROI.
         </p>
       </div>
@@ -85,15 +85,15 @@ export function ROIProjector({ models }: Props) {
       className="rounded-xl p-5 sm:p-6"
       style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
-      <h2 className="text-base font-semibold mb-1" style={{ color: 'var(--color-text)' }}>
+      <h2 className="mb-1 text-base font-semibold" style={{ color: 'var(--color-text)' }}>
         ROI Projector
       </h2>
-      <p className="text-xs mb-5" style={{ color: 'var(--color-text-muted)' }}>
+      <p className="mb-5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
         Compare potential savings of switching from a baseline model to alternatives.
       </p>
 
       {/* Controls */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* Baseline model */}
         <div className="flex flex-col gap-1">
           <label
@@ -165,7 +165,7 @@ export function ROIProjector({ models }: Props) {
             min={1}
             value={tasksPerMonth}
             onChange={(e) => setTasksPerMonth(Math.max(1, Number(e.target.value)))}
-            className="rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus-visible:ring-2"
+            className="rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus-visible:ring-2"
             style={{
               background: 'var(--color-panel-bg)',
               border: '1px solid var(--color-border)',
@@ -176,7 +176,7 @@ export function ROIProjector({ models }: Props) {
       </div>
 
       {/* Token inputs */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
           <label
             htmlFor="roi-input-tokens"
@@ -191,7 +191,7 @@ export function ROIProjector({ models }: Props) {
             min={1}
             value={inputTokens}
             onChange={(e) => setInputTokens(Math.max(1, Number(e.target.value)))}
-            className="rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus-visible:ring-2"
+            className="rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus-visible:ring-2"
             style={{
               background: 'var(--color-panel-bg)',
               border: '1px solid var(--color-border)',
@@ -213,7 +213,7 @@ export function ROIProjector({ models }: Props) {
             min={1}
             value={outputTokens}
             onChange={(e) => setOutputTokens(Math.max(1, Number(e.target.value)))}
-            className="rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus-visible:ring-2"
+            className="rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus-visible:ring-2"
             style={{
               background: 'var(--color-panel-bg)',
               border: '1px solid var(--color-border)',
@@ -225,7 +225,7 @@ export function ROIProjector({ models }: Props) {
 
       {/* ROI cards */}
       {!baselineModel ? (
-        <p className="text-sm text-center py-4" style={{ color: 'var(--color-text-faint)' }}>
+        <p className="py-4 text-center text-sm" style={{ color: 'var(--color-text-faint)' }}>
           Select a baseline model to see ROI projections.
         </p>
       ) : (
@@ -244,16 +244,16 @@ export function ROIProjector({ models }: Props) {
                   border: `1px solid ${isPositive && hasSavings ? 'rgba(0,212,255,0.25)' : 'var(--color-border)'}`,
                 }}
               >
-                <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
+                <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <span className="font-semibold text-sm" style={{ color: 'var(--color-text)' }}>
+                    <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
                       {baselineModel.name}
                     </span>
                     <span className="mx-2 text-xs" style={{ color: 'var(--color-text-faint)' }}>
                       →
                     </span>
                     <span
-                      className="font-semibold text-sm"
+                      className="text-sm font-semibold"
                       style={{ color: 'var(--color-secondary)' }}
                     >
                       {alt.name}
@@ -262,7 +262,7 @@ export function ROIProjector({ models }: Props) {
                   {hasSavings && <SavingsBadge percent={roi.savingsPercent} />}
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <div className="flex flex-col gap-0.5">
                     <span className="text-xs" style={{ color: 'var(--color-text-faint)' }}>
                       Baseline / mo
@@ -343,7 +343,7 @@ export function ROIProjector({ models }: Props) {
         </div>
       )}
 
-      <p className="text-xs mt-4" style={{ color: 'var(--color-text-faint)' }}>
+      <p className="mt-4 text-xs" style={{ color: 'var(--color-text-faint)' }}>
         Projections are based on model pricing metadata. Open-weights models require self-hosted
         infrastructure costs not reflected here.
       </p>

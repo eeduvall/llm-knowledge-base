@@ -110,16 +110,16 @@ export function Navbar() {
   return (
     <nav
       aria-label="Main navigation"
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-white/5 backdrop-blur-sm"
+      className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between border-b border-white/5 px-6 py-4 backdrop-blur-sm"
       style={{ backgroundColor: 'rgba(5, 5, 16, 0.85)' }}
     >
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 group" aria-label="LLM Knowledge Base home">
-        <div className="w-7 h-7 flex items-center justify-center" aria-hidden="true">
+      <Link href="/" className="group flex items-center gap-2" aria-label="LLM Knowledge Base home">
+        <div className="flex h-7 w-7 items-center justify-center" aria-hidden="true">
           <GalaxyLogo />
         </div>
         <span
-          className="font-display font-bold text-white text-base tracking-tight"
+          className="font-display text-base font-bold tracking-tight text-white"
           style={{ fontFamily: 'Syne, sans-serif' }}
         >
           LLM Knowledge Base
@@ -128,12 +128,12 @@ export function Navbar() {
 
       {/* Nav links */}
       <div className="flex items-center gap-8">
-        <ul className="hidden md:flex items-center gap-8 list-none">
+        <ul className="hidden list-none items-center gap-8 md:flex">
           {NAV_ITEMS.map((item) => (
             <li key={item.label}>
               <Link
                 href={item.href}
-                className="text-sm text-white/70 hover:text-white transition-colors duration-200"
+                className="text-sm text-white/70 transition-colors duration-200 hover:text-white"
               >
                 {item.label}
               </Link>
@@ -142,7 +142,7 @@ export function Navbar() {
         </ul>
         <Link
           href="/sign-in"
-          className="text-sm font-medium text-white border border-white/30 rounded px-4 py-1.5 hover:border-white/60 hover:bg-white/5 transition-all duration-200"
+          className="rounded border border-white/30 px-4 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:border-white/60 hover:bg-white/5"
         >
           Sign in
         </Link>

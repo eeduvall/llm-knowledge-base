@@ -55,11 +55,11 @@ function Section({ title, children, defaultOpen = true }: SectionProps) {
     <div className="flex flex-col">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center justify-between w-full px-1 py-1 text-left group"
+        className="group flex w-full items-center justify-between px-1 py-1 text-left"
         aria-expanded={open}
       >
         <span
-          className="text-xs font-mono font-medium tracking-widest uppercase"
+          className="font-mono text-xs font-medium uppercase tracking-widest"
           style={{ color: 'rgba(255,255,255,0.35)' }}
         >
           {title}
@@ -86,7 +86,7 @@ function Section({ title, children, defaultOpen = true }: SectionProps) {
         </svg>
       </button>
 
-      {open && <div className="flex flex-col gap-1 mt-1">{children}</div>}
+      {open && <div className="mt-1 flex flex-col gap-1">{children}</div>}
     </div>
   );
 }
@@ -104,7 +104,7 @@ function Pill({ label, active, color = 'var(--color-primary)', onClick }: PillPr
   return (
     <button
       onClick={onClick}
-      className="w-fit px-3 py-1 rounded text-xs font-mono font-medium capitalize transition-all duration-200"
+      className="w-fit rounded px-3 py-1 font-mono text-xs font-medium capitalize transition-all duration-200"
       style={{
         backgroundColor: active ? `${color}22` : 'rgba(255,255,255,0.05)',
         color: active ? color : 'rgba(255,255,255,0.5)',
@@ -176,7 +176,7 @@ export function FilterBar({
 
   return (
     <aside
-      className="absolute top-0 left-0 h-full z-10 flex flex-col overflow-y-auto"
+      className="absolute left-0 top-0 z-10 flex h-full flex-col overflow-y-auto"
       style={{
         width: '13rem',
         backgroundColor: 'rgba(5,5,16,0.88)',
@@ -186,18 +186,18 @@ export function FilterBar({
     >
       {/* Panel header */}
       <div
-        className="px-4 py-3 border-b flex-shrink-0"
+        className="flex-shrink-0 border-b px-4 py-3"
         style={{ borderColor: 'rgba(255,255,255,0.07)' }}
       >
         <span
-          className="text-xs font-mono font-semibold tracking-widest uppercase"
+          className="font-mono text-xs font-semibold uppercase tracking-widest"
           style={{ color: 'var(--color-primary)' }}
         >
           Explorer
         </span>
       </div>
 
-      <div className="flex flex-col gap-4 px-4 py-4 flex-1">
+      <div className="flex flex-1 flex-col gap-4 px-4 py-4">
         {/* ── Search ── */}
         <div className="relative">
           <svg
@@ -206,7 +206,7 @@ export function FilterBar({
             viewBox="0 0 12 12"
             fill="none"
             aria-hidden="true"
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
+            className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2"
             style={{ color: 'rgba(255,255,255,0.3)' }}
           >
             <circle cx="5" cy="5" r="3.5" stroke="currentColor" strokeWidth="1.2" />
@@ -217,7 +217,7 @@ export function FilterBar({
             placeholder="Search models…"
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
-            className="w-full pl-7 pr-3 py-2 text-xs text-white placeholder-white/30 rounded outline-none transition-colors duration-200"
+            className="w-full rounded py-2 pl-7 pr-3 text-xs text-white placeholder-white/30 outline-none transition-colors duration-200"
             style={{
               backgroundColor: 'rgba(255,255,255,0.05)',
               border: '1px solid rgba(255,255,255,0.1)',
@@ -310,12 +310,12 @@ export function FilterBar({
       {/* Active filter summary badge */}
       {hasActiveFilters && (
         <div
-          className="px-4 py-3 border-t flex-shrink-0"
+          className="flex-shrink-0 border-t px-4 py-3"
           style={{ borderColor: 'rgba(255,255,255,0.07)' }}
         >
           <button
             onClick={onClearAllFilters}
-            className="text-xs font-mono transition-colors duration-200"
+            className="font-mono text-xs transition-colors duration-200"
             style={{ color: 'var(--color-accent)' }}
           >
             Clear all filters

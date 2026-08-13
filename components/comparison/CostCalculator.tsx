@@ -60,15 +60,15 @@ export function CostCalculator({ models }: Props) {
       className="rounded-xl p-5 sm:p-6"
       style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
-      <h2 className="text-base font-semibold mb-1" style={{ color: 'var(--color-text)' }}>
+      <h2 className="mb-1 text-base font-semibold" style={{ color: 'var(--color-text)' }}>
         Cost-Per-Task Calculator
       </h2>
-      <p className="text-xs mb-5" style={{ color: 'var(--color-text-muted)' }}>
+      <p className="mb-5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
         Estimate the cost of running your workload across selected models.
       </p>
 
       {/* Controls */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Task type */}
         <div className="flex flex-col gap-1">
           <label
@@ -112,7 +112,7 @@ export function CostCalculator({ models }: Props) {
             min={1}
             value={inputTokens}
             onChange={(e) => setInputTokens(Math.max(1, Number(e.target.value)))}
-            className="rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus-visible:ring-2"
+            className="rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus-visible:ring-2"
             style={{
               background: 'var(--color-panel-bg)',
               border: '1px solid var(--color-border)',
@@ -136,7 +136,7 @@ export function CostCalculator({ models }: Props) {
             min={1}
             value={outputTokens}
             onChange={(e) => setOutputTokens(Math.max(1, Number(e.target.value)))}
-            className="rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus-visible:ring-2"
+            className="rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus-visible:ring-2"
             style={{
               background: 'var(--color-panel-bg)',
               border: '1px solid var(--color-border)',
@@ -160,7 +160,7 @@ export function CostCalculator({ models }: Props) {
             min={1}
             value={tasksPerMonth}
             onChange={(e) => setTasksPerMonth(Math.max(1, Number(e.target.value)))}
-            className="rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus-visible:ring-2"
+            className="rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus-visible:ring-2"
             style={{
               background: 'var(--color-panel-bg)',
               border: '1px solid var(--color-border)',
@@ -172,7 +172,7 @@ export function CostCalculator({ models }: Props) {
 
       {/* Results table */}
       {models.length === 0 ? (
-        <p className="text-sm text-center py-6" style={{ color: 'var(--color-text-faint)' }}>
+        <p className="py-6 text-center text-sm" style={{ color: 'var(--color-text-faint)' }}>
           Select models above to see cost estimates.
         </p>
       ) : (
@@ -180,7 +180,7 @@ export function CostCalculator({ models }: Props) {
           className="overflow-x-auto rounded-lg"
           style={{ border: '1px solid var(--color-border)' }}
         >
-          <table className="w-full text-sm border-collapse" style={{ minWidth: '560px' }}>
+          <table className="w-full border-collapse text-sm" style={{ minWidth: '560px' }}>
             <thead>
               <tr
                 style={{
@@ -189,31 +189,31 @@ export function CostCalculator({ models }: Props) {
                 }}
               >
                 <th
-                  className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-widest"
+                  className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   Model
                 </th>
                 <th
-                  className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-widest"
+                  className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-widest"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   Cost / Task
                 </th>
                 <th
-                  className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-widest"
+                  className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-widest"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   Cost / 1M Tasks
                 </th>
                 <th
-                  className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-widest"
+                  className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-widest"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   Monthly Spend
                 </th>
                 <th
-                  className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-widest"
+                  className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-widest"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   Annual Spend
@@ -321,7 +321,7 @@ export function CostCalculator({ models }: Props) {
         </div>
       )}
 
-      <p className="text-xs mt-3" style={{ color: 'var(--color-text-faint)' }}>
+      <p className="mt-3 text-xs" style={{ color: 'var(--color-text-faint)' }}>
         Prices are per 1M tokens from model metadata. Actual costs may vary. Open-weights models
         require self-hosted infrastructure.
       </p>

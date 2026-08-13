@@ -52,7 +52,7 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
               <div
                 key={model.id}
                 role="listitem"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm"
+                className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm"
                 style={{
                   background: `${color}18`,
                   border: `1px solid ${color}44`,
@@ -64,7 +64,7 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
                 <button
                   type="button"
                   onClick={() => onRemove(model.id)}
-                  className="ml-1 rounded-full w-4 h-4 flex items-center justify-center text-xs transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2"
+                  className="ml-1 flex h-4 w-4 items-center justify-center rounded-full text-xs transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2"
                   style={{ color: 'var(--color-text-muted)' }}
                   aria-label={`Remove ${model.name}`}
                 >
@@ -95,7 +95,7 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
             }}
             onFocus={() => setOpen(true)}
             onBlur={() => setTimeout(() => setOpen(false), 150)}
-            className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus-visible:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
             style={{
               background: 'var(--color-surface)',
               border: '1px solid var(--color-border)',
@@ -103,7 +103,7 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
             }}
           />
           <span
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs pointer-events-none"
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs"
             style={{ color: 'var(--color-text-faint)' }}
           >
             {selectedIds.length}/{MAX_MODELS}
@@ -116,7 +116,7 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
             id={LISTBOX_ID}
             role="listbox"
             aria-label="Model search results"
-            className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden shadow-xl max-h-64 overflow-y-auto"
+            className="absolute z-50 mt-1 max-h-64 w-full overflow-hidden overflow-y-auto rounded-xl shadow-xl"
             style={{ background: 'var(--color-nav-bg)', border: '1px solid var(--color-border)' }}
           >
             {filtered.length === 0 ? (
@@ -135,7 +135,7 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
                       aria-selected={isSelected}
                       disabled={isSelected}
                       onClick={() => handleSelect(model.id)}
-                      className="w-full text-left px-4 py-3 flex items-center gap-3 transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2"
+                      className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-150 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-40"
                       style={{
                         background: isSelected ? 'var(--color-panel-bg-alt)' : 'transparent',
                         color: 'var(--color-text)',
@@ -151,12 +151,12 @@ export function ModelSelector({ allModels, selectedIds, onAdd, onRemove }: Props
                       }}
                     >
                       <span
-                        className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                        className="flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold"
                         style={{ background: `${color}22`, color, border: `1px solid ${color}44` }}
                       >
                         {model.provider}
                       </span>
-                      <span className="font-medium text-sm">{model.name}</span>
+                      <span className="text-sm font-medium">{model.name}</span>
                       <span
                         className="ml-auto text-xs"
                         style={{ color: 'var(--color-text-faint)' }}

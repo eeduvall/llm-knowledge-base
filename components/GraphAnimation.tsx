@@ -223,7 +223,7 @@ export function GraphAnimation() {
   return (
     <canvas
       ref={canvasRef}
-      className="w-full h-full"
+      className="h-full w-full"
       style={{ display: 'block' }}
       aria-hidden="true"
     />

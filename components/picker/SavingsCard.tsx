@@ -36,7 +36,7 @@ export function SavingsCard({ baseline, alternative }: Props) {
 
   return (
     <div
-      className="rounded-xl p-5 border flex flex-col gap-4"
+      className="flex flex-col gap-4 rounded-xl border p-5"
       style={{
         backgroundColor: hasSavings ? 'rgba(0,212,255,0.06)' : 'rgba(255,255,255,0.03)',
         borderColor: hasSavings ? 'rgba(0,212,255,0.25)' : 'rgba(255,255,255,0.08)',
@@ -45,7 +45,7 @@ export function SavingsCard({ baseline, alternative }: Props) {
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-mono mb-1" style={{ color: 'var(--color-text-faint)' }}>
+          <p className="mb-1 font-mono text-xs" style={{ color: 'var(--color-text-faint)' }}>
             Switch from
           </p>
           <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
@@ -61,7 +61,7 @@ export function SavingsCard({ baseline, alternative }: Props) {
         </div>
 
         <div className="text-right">
-          <p className="text-xs font-mono mb-1" style={{ color: 'var(--color-text-faint)' }}>
+          <p className="mb-1 font-mono text-xs" style={{ color: 'var(--color-text-faint)' }}>
             Switch to
           </p>
           <p className="text-sm font-semibold" style={{ color: 'var(--color-secondary)' }}>
@@ -76,7 +76,7 @@ export function SavingsCard({ baseline, alternative }: Props) {
       {/* Savings figures */}
       {hasSavings && monthlySavings !== null && annualSavings !== null && (
         <div
-          className="rounded-lg p-3 flex flex-wrap gap-4 justify-around"
+          className="flex flex-wrap justify-around gap-4 rounded-lg p-3"
           style={{ backgroundColor: 'rgba(0,212,255,0.08)' }}
         >
           <div className="text-center">
@@ -120,14 +120,14 @@ export function SavingsCard({ baseline, alternative }: Props) {
       {/* Capability gaps */}
       {alternative.missingCapabilities.length > 0 && (
         <div>
-          <p className="text-xs font-medium mb-1" style={{ color: 'var(--color-accent)' }}>
+          <p className="mb-1 text-xs font-medium" style={{ color: 'var(--color-accent)' }}>
             ⚠ Capability trade-offs
           </p>
           <ul className="flex flex-wrap gap-1">
             {alternative.missingCapabilities.map((cap) => (
               <li
                 key={cap}
-                className="text-xs px-2 py-0.5 rounded"
+                className="rounded px-2 py-0.5 text-xs"
                 style={{
                   backgroundColor: 'rgba(255,107,157,0.12)',
                   color: 'var(--color-accent)',

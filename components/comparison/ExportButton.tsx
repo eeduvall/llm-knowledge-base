@@ -20,7 +20,7 @@ export function ExportButton({ models, disabled = false }: Props) {
       type="button"
       onClick={handleExport}
       disabled={disabled || models.length === 0}
-      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border focus:outline-none focus-visible:ring-2 disabled:opacity-40 disabled:cursor-not-allowed"
+      className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-40"
       style={{
         background: 'var(--color-surface)',
         borderColor: 'var(--color-border)',

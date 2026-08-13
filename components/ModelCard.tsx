@@ -18,7 +18,7 @@ export function ModelCard({ model }: Props) {
   return (
     <Link
       href={`/models/${model.id}`}
-      className="block rounded-xl p-5 border transition-all duration-200 hover:border-white/20 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+      className="block rounded-xl border p-5 transition-all duration-200 hover:border-white/20 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
       style={{
         backgroundColor: 'var(--color-surface)',
         borderColor: 'var(--color-border)',
@@ -26,9 +26,9 @@ export function ModelCard({ model }: Props) {
       aria-label={`View details for ${model.name}`}
     >
       {/* Provider + name */}
-      <div className="flex flex-col gap-1 mb-3">
+      <div className="mb-3 flex flex-col gap-1">
         <span
-          className="text-xs font-mono font-medium tracking-widest uppercase"
+          className="font-mono text-xs font-medium uppercase tracking-widest"
           style={{ color: providerColor }}
         >
           {model.provider}
@@ -36,13 +36,13 @@ export function ModelCard({ model }: Props) {
         <h2 className="text-lg font-bold" style={{ color: 'var(--color-text)' }}>
           {model.name}
         </h2>
-        <span className="text-xs font-mono" style={{ color: 'var(--color-text-faint)' }}>
+        <span className="font-mono text-xs" style={{ color: 'var(--color-text-faint)' }}>
           {model.id}
         </span>
       </div>
 
       {/* Key stats */}
-      <dl className="flex flex-wrap gap-x-5 gap-y-1 text-xs mb-3">
+      <dl className="mb-3 flex flex-wrap gap-x-5 gap-y-1 text-xs">
         <div className="flex gap-1">
           <dt style={{ color: 'var(--color-text-faint)' }}>Context</dt>
           <dd style={{ color: 'var(--color-text-muted)' }}>
@@ -72,7 +72,7 @@ export function ModelCard({ model }: Props) {
           {model.capabilities.slice(0, 4).map((cap) => (
             <span
               key={cap}
-              className="px-2 py-0.5 rounded text-xs font-mono"
+              className="rounded px-2 py-0.5 font-mono text-xs"
               style={{
                 backgroundColor: 'var(--color-primary-subtle)',
                 color: 'var(--color-primary-light)',
@@ -84,7 +84,7 @@ export function ModelCard({ model }: Props) {
           ))}
           {model.capabilities.length > 4 && (
             <span
-              className="px-2 py-0.5 rounded text-xs font-mono"
+              className="rounded px-2 py-0.5 font-mono text-xs"
               style={{
                 backgroundColor: 'rgba(255,255,255,0.05)',
                 color: 'var(--color-text-faint)',

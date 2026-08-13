@@ -43,14 +43,14 @@ export default function GraphPage() {
       >
         {/* Background gradient */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="pointer-events-none absolute inset-0"
           style={{
             background:
               'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(108,99,255,0.06) 0%, transparent 70%)',
           }}
         />
 
-        <div className="relative w-full h-full">
+        <div className="relative h-full w-full">
           {/* GraphExplorer fetches live data from /api/models via TanStack Query,
               using initialModels as the SSR seed so the graph renders immediately. */}
           <Suspense fallback={null}>

@@ -290,7 +290,7 @@ export function GraphCanvas({
   onHoverNode,
 }: Props) {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative h-full w-full">
       <Canvas
         camera={{ position: [0, 0, 350], fov: 60, near: 1, far: 2000 }}
         gl={{

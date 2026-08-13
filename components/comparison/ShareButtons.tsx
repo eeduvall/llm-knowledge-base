@@ -38,7 +38,7 @@ export function ShareButtons({ url, modelNames }: Props) {
       <button
         type="button"
         onClick={handleCopy}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border focus:outline-none focus-visible:ring-2"
+        className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2"
         style={{
           background: copied ? 'var(--color-panel-bg-alt)' : 'var(--color-surface)',
           borderColor: copied ? 'var(--color-secondary)' : 'var(--color-border)',
@@ -83,7 +83,7 @@ export function ShareButtons({ url, modelNames }: Props) {
         href={twitterUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border focus:outline-none focus-visible:ring-2"
+        className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2"
         style={{
           background: 'var(--color-surface)',
           borderColor: 'var(--color-border)',
