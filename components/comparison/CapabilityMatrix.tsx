@@ -80,10 +80,7 @@ export function CapabilityMatrix({ models }: Props) {
   };
 
   return (
-    <div
-      className="rounded-xl overflow-hidden"
-      style={{ border: '1px solid var(--color-border)' }}
-    >
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
       <div className="overflow-x-auto">
         <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
           <thead>
@@ -116,11 +113,7 @@ export function CapabilityMatrix({ models }: Props) {
           <tbody>
             {/* ── Capabilities section ── */}
             <tr>
-              <td
-                colSpan={models.length + 1}
-                className="px-4 py-2"
-                style={sectionHeaderStyle}
-              >
+              <td colSpan={models.length + 1} className="px-4 py-2" style={sectionHeaderStyle}>
                 Capabilities
               </td>
             </tr>
@@ -143,11 +136,7 @@ export function CapabilityMatrix({ models }: Props) {
 
             {/* ── Modalities section ── */}
             <tr>
-              <td
-                colSpan={models.length + 1}
-                className="px-4 py-2"
-                style={sectionHeaderStyle}
-              >
+              <td colSpan={models.length + 1} className="px-4 py-2" style={sectionHeaderStyle}>
                 Modalities
               </td>
             </tr>
@@ -170,20 +159,13 @@ export function CapabilityMatrix({ models }: Props) {
 
             {/* ── License section ── */}
             <tr>
-              <td
-                colSpan={models.length + 1}
-                className="px-4 py-2"
-                style={sectionHeaderStyle}
-              >
+              <td colSpan={models.length + 1} className="px-4 py-2" style={sectionHeaderStyle}>
                 License
               </td>
             </tr>
 
             <tr style={rowStyle}>
-              <td
-                className="px-4 py-3 font-medium"
-                style={{ color: 'var(--color-text-muted)' }}
-              >
+              <td className="px-4 py-3 font-medium" style={{ color: 'var(--color-text-muted)' }}>
                 License type
               </td>
               {models.map((m) => (
@@ -209,20 +191,13 @@ export function CapabilityMatrix({ models }: Props) {
 
             {/* ── Context window section ── */}
             <tr>
-              <td
-                colSpan={models.length + 1}
-                className="px-4 py-2"
-                style={sectionHeaderStyle}
-              >
+              <td colSpan={models.length + 1} className="px-4 py-2" style={sectionHeaderStyle}>
                 Context
               </td>
             </tr>
 
             <tr style={rowStyle}>
-              <td
-                className="px-4 py-3 font-medium"
-                style={{ color: 'var(--color-text-muted)' }}
-              >
+              <td className="px-4 py-3 font-medium" style={{ color: 'var(--color-text-muted)' }}>
                 Context window
               </td>
               {models.map((m) => {

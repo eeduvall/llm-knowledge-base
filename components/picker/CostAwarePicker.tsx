@@ -3,11 +3,12 @@
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import type { Model } from '@/lib/models';
-import {
-  rankModelsByConstraints,
-  scoreModelByCost,
+import { rankModelsByConstraints, scoreModelByCost } from '@/lib/cost-aware-picker';
+import type {
+  CostConstraints,
+  CostScoredModel,
+  ConstraintViolation,
 } from '@/lib/cost-aware-picker';
-import type { CostConstraints, CostScoredModel, ConstraintViolation } from '@/lib/cost-aware-picker';
 import { SavingsCard } from '@/components/picker/SavingsCard';
 
 type Props = {
@@ -81,7 +82,15 @@ type ResultCardProps = {
 };
 
 function ResultCard({ result, rank, isCheapest, isBestValue }: ResultCardProps) {
-  const { model, projectedMonthlyCost, score, reason, missingCapabilities, missingModalities, meetsAllConstraints } = result;
+  const {
+    model,
+    projectedMonthlyCost,
+    score,
+    reason,
+    missingCapabilities,
+    missingModalities,
+    meetsAllConstraints,
+  } = result;
   const badge = isBestValue ? 'Best Value' : isCheapest ? 'Cheapest' : null;
 
   return (
@@ -122,7 +131,10 @@ function ResultCard({ result, rank, isCheapest, isBestValue }: ResultCardProps) 
               {badge}
             </span>
           )}
-          <span className="text-sm font-mono font-semibold" style={{ color: 'var(--color-secondary)' }}>
+          <span
+            className="text-sm font-mono font-semibold"
+            style={{ color: 'var(--color-secondary)' }}
+          >
             {formatCost(projectedMonthlyCost)}
           </span>
           <span className="text-xs" style={{ color: 'var(--color-text-faint)' }}>
@@ -165,7 +177,11 @@ function ResultCard({ result, rank, isCheapest, isBestValue }: ResultCardProps) 
         <Link
           href={`/comparison?models=${model.id}`}
           className="text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
-          style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}
+          style={{
+            background: 'var(--color-surface)',
+            color: 'var(--color-text-muted)',
+            border: '1px solid var(--color-border)',
+          }}
         >
           Compare
         </Link>
@@ -226,9 +242,9 @@ export function CostAwarePicker({ models }: Props) {
   // Baseline for savings comparison: most expensive compliant model
   const baselineForSavings =
     result && result.ranked.filter((r) => r.meetsAllConstraints).length > 1
-      ? result.ranked
+      ? (result.ranked
           .filter((r) => r.meetsAllConstraints && r.projectedMonthlyCost !== null)
-          .sort((a, b) => (b.projectedMonthlyCost ?? 0) - (a.projectedMonthlyCost ?? 0))[0] ?? null
+          .sort((a, b) => (b.projectedMonthlyCost ?? 0) - (a.projectedMonthlyCost ?? 0))[0] ?? null)
       : null;
 
   return (
@@ -238,14 +254,21 @@ export function CostAwarePicker({ models }: Props) {
         className="rounded-xl p-5 sm:p-6"
         style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
       >
-        <h2 className="text-sm font-semibold uppercase tracking-widest mb-5" style={{ color: 'var(--color-text-muted)' }}>
+        <h2
+          className="text-sm font-semibold uppercase tracking-widest mb-5"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
           Your Constraints
         </h2>
 
         <div className="flex flex-col gap-5">
           {/* Budget */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="max-budget" className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+            <label
+              htmlFor="max-budget"
+              className="text-xs font-medium"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
               Max monthly budget (USD) — leave blank for no limit
             </label>
             <input
@@ -267,7 +290,11 @@ export function CostAwarePicker({ models }: Props) {
           {/* Token volumes */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <label htmlFor="input-tokens" className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+              <label
+                htmlFor="input-tokens"
+                className="text-xs font-medium"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
                 Monthly input tokens
               </label>
               <input
@@ -285,7 +312,11 @@ export function CostAwarePicker({ models }: Props) {
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label htmlFor="output-tokens" className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+              <label
+                htmlFor="output-tokens"
+                className="text-xs font-medium"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
                 Monthly output tokens
               </label>
               <input
@@ -321,8 +352,7 @@ export function CostAwarePicker({ models }: Props) {
                       minContextWindow === opt.value
                         ? 'var(--color-primary)'
                         : 'var(--color-panel-bg)',
-                    color:
-                      minContextWindow === opt.value ? '#fff' : 'var(--color-text-muted)',
+                    color: minContextWindow === opt.value ? '#fff' : 'var(--color-text-muted)',
                     border: '1px solid var(--color-border)',
                   }}
                 >
@@ -432,10 +462,14 @@ export function CostAwarePicker({ models }: Props) {
 
           {result.ranked.length > 0 && (
             <>
-              <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>
+              <h2
+                className="text-sm font-semibold uppercase tracking-widest"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
                 {result.ranked.filter((r) => r.meetsAllConstraints).length} model
                 {result.ranked.filter((r) => r.meetsAllConstraints).length !== 1 ? 's' : ''} meet
-                {result.ranked.filter((r) => r.meetsAllConstraints).length === 1 ? 's' : ''} your constraints
+                {result.ranked.filter((r) => r.meetsAllConstraints).length === 1 ? 's' : ''} your
+                constraints
               </h2>
 
               {result.ranked.map((r, idx) => (
@@ -444,22 +478,30 @@ export function CostAwarePicker({ models }: Props) {
                   result={r}
                   rank={idx + 1}
                   isCheapest={result.cheapestCompliant?.model.id === r.model.id}
-                  isBestValue={result.bestValueCompliant?.model.id === r.model.id && result.cheapestCompliant?.model.id !== r.model.id}
+                  isBestValue={
+                    result.bestValueCompliant?.model.id === r.model.id &&
+                    result.cheapestCompliant?.model.id !== r.model.id
+                  }
                 />
               ))}
 
               {/* Savings comparison */}
-              {baselineForSavings && result.cheapestCompliant && baselineForSavings.model.id !== result.cheapestCompliant.model.id && (
-                <div className="mt-2">
-                  <h2 className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--color-text-muted)' }}>
-                    Potential savings
-                  </h2>
-                  <SavingsCard
-                    baseline={baselineForSavings}
-                    alternative={result.cheapestCompliant}
-                  />
-                </div>
-              )}
+              {baselineForSavings &&
+                result.cheapestCompliant &&
+                baselineForSavings.model.id !== result.cheapestCompliant.model.id && (
+                  <div className="mt-2">
+                    <h2
+                      className="text-sm font-semibold uppercase tracking-widest mb-3"
+                      style={{ color: 'var(--color-text-muted)' }}
+                    >
+                      Potential savings
+                    </h2>
+                    <SavingsCard
+                      baseline={baselineForSavings}
+                      alternative={result.cheapestCompliant}
+                    />
+                  </div>
+                )}
 
               {/* Link to full comparison */}
               {result.ranked.filter((r) => r.meetsAllConstraints).length >= 2 && (

@@ -13,7 +13,11 @@ async function fetchModels(): Promise<Model[]> {
 }
 
 export default function CostAwarePickerPage() {
-  const { data: models = [], isLoading, isError } = useQuery<Model[]>({
+  const {
+    data: models = [],
+    isLoading,
+    isError,
+  } = useQuery<Model[]>({
     queryKey: ['models'],
     queryFn: fetchModels,
   });

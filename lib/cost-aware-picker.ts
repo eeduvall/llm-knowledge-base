@@ -219,8 +219,7 @@ export function scoreModelByCost(model: Model, constraints: CostConstraints): Co
   // Penalise hard constraint violations
   if (hardViolations.length > 0) score -= hardViolations.length * 15;
 
-  const reason =
-    reasons.slice(0, 3).join('; ') || 'General-purpose model within your constraints.';
+  const reason = reasons.slice(0, 3).join('; ') || 'General-purpose model within your constraints.';
 
   return {
     model,
