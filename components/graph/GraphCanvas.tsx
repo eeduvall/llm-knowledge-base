@@ -67,7 +67,7 @@ function Scene({
     const timer = setTimeout(() => {
       const node = nodesRef.current.find((n) => n.id === highlightId);
       if (!node) return;
-      // Smoothly move the camera target toward the highlighted node
+      // Move the camera to look at the highlighted node
       const target = new THREE.Vector3(node.x, node.y, node.z);
       camera.position.set(target.x, target.y, target.z + 200);
       camera.lookAt(target);
@@ -79,6 +79,9 @@ function Scene({
   useFrame(() => {
     tickLayout(nodesRef.current, edgesRef.current, 0, 0);
   });
+
+  // Stable callback for clearing hover — defined once outside the map
+  const handlePointerOut = useCallback(() => onHoverNode(null), [onHoverNode]);
 
   return (
     <>
@@ -118,7 +121,7 @@ function Scene({
           isHovered={node.id === hoveredId}
           isDimmed={!visibleIds.has(node.id)}
           onPointerOver={onHoverNode}
-          onPointerOut={useCallback(() => onHoverNode(null), [onHoverNode])}
+          onPointerOut={handlePointerOut}
           onClick={onSelectNode}
         />
       ))}
@@ -132,6 +135,17 @@ function Scene({
           mipmapBlur
         />
       </EffectComposer>
+
+      {/* Orbit controls — mouse drag to rotate, scroll to zoom, right-click to pan */}
+      <OrbitControls
+        enableDamping
+        dampingFactor={0.08}
+        rotateSpeed={0.6}
+        zoomSpeed={0.8}
+        panSpeed={0.6}
+        minDistance={50}
+        maxDistance={800}
+      />
     </>
   );
 }
@@ -148,9 +162,7 @@ type LabelsProps = {
 };
 
 function Labels({ nodes, selectedId, hoveredId, visibleIds }: LabelsProps) {
-  // Labels are rendered as absolutely-positioned HTML elements via CSS
-  // transforms computed from the 3D positions projected to screen space.
-  // We use a simple approach: only show labels for selected/hovered/large nodes.
+  // Only show labels for selected/hovered/large nodes to avoid clutter.
   const labelNodes = useMemo(
     () =>
       nodes.filter(
@@ -166,11 +178,7 @@ function Labels({ nodes, selectedId, hoveredId, visibleIds }: LabelsProps) {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
       {labelNodes.map((node) => (
-        <NodeLabel
-          key={node.id}
-          node={node}
-          isSelected={node.id === selectedId}
-        />
+        <NodeLabel key={node.id} node={node} isSelected={node.id === selectedId} />
       ))}
     </div>
   );
@@ -182,8 +190,6 @@ type NodeLabelProps = {
 };
 
 function NodeLabel({ node, isSelected }: NodeLabelProps) {
-  // Position labels using CSS custom properties set by a useFrame hook.
-  // We use a ref to avoid re-renders on every frame.
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -191,7 +197,6 @@ function NodeLabel({ node, isSelected }: NodeLabelProps) {
       ref={ref}
       className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-xs pointer-events-none select-none"
       style={{
-        // Initial position — will be updated by the projection hook
         left: '50%',
         top: '50%',
         color: isSelected ? 'var(--color-text)' : 'var(--color-text-muted)',
