@@ -10,8 +10,10 @@ function makeNode(id: string, provider: string, family: string, x = 0, y = 0): G
     color: '#6C63FF',
     x,
     y,
+    z: 0,
     vx: 0,
     vy: 0,
+    vz: 0,
     radius: 6,
     pulseOffset: 0,
   };
