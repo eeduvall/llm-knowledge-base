@@ -9,6 +9,8 @@ import { StrengthsWeaknessesDiff } from '@/components/comparison/StrengthsWeakne
 import { ModelSelector } from '@/components/comparison/ModelSelector';
 import { ExportButton } from '@/components/comparison/ExportButton';
 import { ShareButtons } from '@/components/comparison/ShareButtons';
+import { CostCalculator } from '@/components/comparison/CostCalculator';
+import { ROIProjector } from '@/components/comparison/ROIProjector';
 import { compareModels } from '@/lib/comparison';
 import type { Model } from '@/lib/models';
 
@@ -19,7 +21,7 @@ async function fetchModels(): Promise<Model[]> {
   return data.models;
 }
 
-type Tab = 'table' | 'strengths';
+type Tab = 'table' | 'strengths' | 'cost';
 
 type Props = {
   initialIds: string[];
@@ -70,6 +72,7 @@ function ComparisonClient({ initialIds }: Props) {
   const tabs: { id: Tab; label: string }[] = [
     { id: 'table', label: 'Side-by-side Table' },
     { id: 'strengths', label: 'Strengths & Weaknesses' },
+    { id: 'cost', label: 'Cost & ROI' },
   ];
 
   return (
@@ -173,12 +176,21 @@ function ComparisonClient({ initialIds }: Props) {
         ) : (
           <div
             role="tabpanel"
-            aria-label={activeTab === 'table' ? 'Side-by-side Table' : 'Strengths & Weaknesses'}
+            aria-label={
+              activeTab === 'table'
+                ? 'Side-by-side Table'
+                : activeTab === 'strengths'
+                  ? 'Strengths & Weaknesses'
+                  : 'Cost & ROI'
+            }
           >
-            {activeTab === 'table' ? (
-              <ComparisonTable rows={comparison.rows} />
-            ) : (
-              <StrengthsWeaknessesDiff models={selectedModels} />
+            {activeTab === 'table' && <ComparisonTable rows={comparison.rows} />}
+            {activeTab === 'strengths' && <StrengthsWeaknessesDiff models={selectedModels} />}
+            {activeTab === 'cost' && (
+              <div className="flex flex-col gap-6">
+                <CostCalculator models={selectedModels} />
+                <ROIProjector models={selectedModels} />
+              </div>
             )}
           </div>
         )}
