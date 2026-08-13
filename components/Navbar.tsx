@@ -112,6 +112,20 @@ function MoonIcon() {
   )
 }
 
+type NavItem = {
+  label: string;
+  href: string;
+};
+
+const NAV_ITEMS: NavItem[] = [
+  { label: 'Graph', href: '/graph' },
+  { label: 'Picker', href: '/picker' },
+  { label: 'Cost Picker', href: '/picker/cost-aware' },
+  { label: 'Models', href: '/models' },
+  { label: 'Compare', href: '/comparison' },
+  { label: 'Changelog', href: '/changelog' },
+];
+
 export function Navbar() {
   const { theme, toggleTheme } = useTheme()
 
@@ -140,14 +154,14 @@ export function Navbar() {
       {/* Nav links */}
       <div className="flex items-center gap-4">
         <ul className="hidden md:flex items-center gap-8 list-none">
-          {(['Graph', 'Picker', 'Models', 'Compare', 'Changelog'] as const).map((item) => (
-            <li key={item}>
+          {NAV_ITEMS.map((item) => (
+            <li key={item.label}>
               <Link
-                href={item === 'Compare' ? '/comparison' : `/${item.toLowerCase()}`}
+                href={item.href}
                 className="text-sm transition-colors duration-200"
                 style={{ color: 'var(--color-text-muted)' }}
               >
-                {item}
+                {item.label}
               </Link>
             </li>
           ))}
