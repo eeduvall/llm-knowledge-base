@@ -9,6 +9,9 @@ import { StrengthsWeaknessesDiff } from '@/components/comparison/StrengthsWeakne
 import { ModelSelector } from '@/components/comparison/ModelSelector';
 import { ExportButton } from '@/components/comparison/ExportButton';
 import { ShareButtons } from '@/components/comparison/ShareButtons';
+import { CostCalculator } from '@/components/comparison/CostCalculator';
+import { ROIProjector } from '@/components/comparison/ROIProjector';
+import { CapabilityMatrix } from '@/components/comparison/CapabilityMatrix';
 import { compareModels } from '@/lib/comparison';
 import type { Model } from '@/lib/models';
 
@@ -19,7 +22,7 @@ async function fetchModels(): Promise<Model[]> {
   return data.models;
 }
 
-type Tab = 'table' | 'strengths';
+type Tab = 'table' | 'strengths' | 'cost' | 'capabilities';
 
 type Props = {
   initialIds: string[];
@@ -70,7 +73,11 @@ function ComparisonClient({ initialIds }: Props) {
   const tabs: { id: Tab; label: string }[] = [
     { id: 'table', label: 'Side-by-side Table' },
     { id: 'strengths', label: 'Strengths & Weaknesses' },
+    { id: 'cost', label: 'Cost & ROI' },
+    { id: 'capabilities', label: 'Capabilities' },
   ];
+
+  const tabPanelLabel = tabs.find((t) => t.id === activeTab)?.label ?? '';
 
   return (
     <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
@@ -141,7 +148,7 @@ function ComparisonClient({ initialIds }: Props) {
                   style={{
                     background:
                       activeTab === tab.id ? 'var(--color-primary)' : 'var(--color-surface)',
-                    color: activeTab === tab.id ? '#fff' : 'var(--color-text-muted)',
+                    color: activeTab === tab.id ? 'var(--color-text)' : 'var(--color-text-muted)',
                   }}
                 >
                   {tab.label}
@@ -171,15 +178,16 @@ function ComparisonClient({ initialIds }: Props) {
             </p>
           </div>
         ) : (
-          <div
-            role="tabpanel"
-            aria-label={activeTab === 'table' ? 'Side-by-side Table' : 'Strengths & Weaknesses'}
-          >
-            {activeTab === 'table' ? (
-              <ComparisonTable rows={comparison.rows} />
-            ) : (
-              <StrengthsWeaknessesDiff models={selectedModels} />
+          <div role="tabpanel" aria-label={tabPanelLabel}>
+            {activeTab === 'table' && <ComparisonTable rows={comparison.rows} />}
+            {activeTab === 'strengths' && <StrengthsWeaknessesDiff models={selectedModels} />}
+            {activeTab === 'cost' && (
+              <div className="flex flex-col gap-6">
+                <CostCalculator models={selectedModels} />
+                <ROIProjector models={selectedModels} />
+              </div>
             )}
+            {activeTab === 'capabilities' && <CapabilityMatrix models={selectedModels} />}
           </div>
         )}
       </div>
