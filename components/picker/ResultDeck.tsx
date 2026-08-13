@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { ScoredModel } from '@/lib/decision-tree';
+import { projectMonthlySpend } from '@/lib/cost-calculator';
 
 type Props = {
   results: ScoredModel[];
@@ -117,6 +118,51 @@ export function ResultDeck({ results, onReset }: Props) {
         ))}
       </ol>
 
+      {/* Savings insight */}
+      {results.length >= 2 &&
+        (() => {
+          const TASKS_PER_MONTH = 10_000;
+          const INPUT_TOKENS = 300;
+          const OUTPUT_TOKENS = 200;
+          const pricedResults = results.filter(
+            (r) => r.model.pricing.input !== null || r.model.pricing.output !== null,
+          );
+          if (pricedResults.length < 2) return null;
+          const spends = pricedResults.map((r) => ({
+            model: r.model,
+            monthly:
+              projectMonthlySpend(r.model, TASKS_PER_MONTH, INPUT_TOKENS, OUTPUT_TOKENS)
+                .monthlySpend ?? 0,
+          }));
+          const mostExpensive = spends.reduce((a, b) => (a.monthly > b.monthly ? a : b));
+          const cheapest = spends.reduce((a, b) => (a.monthly < b.monthly ? a : b));
+          if (mostExpensive.model.id === cheapest.model.id) return null;
+          const saving = mostExpensive.monthly - cheapest.monthly;
+          if (saving <= 0) return null;
+          return (
+            <div
+              className="rounded-xl p-4 border"
+              style={{
+                background: 'rgba(0,212,255,0.05)',
+                borderColor: 'rgba(0,212,255,0.2)',
+              }}
+            >
+              <p className="text-sm font-medium mb-1" style={{ color: 'var(--color-secondary)' }}>
+                💡 Savings Insight
+              </p>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                Switching from{' '}
+                <span style={{ color: 'var(--color-text)' }}>{mostExpensive.model.name}</span> to{' '}
+                <span style={{ color: 'var(--color-text)' }}>{cheapest.model.name}</span> saves{' '}
+                <span className="font-semibold" style={{ color: 'var(--color-secondary)' }}>
+                  ~${saving.toFixed(2)}/month
+                </span>{' '}
+                at {TASKS_PER_MONTH.toLocaleString()} tasks ({INPUT_TOKENS} input / {OUTPUT_TOKENS}{' '}
+                output tokens each).
+              </p>
+            </div>
+          );
+        })()}
       {/* Compare top picks CTA */}
       {results.length >= 2 && (
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
