@@ -41,6 +41,9 @@ type Props = {
   // Cluster mode
   clusterMode: ClusterMode;
   onSetClusterMode: (mode: ClusterMode) => void;
+
+  // Clear all filters
+  onClearAllFilters: () => void;
 };
 
 // ─── Collapsible section ──────────────────────────────────────────────────────
@@ -97,7 +100,7 @@ type PillProps = {
   onClick: () => void;
 };
 
-function Pill({ label, active, color = '#6C63FF', onClick }: PillProps) {
+function Pill({ label, active, color = 'var(--color-primary)', onClick }: PillProps) {
   return (
     <button
       onClick={onClick}
@@ -126,18 +129,18 @@ const CLUSTER_OPTIONS: { value: ClusterMode; label: string }[] = [
 // ─── Capability icon hints ────────────────────────────────────────────────────
 
 const CAPABILITY_COLORS: Record<string, string> = {
-  reasoning: '#6C63FF',
-  vision: '#00D4FF',
-  'tool-use': '#FF6B9D',
+  reasoning: 'var(--color-primary)',
+  vision: 'var(--color-secondary)',
+  'tool-use': 'var(--color-accent)',
   'structured-output': '#F7B731',
   code: '#9B8FFF',
-  'long-context': '#00D4FF',
+  'long-context': 'var(--color-secondary)',
 };
 
 const MODALITY_COLORS: Record<string, string> = {
-  text: '#6C63FF',
-  image: '#00D4FF',
-  audio: '#FF6B9D',
+  text: 'var(--color-primary)',
+  image: 'var(--color-secondary)',
+  audio: 'var(--color-accent)',
   video: '#F7B731',
   code: '#9B8FFF',
 };
@@ -161,7 +164,14 @@ export function FilterBar({
   onToggleLicense,
   clusterMode,
   onSetClusterMode,
+  onClearAllFilters,
 }: Props) {
+  const hasActiveFilters =
+    activeProvider !== null ||
+    activeCapabilities.length > 0 ||
+    activeModalities.length > 0 ||
+    activeLicenses.length > 0;
+
   return (
     <aside
       className="absolute top-0 left-0 h-full z-10 flex flex-col overflow-y-auto"
@@ -179,7 +189,7 @@ export function FilterBar({
       >
         <span
           className="text-xs font-mono font-semibold tracking-widest uppercase"
-          style={{ color: '#6C63FF' }}
+          style={{ color: 'var(--color-primary)' }}
         >
           Explorer
         </span>
@@ -219,11 +229,11 @@ export function FilterBar({
           <Pill
             label="All"
             active={activeProvider === null}
-            color="#6C63FF"
+            color="var(--color-primary)"
             onClick={() => onSelectProvider(null)}
           />
           {providers.map((provider) => {
-            const color = PROVIDER_COLORS[provider] ?? '#6C63FF';
+            const color = PROVIDER_COLORS[provider] ?? 'var(--color-primary)';
             return (
               <Pill
                 key={provider}
@@ -239,7 +249,7 @@ export function FilterBar({
         {/* ── Capability ── */}
         <Section title="Capability" defaultOpen={true}>
           {capabilities.map((cap) => {
-            const color = CAPABILITY_COLORS[cap] ?? '#6C63FF';
+            const color = CAPABILITY_COLORS[cap] ?? 'var(--color-primary)';
             return (
               <Pill
                 key={cap}
@@ -255,7 +265,7 @@ export function FilterBar({
         {/* ── Modality ── */}
         <Section title="Modality" defaultOpen={false}>
           {modalities.map((mod) => {
-            const color = MODALITY_COLORS[mod] ?? '#6C63FF';
+            const color = MODALITY_COLORS[mod] ?? 'var(--color-primary)';
             return (
               <Pill
                 key={mod}
@@ -288,7 +298,7 @@ export function FilterBar({
               key={value}
               label={label}
               active={clusterMode === value}
-              color="#00D4FF"
+              color="var(--color-secondary)"
               onClick={() => onSetClusterMode(value)}
             />
           ))}
@@ -296,23 +306,15 @@ export function FilterBar({
       </div>
 
       {/* Active filter summary badge */}
-      {(activeProvider !== null ||
-        activeCapabilities.length > 0 ||
-        activeModalities.length > 0 ||
-        activeLicenses.length > 0) && (
+      {hasActiveFilters && (
         <div
           className="px-4 py-3 border-t flex-shrink-0"
           style={{ borderColor: 'rgba(255,255,255,0.07)' }}
         >
           <button
-            onClick={() => {
-              onSelectProvider(null);
-              activeCapabilities.forEach(onToggleCapability);
-              activeModalities.forEach(onToggleModality);
-              activeLicenses.forEach(onToggleLicense);
-            }}
+            onClick={onClearAllFilters}
             className="text-xs font-mono transition-colors duration-200"
-            style={{ color: '#FF6B9D' }}
+            style={{ color: 'var(--color-accent)' }}
           >
             Clear all filters
           </button>
