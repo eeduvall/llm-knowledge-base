@@ -9,6 +9,11 @@ type Props = {
 };
 
 export function ResultDeck({ results, onReset }: Props) {
+  const topIds = results
+    .slice(0, 5)
+    .map((r) => r.model.id)
+    .join(',');
+
   return (
     <section
       className="w-full max-w-2xl mx-auto flex flex-col gap-6"
@@ -111,6 +116,30 @@ export function ResultDeck({ results, onReset }: Props) {
           </li>
         ))}
       </ol>
+
+      {/* Compare top picks CTA */}
+      {results.length >= 2 && (
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <Link
+            href={`/comparison?models=${topIds}`}
+            className="flex-1 text-center py-2.5 rounded-lg text-sm font-semibold transition-colors"
+            style={{ background: 'var(--color-primary)', color: '#fff' }}
+          >
+            Compare top picks side-by-side →
+          </Link>
+          <Link
+            href="/picker/cost-aware"
+            className="flex-1 text-center py-2.5 rounded-lg text-sm font-medium transition-colors"
+            style={{
+              background: 'var(--color-surface)',
+              color: 'var(--color-text-muted)',
+              border: '1px solid var(--color-border)',
+            }}
+          >
+            Find cheapest option →
+          </Link>
+        </div>
+      )}
     </section>
   );
 }
