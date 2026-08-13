@@ -5,8 +5,8 @@
 // GraphExplorer.tsx so Three.js never runs during server-side rendering.
 
 import { useRef, useEffect, useCallback, useMemo } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, Html } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import type { GraphNode, GraphEdge } from '@/lib/graph-layout';
@@ -33,6 +33,41 @@ type Props = {
 };
 
 // ---------------------------------------------------------------------------
+// NodeLabel — uses drei Html for correct 3-D → 2-D screen projection
+// ---------------------------------------------------------------------------
+
+type NodeLabelProps = {
+  node: GraphNode;
+  isSelected: boolean;
+};
+
+function NodeLabel({ node, isSelected }: NodeLabelProps) {
+  const r = node.radius * 0.12;
+  return (
+    // Html renders a DOM element anchored to the 3-D world position.
+    // occlude hides the label when the node is behind other objects.
+    <Html
+      position={[node.x, node.y + r * 1.8, node.z]}
+      center
+      style={{ pointerEvents: 'none', userSelect: 'none' }}
+    >
+      <span
+        style={{
+          fontSize: '10px',
+          fontFamily: 'var(--font-mono, monospace)',
+          whiteSpace: 'nowrap',
+          color: isSelected ? 'var(--color-text)' : 'var(--color-text-muted)',
+          fontWeight: isSelected ? 600 : 400,
+          textShadow: '0 1px 4px rgba(0,0,0,0.9)',
+        }}
+      >
+        {node.label}
+      </span>
+    </Html>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Inner scene — runs inside the R3F Canvas context
 // ---------------------------------------------------------------------------
 
@@ -50,7 +85,6 @@ function Scene({
 }: SceneProps) {
   const nodesRef = useRef<GraphNode[]>(nodes);
   const edgesRef = useRef<GraphEdge[]>(edges);
-  const { camera } = useThree();
 
   // Keep refs in sync with props so useFrame always has the latest data
   useEffect(() => {
@@ -61,27 +95,39 @@ function Scene({
     edgesRef.current = edges;
   }, [edges]);
 
-  // Pan camera to the highlighted node after the physics simulation settles
+  // Pan camera to the highlighted node after the physics simulation settles.
+  // The 1.5 s delay is intentional — the d3-force simulation needs time to
+  // reach stable positions from the initial spherical ring layout.
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   useEffect(() => {
     if (!highlightId) return;
     const timer = setTimeout(() => {
       const node = nodesRef.current.find((n) => n.id === highlightId);
-      if (!node) return;
-      // Move the camera to look at the highlighted node
+      if (!node || !cameraRef.current) return;
       const target = new THREE.Vector3(node.x, node.y, node.z);
-      camera.position.set(target.x, target.y, target.z + 200);
-      camera.lookAt(target);
+      cameraRef.current.position.set(target.x, target.y, target.z + 200);
+      cameraRef.current.lookAt(target);
     }, 1500);
     return () => clearTimeout(timer);
-  }, [highlightId, camera]);
+  }, [highlightId]);
 
   // Run the physics simulation every frame
-  useFrame(() => {
+  useFrame(({ camera }) => {
+    cameraRef.current = camera as THREE.PerspectiveCamera;
     tickLayout(nodesRef.current, edgesRef.current, 0, 0);
   });
 
   // Stable callback for clearing hover — defined once outside the map
   const handlePointerOut = useCallback(() => onHoverNode(null), [onHoverNode]);
+
+  // Only show labels for selected/hovered/prominent nodes to avoid clutter
+  const labelNodes = useMemo(
+    () =>
+      nodes.filter(
+        (n) => visibleIds.has(n.id) && (n.id === selectedId || n.id === hoveredId || n.radius >= 7),
+      ),
+    [nodes, selectedId, hoveredId, visibleIds],
+  );
 
   return (
     <>
@@ -126,6 +172,11 @@ function Scene({
         />
       ))}
 
+      {/* HTML labels — drei Html anchors each label to its node's 3-D world position */}
+      {labelNodes.map((node) => (
+        <NodeLabel key={node.id} node={node} isSelected={node.id === selectedId} />
+      ))}
+
       {/* Post-processing: Bloom for the neural glow effect */}
       <EffectComposer>
         <Bloom intensity={1.5} luminanceThreshold={0.2} luminanceSmoothing={0.025} mipmapBlur />
@@ -142,63 +193,6 @@ function Scene({
         maxDistance={800}
       />
     </>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Labels overlay — rendered in HTML on top of the WebGL canvas
-// ---------------------------------------------------------------------------
-
-type LabelsProps = {
-  nodes: GraphNode[];
-  selectedId: string | null;
-  hoveredId: string | null;
-  visibleIds: Set<string>;
-};
-
-function Labels({ nodes, selectedId, hoveredId, visibleIds }: LabelsProps) {
-  // Only show labels for selected/hovered/large nodes to avoid clutter.
-  const labelNodes = useMemo(
-    () =>
-      nodes.filter(
-        (n) => visibleIds.has(n.id) && (n.id === selectedId || n.id === hoveredId || n.radius >= 7),
-      ),
-    [nodes, selectedId, hoveredId, visibleIds],
-  );
-
-  if (labelNodes.length === 0) return null;
-
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {labelNodes.map((node) => (
-        <NodeLabel key={node.id} node={node} isSelected={node.id === selectedId} />
-      ))}
-    </div>
-  );
-}
-
-type NodeLabelProps = {
-  node: GraphNode;
-  isSelected: boolean;
-};
-
-function NodeLabel({ node, isSelected }: NodeLabelProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  return (
-    <div
-      ref={ref}
-      className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-xs pointer-events-none select-none"
-      style={{
-        left: '50%',
-        top: '50%',
-        color: isSelected ? 'var(--color-text)' : 'var(--color-text-muted)',
-        fontWeight: isSelected ? 600 : 400,
-        textShadow: '0 1px 4px rgba(0,0,0,0.8)',
-      }}
-    >
-      {node.label}
-    </div>
   );
 }
 
@@ -318,9 +312,6 @@ export function GraphCanvas({
           onHoverNode={onHoverNode}
         />
       </Canvas>
-
-      {/* HTML labels overlay */}
-      <Labels nodes={nodes} selectedId={selectedId} hoveredId={hoveredId} visibleIds={visibleIds} />
 
       {/* Keyboard navigation overlay */}
       <KeyboardNav

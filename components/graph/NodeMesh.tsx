@@ -3,7 +3,7 @@
 // NodeMesh — individual LLM node rendered as a glowing icosahedron sphere.
 // This is a React Three Fiber component; it must only be used inside a <Canvas>.
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { GraphNode } from '@/lib/graph-layout';
@@ -34,37 +34,61 @@ export function NodeMesh({
 
   const nodeColor = useMemo(() => new THREE.Color(node.color), [node.color]);
 
+  // Shared geometry — one icosahedron shape reused for both core and glow meshes.
+  // Stored in useMemo so it is created once and disposed on unmount.
+  const r = node.radius * 0.12; // scale world-space radius to scene units
+  const geometry = useMemo(() => new THREE.IcosahedronGeometry(r, 2), [r]);
+
   // Core material — emissive so it glows through the Bloom pass
-  const coreMaterial = useMemo(() => {
-    const mat = new THREE.MeshStandardMaterial({
-      color: nodeColor,
-      emissive: nodeColor,
-      emissiveIntensity: isSelected ? 2.5 : isHovered ? 2.0 : 1.2,
-      roughness: 0.2,
-      metalness: 0.6,
-      transparent: true,
-      opacity: isDimmed ? 0.15 : 1.0,
-    });
-    return mat;
-  }, [nodeColor, isSelected, isHovered, isDimmed]);
+  const coreMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: nodeColor,
+        emissive: nodeColor,
+        emissiveIntensity: isSelected ? 2.5 : isHovered ? 2.0 : 1.2,
+        roughness: 0.2,
+        metalness: 0.6,
+        transparent: true,
+        opacity: isDimmed ? 0.15 : 1.0,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nodeColor, isDimmed],
+  );
 
   // Outer glow shell — larger, very transparent sphere
-  const glowMaterial = useMemo(() => {
-    const mat = new THREE.MeshBasicMaterial({
-      color: nodeColor,
-      transparent: true,
-      opacity: isDimmed ? 0.02 : isSelected ? 0.12 : isHovered ? 0.1 : 0.06,
-      side: THREE.BackSide,
-      depthWrite: false,
-    });
-    return mat;
-  }, [nodeColor, isSelected, isHovered, isDimmed]);
+  const glowMaterial = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: nodeColor,
+        transparent: true,
+        opacity: isDimmed ? 0.02 : isSelected ? 0.12 : isHovered ? 0.1 : 0.06,
+        side: THREE.BackSide,
+        depthWrite: false,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nodeColor, isDimmed],
+  );
 
-  // Dispose materials on unmount
-  // (geometries are shared via useMemo and disposed separately)
-  // Note: materials are recreated when deps change; the old ones are GC'd.
-  // For a production app we'd track and dispose them explicitly, but since
-  // the node count is small (< 50) this is acceptable.
+  // Dispose geometry and materials when the component unmounts or when
+  // the memoised objects are replaced (dep changes trigger a new useMemo,
+  // so the cleanup runs before the next value is created).
+  useEffect(() => {
+    return () => {
+      geometry.dispose();
+    };
+  }, [geometry]);
+
+  useEffect(() => {
+    return () => {
+      coreMaterial.dispose();
+    };
+  }, [coreMaterial]);
+
+  useEffect(() => {
+    return () => {
+      glowMaterial.dispose();
+    };
+  }, [glowMaterial]);
 
   useFrame((_, delta) => {
     if (!meshRef.current || !glowRef.current) return;
@@ -82,7 +106,7 @@ export function NodeMesh({
     meshRef.current.position.set(node.x, node.y, node.z);
     glowRef.current.position.set(node.x, node.y, node.z);
 
-    // Update emissive intensity reactively
+    // Update emissive intensity reactively (avoids recreating the material)
     (meshRef.current.material as THREE.MeshStandardMaterial).emissiveIntensity = isSelected
       ? 2.5
       : isHovered
@@ -90,14 +114,13 @@ export function NodeMesh({
         : 1.2;
   });
 
-  const r = node.radius * 0.12; // scale world-space radius to scene units
-
   return (
     <group>
       {/* Core sphere */}
       <mesh
         ref={meshRef}
         position={[node.x, node.y, node.z]}
+        geometry={geometry}
         material={coreMaterial}
         onPointerOver={(e) => {
           e.stopPropagation();
@@ -111,14 +134,15 @@ export function NodeMesh({
           e.stopPropagation();
           onClick(node.id);
         }}
-      >
-        <icosahedronGeometry args={[r, 2]} />
-      </mesh>
+      />
 
       {/* Outer glow shell */}
-      <mesh ref={glowRef} position={[node.x, node.y, node.z]} material={glowMaterial}>
-        <icosahedronGeometry args={[r, 2]} />
-      </mesh>
+      <mesh
+        ref={glowRef}
+        position={[node.x, node.y, node.z]}
+        geometry={geometry}
+        material={glowMaterial}
+      />
     </group>
   );
 }

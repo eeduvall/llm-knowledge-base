@@ -126,14 +126,16 @@ const CLUSTER_OPTIONS: { value: ClusterMode; label: string }[] = [
   { value: 'benchmark', label: 'Benchmark' },
 ];
 
-// ─── Capability icon hints ────────────────────────────────────────────────────
+// ─── Capability and modality color maps ───────────────────────────────────────
+// All values reference CSS custom properties defined in styles/globals.css.
+// Never use bare hex literals here — add a token to globals.css if needed.
 
 const CAPABILITY_COLORS: Record<string, string> = {
   reasoning: 'var(--color-primary)',
   vision: 'var(--color-secondary)',
   'tool-use': 'var(--color-accent)',
-  'structured-output': '#F7B731',
-  code: '#9B8FFF',
+  'structured-output': 'var(--color-warning)',
+  code: 'var(--color-primary-light)',
   'long-context': 'var(--color-secondary)',
 };
 
@@ -141,8 +143,8 @@ const MODALITY_COLORS: Record<string, string> = {
   text: 'var(--color-primary)',
   image: 'var(--color-secondary)',
   audio: 'var(--color-accent)',
-  video: '#F7B731',
-  code: '#9B8FFF',
+  video: 'var(--color-warning)',
+  code: 'var(--color-primary-light)',
 };
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -285,7 +287,7 @@ export function FilterBar({
               key={lic}
               label={lic}
               active={activeLicenses.includes(lic)}
-              color="#9B8FFF"
+              color="var(--color-primary-light)"
               onClick={() => onToggleLicense(lic)}
             />
           ))}
