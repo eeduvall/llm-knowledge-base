@@ -148,7 +148,7 @@ function ComparisonClient({ initialIds }: Props) {
                   style={{
                     background:
                       activeTab === tab.id ? 'var(--color-primary)' : 'var(--color-surface)',
-                    color: activeTab === tab.id ? '#fff' : 'var(--color-text-muted)',
+                    color: activeTab === tab.id ? 'var(--color-text)' : 'var(--color-text-muted)',
                   }}
                 >
                   {tab.label}

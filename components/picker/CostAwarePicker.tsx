@@ -352,7 +352,10 @@ export function CostAwarePicker({ models }: Props) {
                       minContextWindow === opt.value
                         ? 'var(--color-primary)'
                         : 'var(--color-panel-bg)',
-                    color: minContextWindow === opt.value ? '#fff' : 'var(--color-text-muted)',
+                    color:
+                      minContextWindow === opt.value
+                        ? 'var(--color-text)'
+                        : 'var(--color-text-muted)',
                     border: '1px solid var(--color-border)',
                   }}
                 >
@@ -378,7 +381,9 @@ export function CostAwarePicker({ models }: Props) {
                     background: requiredCapabilities.includes(cap)
                       ? 'var(--color-primary)'
                       : 'var(--color-panel-bg)',
-                    color: requiredCapabilities.includes(cap) ? '#fff' : 'var(--color-text-muted)',
+                    color: requiredCapabilities.includes(cap)
+                      ? 'var(--color-text)'
+                      : 'var(--color-text-muted)',
                     border: '1px solid var(--color-border)',
                   }}
                 >
@@ -404,7 +409,9 @@ export function CostAwarePicker({ models }: Props) {
                     background: requiredModalities.includes(mod)
                       ? 'var(--color-primary)'
                       : 'var(--color-panel-bg)',
-                    color: requiredModalities.includes(mod) ? '#fff' : 'var(--color-text-muted)',
+                    color: requiredModalities.includes(mod)
+                      ? 'var(--color-text)'
+                      : 'var(--color-text-muted)',
                     border: '1px solid var(--color-border)',
                   }}
                 >
@@ -433,7 +440,7 @@ export function CostAwarePicker({ models }: Props) {
               type="button"
               onClick={handleSearch}
               className="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors"
-              style={{ background: 'var(--color-primary)', color: '#fff' }}
+              style={{ background: 'var(--color-primary)', color: 'var(--color-text)' }}
             >
               Find cheapest model
             </button>
