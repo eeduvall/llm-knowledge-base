@@ -19,7 +19,14 @@ jest.mock('./client', () => ({
 }));
 
 // Import AFTER mocking
-import { getAllModels, getModelById, getModelsByProvider, getModelsByCapability } from './models';
+import {
+  getAllModels,
+  getModelById,
+  getModelsByProvider,
+  getModelsByCapability,
+  getModelsByModality,
+  getModelsByIds,
+} from './models';
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -45,6 +52,9 @@ const rawRow: DbModelRow = {
   benchmark_mt_bench: null,
   docs_url: 'https://platform.openai.com/docs',
   paper_url: null,
+  latency_first_token_ms: 500,
+  latency_end_to_end_ms: 1400,
+  latency_throughput_tokens_per_sec: 80,
 };
 
 const expectedModel: Model = {
@@ -63,6 +73,21 @@ const expectedModel: Model = {
   strengths: ['Best-in-class multimodal reasoning'],
   weaknesses: ['Higher cost vs. smaller models'],
   links: { docs: 'https://platform.openai.com/docs', paper: null },
+  latency: { first_token_ms: 500, end_to_end_ms: 1400, throughput_tokens_per_sec: 80 },
+};
+
+const rawRowNullLatency: DbModelRow = {
+  ...rawRow,
+  id: 'llama-3-1-405b',
+  latency_first_token_ms: null,
+  latency_end_to_end_ms: null,
+  latency_throughput_tokens_per_sec: null,
+};
+
+const expectedModelNullLatency: Model = {
+  ...expectedModel,
+  id: 'llama-3-1-405b',
+  latency: { first_token_ms: null, end_to_end_ms: null, throughput_tokens_per_sec: null },
 };
 
 // ---------------------------------------------------------------------------
@@ -176,5 +201,76 @@ describe('getModelsByCapability', () => {
   it('throws when the DB throws', () => {
     setupAllThrows('cap error');
     expect(() => getModelsByCapability('vision')).toThrow('cap error');
+  });
+});
+
+describe('getModelsByModality', () => {
+  it('returns models with the given modality', () => {
+    setupAll([rawRow]);
+    const result = getModelsByModality('image');
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('gpt-4o');
+  });
+
+  it('returns empty array when no models have the modality', () => {
+    setupAll([]);
+    const result = getModelsByModality('video');
+    expect(result).toEqual([]);
+  });
+
+  it('throws when the DB throws', () => {
+    setupAllThrows('modality error');
+    expect(() => getModelsByModality('image')).toThrow('modality error');
+  });
+});
+
+describe('getModelsByIds', () => {
+  it('returns empty array for empty input', () => {
+    const result = getModelsByIds([]);
+    expect(result).toEqual([]);
+    expect(mockPrepare).not.toHaveBeenCalled();
+  });
+
+  it('returns models in the requested order', () => {
+    const secondRow: DbModelRow = { ...rawRow, id: 'gpt-4o-mini' };
+    setupAll([rawRow, secondRow]);
+    const result = getModelsByIds(['gpt-4o-mini', 'gpt-4o']);
+    expect(result[0].id).toBe('gpt-4o-mini');
+    expect(result[1].id).toBe('gpt-4o');
+  });
+
+  it('skips IDs not found in the DB', () => {
+    setupAll([rawRow]);
+    const result = getModelsByIds(['gpt-4o', 'nonexistent']);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('gpt-4o');
+  });
+
+  it('throws when the DB throws', () => {
+    setupAllThrows('ids error');
+    expect(() => getModelsByIds(['gpt-4o'])).toThrow('ids error');
+  });
+});
+
+describe('latency field mapping', () => {
+  it('maps latency values from DB row to Model', () => {
+    setupGet(rawRow);
+    const result = getModelById('gpt-4o');
+    expect(result?.latency).toEqual({
+      first_token_ms: 500,
+      end_to_end_ms: 1400,
+      throughput_tokens_per_sec: 80,
+    });
+  });
+
+  it('maps null latency values correctly', () => {
+    setupGet(rawRowNullLatency);
+    const result = getModelById('llama-3-1-405b');
+    expect(result).toEqual(expectedModelNullLatency);
+    expect(result?.latency).toEqual({
+      first_token_ms: null,
+      end_to_end_ms: null,
+      throughput_tokens_per_sec: null,
+    });
   });
 });
