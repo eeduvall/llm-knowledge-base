@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTheme } from '@/hooks/useTheme'
 
 /** Inline SVG galaxy logo — tilted elliptical disc with glowing core.
  *  The disc shape reads clearly at 28 × 28 px where spiral arms become
@@ -22,15 +23,15 @@ function GalaxyLogo() {
       <defs>
         {/* Soft outer halo */}
         <radialGradient id="halo" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#6C63FF" stopOpacity="0.18" />
-          <stop offset="70%" stopColor="#00D4FF" stopOpacity="0.06" />
-          <stop offset="100%" stopColor="#050510" stopOpacity="0" />
+          <stop offset="0%"   stopColor="var(--color-primary)" stopOpacity="0.18" />
+          <stop offset="70%"  stopColor="var(--color-secondary)" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="var(--color-bg)" stopOpacity="0"    />
         </radialGradient>
         {/* Bright core glow */}
         <radialGradient id="core" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-          <stop offset="45%" stopColor="#6C63FF" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#050510" stopOpacity="0" />
+          <stop offset="0%"   stopColor="#ffffff"  stopOpacity="1"   />
+          <stop offset="45%"  stopColor="var(--color-primary)"  stopOpacity="0.9" />
+          <stop offset="100%" stopColor="var(--color-bg)"  stopOpacity="0"   />
         </radialGradient>
       </defs>
 
@@ -43,7 +44,7 @@ function GalaxyLogo() {
         cy="14"
         rx="11"
         ry="4.5"
-        stroke="#6C63FF"
+        stroke="var(--color-primary)"
         strokeWidth="1.4"
         strokeOpacity="0.7"
         fill="none"
@@ -56,7 +57,7 @@ function GalaxyLogo() {
         cy="14"
         rx="7.5"
         ry="3"
-        stroke="#00D4FF"
+        stroke="var(--color-secondary)"
         strokeWidth="1.1"
         strokeOpacity="0.65"
         fill="none"
@@ -69,20 +70,20 @@ function GalaxyLogo() {
         cy="14"
         rx="5"
         ry="2"
-        fill="#6C63FF"
+        fill="var(--color-primary)"
         fillOpacity="0.12"
         transform="rotate(-20 14 14)"
       />
 
       {/* Star dots — scattered around the disc plane */}
-      <circle cx="4" cy="11" r="0.7" fill="#00D4FF" opacity="0.85" />
-      <circle cx="24" cy="17" r="0.7" fill="#6C63FF" opacity="0.85" />
-      <circle cx="7" cy="18" r="0.55" fill="#6C63FF" opacity="0.7" />
-      <circle cx="21" cy="10" r="0.55" fill="#00D4FF" opacity="0.7" />
-      <circle cx="3" cy="15" r="0.45" fill="#FF6B9D" opacity="0.6" />
-      <circle cx="25" cy="13" r="0.45" fill="#FF6B9D" opacity="0.6" />
-      <circle cx="10" cy="6" r="0.4" fill="#ffffff" opacity="0.5" />
-      <circle cx="18" cy="22" r="0.4" fill="#ffffff" opacity="0.5" />
+      <circle cx="4"  cy="11" r="0.7" fill="var(--color-secondary)" opacity="0.85" />
+      <circle cx="24" cy="17" r="0.7" fill="var(--color-primary)" opacity="0.85" />
+      <circle cx="7"  cy="18" r="0.55" fill="var(--color-primary)" opacity="0.7" />
+      <circle cx="21" cy="10" r="0.55" fill="var(--color-secondary)" opacity="0.7" />
+      <circle cx="3"  cy="15" r="0.45" fill="var(--color-accent)" opacity="0.6" />
+      <circle cx="25" cy="13" r="0.45" fill="var(--color-accent)" opacity="0.6" />
+      <circle cx="10" cy="6"  r="0.4"  fill="#ffffff"  opacity="0.5" />
+      <circle cx="18" cy="22" r="0.4"  fill="#ffffff"  opacity="0.5" />
 
       {/* Bright galactic core */}
       <circle cx="14" cy="14" r="3" fill="url(#core)" />
@@ -90,6 +91,25 @@ function GalaxyLogo() {
       <circle cx="13.3" cy="13.3" r="0.9" fill="#ffffff" opacity="0.95" />
     </svg>
   );
+}
+
+/** Sun icon for light mode */
+function SunIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+/** Moon icon for dark mode */
+function MoonIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M13.5 10A6 6 0 016 2.5a6 6 0 100 11 6 6 0 007.5-3.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
 }
 
 type NavItem = {
@@ -107,11 +127,16 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export function Navbar() {
+  const { theme, toggleTheme } = useTheme()
+
   return (
     <nav
       aria-label="Main navigation"
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-white/5 backdrop-blur-sm"
-      style={{ backgroundColor: 'rgba(5, 5, 16, 0.85)' }}
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b backdrop-blur-sm"
+      style={{
+        backgroundColor: 'var(--color-nav-bg)',
+        borderColor: 'var(--color-border)',
+      }}
     >
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2 group" aria-label="LLM Knowledge Base home">
@@ -119,30 +144,50 @@ export function Navbar() {
           <GalaxyLogo />
         </div>
         <span
-          className="font-display font-bold text-white text-base tracking-tight"
-          style={{ fontFamily: 'Syne, sans-serif' }}
+          className="font-display font-bold text-base tracking-tight"
+          style={{ fontFamily: 'Syne, sans-serif', color: 'var(--color-text)' }}
         >
           LLM Knowledge Base
         </span>
       </Link>
 
       {/* Nav links */}
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-4">
         <ul className="hidden md:flex items-center gap-8 list-none">
           {NAV_ITEMS.map((item) => (
             <li key={item.label}>
               <Link
                 href={item.href}
-                className="text-sm text-white/70 hover:text-white transition-colors duration-200"
+                className="text-sm transition-colors duration-200"
+                style={{ color: 'var(--color-text-muted)' }}
               >
                 {item.label}
               </Link>
             </li>
           ))}
         </ul>
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-pressed={theme === 'light'}
+          className="flex items-center justify-center w-8 h-8 rounded transition-colors duration-200"
+          style={{
+            color: 'var(--color-text-muted)',
+            border: '1px solid var(--color-border)',
+          }}
+        >
+          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+        </button>
+
         <Link
           href="/sign-in"
-          className="text-sm font-medium text-white border border-white/30 rounded px-4 py-1.5 hover:border-white/60 hover:bg-white/5 transition-all duration-200"
+          className="text-sm font-medium rounded px-4 py-1.5 transition-all duration-200"
+          style={{
+            color: 'var(--color-text)',
+            border: '1px solid var(--color-border)',
+          }}
         >
           Sign in
         </Link>
