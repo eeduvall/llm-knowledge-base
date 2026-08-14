@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { loadModels } from '@/lib/models-server';
+import { getAllModels } from '@/lib/db/models';
 import { GraphExplorer } from '@/components/graph/GraphExplorer';
 import { Navbar } from '@/components/Navbar';
 import type { Model } from '@/lib/models';
@@ -15,7 +15,7 @@ export default function GraphPage() {
   let loadError = false;
 
   try {
-    initialModels = loadModels();
+    initialModels = getAllModels();
   } catch {
     loadError = true;
   }
