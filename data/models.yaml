@@ -1,0 +1,398 @@
+# data/models.yaml — Single source of truth for all LLM metadata.
+# See AGENTS.md §7 for schema rules and conventions.
+# Validate: npx js-yaml data/models.yaml (must exit 0)
+# Entries are sorted alphabetically by id within each provider group.
+
+# ---------------------------------------------------------------------------
+# Anthropic
+# ---------------------------------------------------------------------------
+
+- id: claude-3-5-sonnet
+  name: 'Claude 3.5 Sonnet'
+  provider: anthropic
+  family: claude-3
+  release_date: '2024-06-20'
+  context_window: 200000
+  modalities: [text, image]
+  capabilities:
+    - reasoning
+    - vision
+    - tool-use
+    - structured-output
+    - code
+  pricing:
+    input: 3.00
+    output: 15.00
+  benchmarks:
+    mmlu: 88.7
+    humaneval: 92.0
+    mt_bench: null
+  strengths:
+    - 'Best-in-class coding and reasoning'
+    - '200K context window'
+    - 'Strong instruction following'
+  weaknesses:
+    - 'Higher cost vs. smaller models (~$15/1M output tokens)'
+    - 'No audio modality'
+    - 'Occasional refusals on sensitive or edge-case requests'
+    - 'Context window smaller than Gemini 1.5 Pro'
+  license: proprietary
+  links:
+    docs: 'https://docs.anthropic.com/claude/docs'
+    paper: null
+  last_verified: '2024-07-01'
+
+- id: claude-3-haiku
+  name: 'Claude 3 Haiku'
+  provider: anthropic
+  family: claude-3
+  release_date: '2024-03-13'
+  context_window: 200000
+  modalities: [text, image]
+  capabilities:
+    - vision
+    - tool-use
+    - structured-output
+  pricing:
+    input: 0.25
+    output: 1.25
+  benchmarks:
+    mmlu: 75.2
+    humaneval: null
+    mt_bench: null
+  strengths:
+    - 'Fastest and most affordable Claude model'
+    - 'Good for high-throughput tasks'
+  weaknesses:
+    - 'Less capable than Sonnet/Opus for complex reasoning'
+    - 'Lower benchmark scores than larger Claude models'
+    - 'May struggle with nuanced multi-step instructions'
+    - 'No audio modality'
+  license: proprietary
+  links:
+    docs: 'https://docs.anthropic.com/claude/docs'
+    paper: null
+  last_verified: '2024-07-01'
+
+# ---------------------------------------------------------------------------
+# Google
+# ---------------------------------------------------------------------------
+
+- id: gemini-1-5-flash
+  name: 'Gemini 1.5 Flash'
+  provider: google
+  family: gemini-1.5
+  release_date: '2024-05-14'
+  context_window: 1000000
+  modalities: [text, image, audio, video]
+  capabilities:
+    - reasoning
+    - vision
+    - tool-use
+    - structured-output
+    - long-context
+  pricing:
+    input: 0.35
+    output: 1.05
+  benchmarks:
+    mmlu: 78.9
+    humaneval: null
+    mt_bench: null
+  strengths:
+    - '1M token context window'
+    - 'Multimodal (text, image, audio, video)'
+    - 'Fast and cost-effective'
+  weaknesses:
+    - 'Less capable than Pro on complex reasoning tasks'
+    - 'No published HumanEval score'
+    - 'Quality degrades on very long context inputs'
+    - 'Smaller ecosystem of third-party integrations vs. OpenAI'
+  license: proprietary
+  links:
+    docs: 'https://ai.google.dev/gemini-api/docs'
+    paper: null
+  last_verified: '2024-07-01'
+
+- id: gemini-1-5-pro
+  name: 'Gemini 1.5 Pro'
+  provider: google
+  family: gemini-1.5
+  release_date: '2024-02-15'
+  context_window: 2000000
+  modalities: [text, image, audio, video]
+  capabilities:
+    - reasoning
+    - vision
+    - tool-use
+    - structured-output
+    - long-context
+    - code
+  pricing:
+    input: 3.50
+    output: 10.50
+  benchmarks:
+    mmlu: 85.9
+    humaneval: 71.9
+    mt_bench: null
+  strengths:
+    - '2M token context window — largest available'
+    - 'Strong multimodal reasoning'
+  weaknesses:
+    - 'Higher latency on very long contexts (>500K tokens)'
+    - 'Cost scales significantly with context length'
+    - 'Lower HumanEval score than GPT-4o and Claude 3.5 Sonnet'
+    - 'Rate limits more restrictive than OpenAI at high volume'
+  license: proprietary
+  links:
+    docs: 'https://ai.google.dev/gemini-api/docs'
+    paper: null
+  last_verified: '2024-07-01'
+
+# ---------------------------------------------------------------------------
+# Meta
+# ---------------------------------------------------------------------------
+
+- id: llama-3-1-405b
+  name: 'Llama 3.1 405B'
+  provider: meta
+  family: llama-3
+  release_date: '2024-07-23'
+  context_window: 128000
+  modalities: [text]
+  capabilities:
+    - reasoning
+    - tool-use
+    - structured-output
+    - code
+  pricing:
+    input: null
+    output: null
+  benchmarks:
+    mmlu: 88.6
+    humaneval: 89.0
+    mt_bench: null
+  strengths:
+    - 'Open weights — fully self-hostable'
+    - 'Competitive with GPT-4 class models'
+    - 'Strong multilingual support'
+  weaknesses:
+    - 'Requires significant compute to self-host (8×A100 minimum)'
+    - 'No vision modality'
+    - 'Inference latency depends heavily on hardware configuration'
+    - 'No managed pricing — infrastructure costs vary widely'
+  license: llama
+  links:
+    docs: 'https://llama.meta.com/'
+    paper: 'https://arxiv.org/abs/2407.21783'
+  last_verified: '2024-07-23'
+
+- id: llama-3-1-70b
+  name: 'Llama 3.1 70B'
+  provider: meta
+  family: llama-3
+  release_date: '2024-07-23'
+  context_window: 128000
+  modalities: [text]
+  capabilities:
+    - reasoning
+    - tool-use
+    - structured-output
+    - code
+  pricing:
+    input: null
+    output: null
+  benchmarks:
+    mmlu: 83.6
+    humaneval: 80.5
+    mt_bench: null
+  strengths:
+    - 'Open weights — self-hostable on consumer hardware'
+    - 'Strong reasoning for its size'
+  weaknesses:
+    - 'Less capable than 405B on complex tasks'
+    - 'No vision modality'
+    - 'Inference latency varies by hosting provider'
+    - 'No official managed API from Meta'
+  license: llama
+  links:
+    docs: 'https://llama.meta.com/'
+    paper: 'https://arxiv.org/abs/2407.21783'
+  last_verified: '2024-07-23'
+
+# ---------------------------------------------------------------------------
+# Mistral
+# ---------------------------------------------------------------------------
+
+- id: mistral-large-2
+  name: 'Mistral Large 2'
+  provider: mistral
+  family: mistral-large
+  release_date: '2024-07-24'
+  context_window: 128000
+  modalities: [text]
+  capabilities:
+    - reasoning
+    - tool-use
+    - structured-output
+    - code
+  pricing:
+    input: 3.00
+    output: 9.00
+  benchmarks:
+    mmlu: 84.0
+    humaneval: 92.0
+    mt_bench: null
+  strengths:
+    - 'Strong coding performance'
+    - 'Multilingual (80+ languages)'
+    - 'Competitive pricing'
+  weaknesses:
+    - 'No vision modality'
+    - 'Smaller ecosystem than OpenAI/Anthropic'
+    - 'No audio or video modality support'
+    - 'Less community tooling and third-party integrations'
+  license: mistral
+  links:
+    docs: 'https://docs.mistral.ai/'
+    paper: null
+  last_verified: '2024-07-24'
+
+- id: mistral-nemo
+  name: 'Mistral NeMo'
+  provider: mistral
+  family: mistral-nemo
+  release_date: '2024-07-18'
+  context_window: 128000
+  modalities: [text]
+  capabilities:
+    - reasoning
+    - tool-use
+    - code
+  pricing:
+    input: 0.30
+    output: 0.30
+  benchmarks:
+    mmlu: 68.0
+    humaneval: null
+    mt_bench: null
+  strengths:
+    - '12B parameters — efficient and fast'
+    - 'Apache 2.0 license'
+    - 'Good multilingual support'
+  weaknesses:
+    - 'Less capable than larger models on complex reasoning'
+    - 'No vision modality'
+    - 'Lower MMLU score than most frontier models'
+    - 'No published HumanEval benchmark'
+  license: apache-2.0
+  links:
+    docs: 'https://docs.mistral.ai/'
+    paper: null
+  last_verified: '2024-07-18'
+
+# ---------------------------------------------------------------------------
+# OpenAI
+# ---------------------------------------------------------------------------
+
+- id: gpt-4o
+  name: 'GPT-4o'
+  provider: openai
+  family: gpt-4
+  release_date: '2024-05-13'
+  context_window: 128000
+  modalities: [text, image, audio]
+  capabilities:
+    - reasoning
+    - vision
+    - tool-use
+    - structured-output
+    - code
+  pricing:
+    input: 5.00
+    output: 15.00
+  benchmarks:
+    mmlu: 88.7
+    humaneval: 90.2
+    mt_bench: null
+  strengths:
+    - 'Best-in-class multimodal reasoning'
+    - 'Native audio input/output'
+    - 'Strong tool-use and structured output'
+  weaknesses:
+    - 'Higher cost vs. smaller models (~$15/1M output tokens)'
+    - 'Context window smaller than Gemini 1.5'
+    - 'Occasional refusals on edge-case requests'
+    - 'Hallucinations on obscure or highly specialized facts'
+  license: proprietary
+  links:
+    docs: 'https://platform.openai.com/docs'
+    paper: null
+  last_verified: '2024-07-01'
+
+- id: gpt-4o-mini
+  name: 'GPT-4o mini'
+  provider: openai
+  family: gpt-4
+  release_date: '2024-07-18'
+  context_window: 128000
+  modalities: [text, image]
+  capabilities:
+    - reasoning
+    - vision
+    - tool-use
+    - structured-output
+    - code
+  pricing:
+    input: 0.15
+    output: 0.60
+  benchmarks:
+    mmlu: 82.0
+    humaneval: 87.2
+    mt_bench: null
+  strengths:
+    - 'Very low cost'
+    - 'Fast response times'
+    - 'Strong performance for its price'
+  weaknesses:
+    - 'Less capable than GPT-4o on complex multi-step tasks'
+    - 'No audio modality'
+    - 'May produce lower-quality outputs on nuanced reasoning'
+    - 'Smaller context window than Claude 3.5 Sonnet or Gemini 1.5'
+  license: proprietary
+  links:
+    docs: 'https://platform.openai.com/docs'
+    paper: null
+  last_verified: '2024-07-18'
+
+- id: o1-preview
+  name: 'o1-preview'
+  provider: openai
+  family: o1
+  release_date: '2024-09-12'
+  context_window: 128000
+  modalities: [text]
+  capabilities:
+    - reasoning
+    - code
+    - structured-output
+  pricing:
+    input: 15.00
+    output: 60.00
+  benchmarks:
+    mmlu: null
+    humaneval: 92.4
+    mt_bench: null
+  strengths:
+    - 'Exceptional multi-step reasoning'
+    - 'Strong math and science performance'
+    - 'Chain-of-thought built in'
+  weaknesses:
+    - 'Very high cost (~$60/1M output tokens)'
+    - 'Significantly slower than GPT-4o due to internal reasoning steps'
+    - 'No vision or tool-use in preview release'
+    - 'No audio modality'
+  license: proprietary
+  links:
+    docs: 'https://platform.openai.com/docs'
+    paper: null
+  last_verified: '2024-09-12'
