@@ -27,4 +27,8 @@ export type DbModelRow = {
   // Links (nullable)
   docs_url: string | null;
   paper_url: string | null;
+  // Latency (nullable)
+  latency_first_token_ms: number | null;
+  latency_end_to_end_ms: number | null;
+  latency_throughput_tokens_per_sec: number | null;
 };

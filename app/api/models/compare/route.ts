@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { loadModels } from '@/lib/models-server';
+import { getModelsByIds } from '@/lib/db/models';
 import type { Model } from '@/lib/models';
 
 // ---------------------------------------------------------------------------
@@ -54,10 +54,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const allModels = loadModels();
-    const modelMap = new Map(allModels.map((m) => [m.id, m]));
+    const models = getModelsByIds(requestedIds);
 
-    const missing = requestedIds.filter((id) => !modelMap.has(id));
+    const foundIds = new Set(models.map((m) => m.id));
+    const missing = requestedIds.filter((id) => !foundIds.has(id));
     if (missing.length > 0) {
       return NextResponse.json(
         { error: `Unknown model IDs: ${missing.join(', ')}` },
@@ -65,7 +65,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const models = requestedIds.map((id) => modelMap.get(id)!);
     const response: CompareResponse = { models };
 
     return NextResponse.json(response, {
