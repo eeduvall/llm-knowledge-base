@@ -10,6 +10,7 @@ import type { GraphNode, GraphEdge, NodeMeta } from '@/lib/graph-layout';
 import { buildEdges, deriveCostTier } from '@/lib/graph-layout';
 import { NodePanel } from '@/components/graph/NodePanel';
 import { FilterBar } from '@/components/graph/FilterBar';
+import type { ClusterMode, BenchmarkRange } from '@/components/graph/FilterBar';
 import { useGraphStore } from '@/lib/store/graph-store';
 
 // Lazy-load the R3F canvas — Three.js must never run during SSR.
@@ -85,6 +86,8 @@ export function GraphExplorer({ initialModels }: Props) {
     activeLicenses,
     clusterMode,
     searchQuery,
+    mmluRange,
+    humanEvalRange,
     setSelectedId,
     setHoveredId,
     setFilterProvider,
@@ -94,6 +97,8 @@ export function GraphExplorer({ initialModels }: Props) {
     setClusterMode,
     setSearchQuery,
     setHighlightId,
+    setMmluRange,
+    setHumanEvalRange,
     clearAllFilters,
   } = useGraphStore();
 
@@ -159,11 +164,31 @@ export function GraphExplorer({ initialModels }: Props) {
           )
             return false;
           if (activeLicenses.length > 0 && !activeLicenses.includes(m.license)) return false;
+          // Benchmark range filters — only apply when the model has a score
+          if (m.benchmarks.mmlu !== null) {
+            if (m.benchmarks.mmlu < mmluRange.min || m.benchmarks.mmlu > mmluRange.max)
+              return false;
+          }
+          if (m.benchmarks.humaneval !== null) {
+            if (
+              m.benchmarks.humaneval < humanEvalRange.min ||
+              m.benchmarks.humaneval > humanEvalRange.max
+            )
+              return false;
+          }
           return true;
         })
         .map((m) => m.id),
     );
-  }, [models, filterProvider, activeCapabilities, activeModalities, activeLicenses]);
+  }, [
+    models,
+    filterProvider,
+    activeCapabilities,
+    activeModalities,
+    activeLicenses,
+    mmluRange,
+    humanEvalRange,
+  ]);
 
   // Apply search: highlight matching nodes (all matches, not just first)
   const searchMatchIds = useMemo(() => {
@@ -233,6 +258,10 @@ export function GraphExplorer({ initialModels }: Props) {
         onToggleLicense={toggleLicense}
         clusterMode={clusterMode}
         onSetClusterMode={setClusterMode}
+        mmluRange={mmluRange}
+        onMmluRangeChange={setMmluRange}
+        humanEvalRange={humanEvalRange}
+        onHumanEvalRangeChange={setHumanEvalRange}
         onClearAllFilters={clearAllFilters}
       />
 
