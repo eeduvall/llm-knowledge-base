@@ -81,7 +81,10 @@ db.exec(`
     benchmark_humaneval REAL,
     benchmark_mt_bench  REAL,
     docs_url         TEXT,
-    paper_url        TEXT
+    paper_url        TEXT,
+    latency_first_token_ms          REAL,
+    latency_end_to_end_ms           REAL,
+    latency_throughput_tokens_per_sec REAL
   );
 
   CREATE INDEX IF NOT EXISTS idx_models_provider ON models(provider);
@@ -98,13 +101,15 @@ const insert = db.prepare(`
     last_verified, modalities, capabilities, strengths, weaknesses,
     pricing_input, pricing_output,
     benchmark_mmlu, benchmark_humaneval, benchmark_mt_bench,
-    docs_url, paper_url
+    docs_url, paper_url,
+    latency_first_token_ms, latency_end_to_end_ms, latency_throughput_tokens_per_sec
   ) VALUES (
     @id, @name, @provider, @family, @release_date, @context_window, @license,
     @last_verified, @modalities, @capabilities, @strengths, @weaknesses,
     @pricing_input, @pricing_output,
     @benchmark_mmlu, @benchmark_humaneval, @benchmark_mt_bench,
-    @docs_url, @paper_url
+    @docs_url, @paper_url,
+    @latency_first_token_ms, @latency_end_to_end_ms, @latency_throughput_tokens_per_sec
   )
 `);
 
@@ -130,6 +135,9 @@ const insertAll = db.transaction((rows: Model[]) => {
       benchmark_mt_bench: m.benchmarks?.mt_bench ?? null,
       docs_url: m.links?.docs ?? null,
       paper_url: m.links?.paper ?? null,
+      latency_first_token_ms: m.latency?.first_token_ms ?? null,
+      latency_end_to_end_ms: m.latency?.end_to_end_ms ?? null,
+      latency_throughput_tokens_per_sec: m.latency?.throughput_tokens_per_sec ?? null,
     });
   }
 });
