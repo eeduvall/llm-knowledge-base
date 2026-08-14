@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
-import { loadModels } from '@/lib/models-server';
+import { getAllModels } from '@/lib/db/models';
 import { getProviderColor } from '@/lib/models';
 import type { Model } from '@/lib/models';
 import type { Metadata } from 'next';
@@ -11,12 +11,12 @@ type Props = {
 };
 
 export async function generateStaticParams() {
-  const models = loadModels();
+  const models = getAllModels();
   return models.map((m) => ({ id: m.id }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const models = loadModels();
+  const models = getAllModels();
   const model = models.find((m) => m.id === params.id);
   if (!model) return { title: 'Model not found — LLM Knowledge Base' };
   return {
@@ -108,7 +108,7 @@ function computeBenchmarkStats(
 }
 
 export default function ModelDetailPage({ params }: Props) {
-  const allModels = loadModels();
+  const allModels = getAllModels();
   const model = allModels.find((m) => m.id === params.id);
   if (!model) notFound();
 

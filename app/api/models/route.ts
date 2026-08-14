@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getAllModels, getModelsByProvider, getModelsByCapability } from '@/lib/db/models';
+import {
+  getAllModels,
+  getModelsByProvider,
+  getModelsByCapability,
+  getModelsByModality,
+} from '@/lib/db/models';
 import type { Model } from '@/lib/models';
 
 // ---------------------------------------------------------------------------
@@ -24,13 +29,15 @@ export type ModelsResponse = {
 const QuerySchema = z.object({
   provider: z.string().optional(),
   capability: z.string().optional(),
+  modality: z.string().optional(),
 });
 
 // ---------------------------------------------------------------------------
 // GET /api/models
 // Query params:
-//   ?provider=openai   — filter by provider slug
-//   ?capability=vision — filter by capability tag
+//   ?provider=openai    — filter by provider slug
+//   ?capability=vision  — filter by capability tag
+//   ?modality=audio     — filter by modality
 // ---------------------------------------------------------------------------
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -38,6 +45,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const rawParams = {
     provider: searchParams.get('provider') ?? undefined,
     capability: searchParams.get('capability') ?? undefined,
+    modality: searchParams.get('modality') ?? undefined,
   };
 
   const parsed = QuerySchema.safeParse(rawParams);
@@ -48,7 +56,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const { provider, capability } = parsed.data;
+  const { provider, capability, modality } = parsed.data;
 
   try {
     let models: Model[];
@@ -57,6 +65,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       models = getModelsByProvider(provider);
     } else if (capability !== undefined) {
       models = getModelsByCapability(capability);
+    } else if (modality !== undefined) {
+      models = getModelsByModality(modality);
     } else {
       models = getAllModels();
     }
