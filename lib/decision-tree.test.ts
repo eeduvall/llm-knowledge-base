@@ -664,3 +664,76 @@ describe('scoreModel — cost_sensitivity: cost_aware', () => {
     );
   });
 });
+
+// ---------------------------------------------------------------------------
+// scoreModel — latency dimension (enhanced with Latency type)
+// ---------------------------------------------------------------------------
+
+describe('scoreModel — latency: fast with first_token_ms', () => {
+  it('gives highest score to model with sub-500ms first-token latency', () => {
+    const fast = makeModel({
+      latency: { first_token_ms: 300, end_to_end_ms: 800, throughput_tokens_per_sec: 80 },
+    });
+    const slow = makeModel({
+      latency: { first_token_ms: 1200, end_to_end_ms: 3000, throughput_tokens_per_sec: 40 },
+      pricing: { input: 5.0, output: 15.0 },
+    });
+    const answers = allAnswers({ latency: 'fast' });
+    expect(scoreModel(fast, answers).score).toBeGreaterThan(scoreModel(slow, answers).score);
+  });
+
+  it('includes sub-500ms reason in output', () => {
+    const fast = makeModel({
+      latency: { first_token_ms: 200, end_to_end_ms: 600, throughput_tokens_per_sec: 120 },
+    });
+    const result = scoreModel(fast, allAnswers({ latency: 'fast' }));
+    expect(result.reason).toMatch(/sub-500ms/i);
+  });
+});
+
+describe('scoreModel — latency: fast with throughput fallback', () => {
+  it('rewards high-throughput model when first_token_ms is null', () => {
+    const highThroughput = makeModel({
+      latency: { first_token_ms: null, end_to_end_ms: null, throughput_tokens_per_sec: 150 },
+      pricing: { input: 5.0, output: 15.0 },
+    });
+    const lowThroughput = makeModel({
+      latency: { first_token_ms: null, end_to_end_ms: null, throughput_tokens_per_sec: 30 },
+      pricing: { input: 5.0, output: 15.0 },
+    });
+    const answers = allAnswers({ latency: 'fast' });
+    expect(scoreModel(highThroughput, answers).score).toBeGreaterThan(
+      scoreModel(lowThroughput, answers).score,
+    );
+  });
+});
+
+describe('scoreModel — latency: medium with end_to_end_ms', () => {
+  it('rewards model with end-to-end latency under 2000ms', () => {
+    const fast = makeModel({
+      latency: { first_token_ms: 400, end_to_end_ms: 1500, throughput_tokens_per_sec: 80 },
+    });
+    const slow = makeModel({
+      latency: { first_token_ms: 800, end_to_end_ms: 4000, throughput_tokens_per_sec: 40 },
+    });
+    const answers = allAnswers({ latency: 'medium' });
+    expect(scoreModel(fast, answers).score).toBeGreaterThan(scoreModel(slow, answers).score);
+  });
+
+  it('includes acceptable end-to-end latency reason', () => {
+    const fast = makeModel({
+      latency: { first_token_ms: 400, end_to_end_ms: 1800, throughput_tokens_per_sec: 60 },
+    });
+    const result = scoreModel(fast, allAnswers({ latency: 'medium' }));
+    expect(result.reason).toMatch(/end-to-end/i);
+  });
+});
+
+describe('scoreModel — latency: fast with no latency data', () => {
+  it('falls back to pricing heuristic when latency field is absent', () => {
+    const cheap = makeModel({ latency: undefined, pricing: { input: 0.5, output: 1.5 } });
+    const expensive = makeModel({ latency: undefined, pricing: { input: 15.0, output: 60.0 } });
+    const answers = allAnswers({ latency: 'fast' });
+    expect(scoreModel(cheap, answers).score).toBeGreaterThan(scoreModel(expensive, answers).score);
+  });
+});
