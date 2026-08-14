@@ -1,9 +1,9 @@
 /**
- * scripts/migrate.ts  (repurposed as the YAML → SQLite build script)
+ * scripts/migrate.ts — SQLite build script
  *
- * Reads data/models.yaml and writes a flat SQLite database at data/models.db.
- * The database is the runtime data store; the YAML file remains the
- * human-editable source of truth.
+ * Reads model data from data/models-seed.ts and writes a flat SQLite
+ * database at data/models.db. The database is the runtime data store.
+ * To add or update models, edit data/models-seed.ts and re-run this script.
  *
  * Usage:
  *   npx ts-node --project tsconfig.scripts.json scripts/migrate.ts
@@ -16,31 +16,28 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as yaml from 'js-yaml';
 import Database from 'better-sqlite3';
 import type { Model } from '../lib/models';
+import { SEED_MODELS } from '../data/models-seed';
 
 // ---------------------------------------------------------------------------
 // Paths
 // ---------------------------------------------------------------------------
 
-const YAML_PATH = path.join(__dirname, '..', 'data', 'models.yaml');
 const DB_PATH = path.join(__dirname, '..', 'data', 'models.db');
 
 // ---------------------------------------------------------------------------
-// Load & validate YAML
+// Validate seed data
 // ---------------------------------------------------------------------------
 
-console.log('📖  Reading', YAML_PATH);
-const raw = fs.readFileSync(YAML_PATH, 'utf8');
-const models = yaml.load(raw) as Model[];
+const models: Model[] = SEED_MODELS;
 
 if (!Array.isArray(models) || models.length === 0) {
-  console.error('❌  models.yaml is empty or not an array');
+  console.error('❌  SEED_MODELS is empty or not an array');
   process.exit(1);
 }
 
-console.log(`✅  Loaded ${models.length} models from YAML`);
+console.log(`✅  Loaded ${models.length} models from seed data`);
 
 // ---------------------------------------------------------------------------
 // Open / create SQLite database
