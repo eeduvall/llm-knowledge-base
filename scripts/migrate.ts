@@ -1,147 +1,138 @@
 /**
- * scripts/migrate.ts — SQLite build script
+ * scripts/migrate.ts — SQLite migration runner
  *
- * Reads model data from data/models-seed.ts and writes a flat SQLite
- * database at data/models.db. The database is the runtime data store.
- * To add or update models, edit data/models-seed.ts and re-run this script.
+ * Applies versioned SQL migration files from lib/db/migrations/sqlite/ to
+ * data/models.db in lexicographic order. Each migration is recorded in a
+ * `schema_migrations` table so it is never applied twice.
  *
  * Usage:
- *   npx ts-node --project tsconfig.scripts.json scripts/migrate.ts
- *   # or via npm:
  *   npm run db:migrate
+ *   # expands to: ts-node --project tsconfig.scripts.json scripts/migrate.ts
  *
- * The script is idempotent — running it again rebuilds the database from
- * scratch (DROP + CREATE + INSERT).
+ * Adding a new migration:
+ *   1. Create lib/db/migrations/sqlite/NNN_description.sql  (NNN = next number)
+ *   2. Run `npm run db:migrate` — only the new file is applied.
+ *
+ * The runner is idempotent: running it again when all migrations are already
+ * applied is a no-op (exits 0, prints "Nothing to migrate").
+ *
+ * To rebuild from scratch (e.g. in CI or after a destructive schema change):
+ *   rm data/models.db && npm run db:migrate
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import Database from 'better-sqlite3';
-import type { Model } from '../lib/models';
-import { SEED_MODELS } from '../data/models-seed';
 
 // ---------------------------------------------------------------------------
 // Paths
 // ---------------------------------------------------------------------------
 
 const DB_PATH = path.join(__dirname, '..', 'data', 'models.db');
+const MIGRATIONS_DIR = path.join(__dirname, '..', 'lib', 'db', 'migrations', 'sqlite');
 
 // ---------------------------------------------------------------------------
-// Validate seed data
+// Open / create the database
 // ---------------------------------------------------------------------------
 
-const models: Model[] = SEED_MODELS;
-
-if (!Array.isArray(models) || models.length === 0) {
-  console.error('❌  SEED_MODELS is empty or not an array');
-  process.exit(1);
-}
-
-console.log(`✅  Loaded ${models.length} models from seed data`);
-
-// ---------------------------------------------------------------------------
-// Open / create SQLite database
-// ---------------------------------------------------------------------------
-
-// Remove existing DB so the script is fully idempotent
-if (fs.existsSync(DB_PATH)) {
-  fs.unlinkSync(DB_PATH);
-  console.log('🗑   Removed existing', DB_PATH);
-}
-
+const isNew = !fs.existsSync(DB_PATH);
 const db = new Database(DB_PATH);
-console.log('🗄   Created', DB_PATH);
+if (isNew) {
+  console.log('🗄   Created', DB_PATH);
+} else {
+  console.log('🗄   Opened', DB_PATH);
+}
+
+// Enable WAL mode for better concurrent read performance.
+db.pragma('journal_mode = WAL');
 
 // ---------------------------------------------------------------------------
-// Schema
-// Flat single-table design: arrays are stored as JSON strings.
-// This keeps queries simple and avoids joins for a read-only, small dataset.
+// Ensure the migrations tracking table exists
 // ---------------------------------------------------------------------------
 
 db.exec(`
-  CREATE TABLE IF NOT EXISTS models (
-    id               TEXT    PRIMARY KEY,
-    name             TEXT    NOT NULL,
-    provider         TEXT    NOT NULL,
-    family           TEXT    NOT NULL,
-    release_date     TEXT    NOT NULL,
-    context_window   INTEGER NOT NULL,
-    license          TEXT    NOT NULL,
-    last_verified    TEXT,
-    modalities       TEXT    NOT NULL DEFAULT '[]',
-    capabilities     TEXT    NOT NULL DEFAULT '[]',
-    strengths        TEXT    NOT NULL DEFAULT '[]',
-    weaknesses       TEXT    NOT NULL DEFAULT '[]',
-    pricing_input    REAL,
-    pricing_output   REAL,
-    benchmark_mmlu      REAL,
-    benchmark_humaneval REAL,
-    benchmark_mt_bench  REAL,
-    docs_url         TEXT,
-    paper_url        TEXT,
-    latency_first_token_ms          REAL,
-    latency_end_to_end_ms           REAL,
-    latency_throughput_tokens_per_sec REAL
+  CREATE TABLE IF NOT EXISTS schema_migrations (
+    version    TEXT    PRIMARY KEY,
+    applied_at TEXT    NOT NULL DEFAULT (datetime('now'))
   );
-
-  CREATE INDEX IF NOT EXISTS idx_models_provider ON models(provider);
-  CREATE INDEX IF NOT EXISTS idx_models_license  ON models(license);
 `);
 
 // ---------------------------------------------------------------------------
-// Insert rows
+// Discover migration files
 // ---------------------------------------------------------------------------
 
-const insert = db.prepare(`
-  INSERT INTO models (
-    id, name, provider, family, release_date, context_window, license,
-    last_verified, modalities, capabilities, strengths, weaknesses,
-    pricing_input, pricing_output,
-    benchmark_mmlu, benchmark_humaneval, benchmark_mt_bench,
-    docs_url, paper_url,
-    latency_first_token_ms, latency_end_to_end_ms, latency_throughput_tokens_per_sec
-  ) VALUES (
-    @id, @name, @provider, @family, @release_date, @context_window, @license,
-    @last_verified, @modalities, @capabilities, @strengths, @weaknesses,
-    @pricing_input, @pricing_output,
-    @benchmark_mmlu, @benchmark_humaneval, @benchmark_mt_bench,
-    @docs_url, @paper_url,
-    @latency_first_token_ms, @latency_end_to_end_ms, @latency_throughput_tokens_per_sec
-  )
-`);
+if (!fs.existsSync(MIGRATIONS_DIR)) {
+  console.error('❌  Migrations directory not found:', MIGRATIONS_DIR);
+  process.exit(1);
+}
 
-const insertAll = db.transaction((rows: Model[]) => {
-  for (const m of rows) {
-    insert.run({
-      id: m.id,
-      name: m.name,
-      provider: m.provider,
-      family: m.family,
-      release_date: m.release_date,
-      context_window: m.context_window,
-      license: m.license,
-      last_verified: m.last_verified ?? null,
-      modalities: JSON.stringify(m.modalities ?? []),
-      capabilities: JSON.stringify(m.capabilities ?? []),
-      strengths: JSON.stringify(m.strengths ?? []),
-      weaknesses: JSON.stringify(m.weaknesses ?? []),
-      pricing_input: m.pricing?.input ?? null,
-      pricing_output: m.pricing?.output ?? null,
-      benchmark_mmlu: m.benchmarks?.mmlu ?? null,
-      benchmark_humaneval: m.benchmarks?.humaneval ?? null,
-      benchmark_mt_bench: m.benchmarks?.mt_bench ?? null,
-      docs_url: m.links?.docs ?? null,
-      paper_url: m.links?.paper ?? null,
-      latency_first_token_ms: m.latency?.first_token_ms ?? null,
-      latency_end_to_end_ms: m.latency?.end_to_end_ms ?? null,
-      latency_throughput_tokens_per_sec: m.latency?.throughput_tokens_per_sec ?? null,
-    });
+const migrationFiles = fs
+  .readdirSync(MIGRATIONS_DIR)
+  .filter((f) => f.endsWith('.sql'))
+  .sort(); // lexicographic order — relies on NNN_ prefix convention
+
+if (migrationFiles.length === 0) {
+  console.log('⚠️   No migration files found in', MIGRATIONS_DIR);
+  process.exit(0);
+}
+
+// ---------------------------------------------------------------------------
+// Determine which migrations have already been applied
+// ---------------------------------------------------------------------------
+
+type MigrationRow = { version: string };
+const applied = new Set(
+  (db.prepare('SELECT version FROM schema_migrations').all() as MigrationRow[]).map(
+    (r) => r.version,
+  ),
+);
+
+// ---------------------------------------------------------------------------
+// Apply pending migrations
+// ---------------------------------------------------------------------------
+
+const pending = migrationFiles.filter((f) => !applied.has(f));
+
+if (pending.length === 0) {
+  console.log(
+    '✅  Nothing to migrate — all',
+    migrationFiles.length,
+    'migration(s) already applied',
+  );
+  db.close();
+  process.exit(0);
+}
+
+console.log(`🔄  Applying ${pending.length} pending migration(s)…`);
+
+const recordMigration = db.prepare(`INSERT INTO schema_migrations (version) VALUES (?)`);
+
+for (const file of pending) {
+  const filePath = path.join(MIGRATIONS_DIR, file);
+  const sql = fs.readFileSync(filePath, 'utf8').trim();
+
+  if (!sql) {
+    console.log(`  ⏭   ${file} — empty, skipping`);
+    continue;
   }
-});
 
-insertAll(models);
+  // Each migration runs inside its own transaction so a failure leaves the
+  // database in a consistent state and the version is not recorded.
+  const applyMigration = db.transaction(() => {
+    db.exec(sql);
+    recordMigration.run(file);
+  });
 
-console.log(`✅  Inserted ${models.length} rows into models table`);
-console.log('\n🎉  Database build complete:', DB_PATH);
+  try {
+    applyMigration();
+    console.log(`  ✅  ${file}`);
+  } catch (err) {
+    console.error(`  ❌  ${file} — FAILED`);
+    console.error(err instanceof Error ? err.message : String(err));
+    db.close();
+    process.exit(1);
+  }
+}
 
+console.log('\n🎉  Migration complete:', DB_PATH);
 db.close();
