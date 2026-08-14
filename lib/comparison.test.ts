@@ -143,7 +143,15 @@ describe('normalizeForComparison', () => {
 
   it('each row has a highlights object with all required keys', () => {
     const rows = normalizeForComparison([modelA, modelB]);
-    const keys = ['contextWindow', 'inputPrice', 'outputPrice', 'mmlu', 'humaneval', 'mt_bench'];
+    const keys = [
+      'contextWindow',
+      'inputPrice',
+      'outputPrice',
+      'mmlu',
+      'humaneval',
+      'mt_bench',
+      'firstTokenLatency',
+    ];
     for (const row of rows) {
       for (const key of keys) {
         expect(row.highlights).toHaveProperty(key);
@@ -227,5 +235,44 @@ describe('findSharedWeaknesses', () => {
     const result = findSharedWeaknesses([modelA, modelC]);
     // modelA: ['Expensive'], modelC: ['Limited context']
     expect(result).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// calculateDifferences — firstTokenLatency field
+// ---------------------------------------------------------------------------
+
+describe('calculateDifferences — firstTokenLatency', () => {
+  const fastModel = makeModel({
+    id: 'fast-model',
+    latency: { first_token_ms: 200, end_to_end_ms: 600, throughput_tokens_per_sec: 120 },
+  });
+  const slowModel = makeModel({
+    id: 'slow-model',
+    latency: { first_token_ms: 1500, end_to_end_ms: 4000, throughput_tokens_per_sec: 30 },
+  });
+  const noLatencyModel = makeModel({
+    id: 'no-latency',
+    latency: undefined,
+  });
+
+  it('marks the model with lowest first_token_ms as best (lower is better)', () => {
+    const result = calculateDifferences([fastModel, slowModel]);
+    expect(result['fast-model'].firstTokenLatency.isBest).toBe(true);
+    expect(result['slow-model'].firstTokenLatency.isWorst).toBe(true);
+  });
+
+  it('model without latency data has null value and is neither best nor worst', () => {
+    const result = calculateDifferences([fastModel, noLatencyModel]);
+    expect(result['no-latency'].firstTokenLatency.value).toBeNull();
+    expect(result['no-latency'].firstTokenLatency.isBest).toBe(false);
+    expect(result['no-latency'].firstTokenLatency.isWorst).toBe(false);
+  });
+
+  it('firstTokenLatency is present on every model in the result', () => {
+    const result = calculateDifferences([fastModel, slowModel, noLatencyModel]);
+    for (const id of ['fast-model', 'slow-model', 'no-latency']) {
+      expect(result[id]).toHaveProperty('firstTokenLatency');
+    }
   });
 });

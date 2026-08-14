@@ -261,12 +261,34 @@ export function scoreModel(model: Model, answers: UserAnswers): ScoredModel {
   // --- latency ---
   const latency = answers['latency'];
   if (latency === 'fast') {
-    if (model.pricing.input !== null && model.pricing.input < 1.0) {
+    if (
+      model.latency?.first_token_ms !== null &&
+      model.latency?.first_token_ms !== undefined &&
+      model.latency.first_token_ms < 500
+    ) {
+      score += 25;
+      reasons.push('sub-500ms first-token latency');
+    } else if (
+      model.latency?.throughput_tokens_per_sec !== null &&
+      model.latency?.throughput_tokens_per_sec !== undefined &&
+      model.latency.throughput_tokens_per_sec > 100
+    ) {
+      score += 20;
+      reasons.push('high throughput for streaming');
+    } else if (model.pricing.input !== null && model.pricing.input < 1.0) {
       score += 15;
       reasons.push('low cost signals smaller, faster model');
     }
+  } else if (latency === 'medium') {
+    if (
+      model.latency?.end_to_end_ms !== null &&
+      model.latency?.end_to_end_ms !== undefined &&
+      model.latency.end_to_end_ms < 2000
+    ) {
+      score += 15;
+      reasons.push('acceptable end-to-end latency');
+    }
   }
-
   // --- budget ---
   const budget = answers['budget'];
   if (budget === 'low') {
