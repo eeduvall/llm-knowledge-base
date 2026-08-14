@@ -1,4 +1,16 @@
-import type { Model } from '../lib/models';
+/**
+ * lib/db/seed-data.ts — Typed seed data for the initial database migration.
+ *
+ * This file is the TypeScript-typed counterpart to
+ * lib/db/migrations/sqlite/001_initial_schema_and_seed.sql.
+ * It is NOT imported at runtime — the running app reads exclusively from
+ * data/models.db via lib/db/models.ts.
+ *
+ * Use this file as a reference when writing future migrations, or import it
+ * from scripts/migrate.ts if you need to generate SQL programmatically.
+ */
+
+import type { Model } from '../models';
 
 export const SEED_MODELS: Model[] = [
   {
@@ -118,7 +130,7 @@ export const SEED_MODELS: Model[] = [
       'Strong multilingual support',
     ],
     weaknesses: [
-      'Requires significant compute to self-host (8\u00d7A100 minimum)',
+      'Requires significant compute to self-host (8×A100 minimum)',
       'No vision modality',
       'Inference latency depends heavily on hardware configuration',
       'No managed pricing — infrastructure costs vary widely',
