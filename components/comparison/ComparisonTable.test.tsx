@@ -33,6 +33,7 @@ function makeRow(model: Model, isBest = false, isWorst = false): ComparisonRow {
       mmlu: { value: model.benchmarks.mmlu, isBest, isWorst },
       humaneval: { value: model.benchmarks.humaneval, isBest, isWorst },
       mt_bench: { value: model.benchmarks.mt_bench, isBest, isWorst },
+      firstTokenLatency: { value: model.latency?.first_token_ms ?? null, isBest, isWorst },
     },
   };
 }
