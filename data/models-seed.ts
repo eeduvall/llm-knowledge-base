@@ -10,7 +10,7 @@ export const SEED_MODELS: Model[] = [
     context_window: 200000,
     modalities: ['text', 'image'],
     capabilities: ['reasoning', 'vision', 'tool-use', 'structured-output', 'code'],
-    pricing: { input: 3.00, output: 15.00 },
+    pricing: { input: 3.0, output: 15.0 },
     benchmarks: { mmlu: 88.7, humaneval: 92.0, mt_bench: null },
     strengths: [
       'Best-in-class coding and reasoning',
@@ -39,10 +39,7 @@ export const SEED_MODELS: Model[] = [
     capabilities: ['vision', 'tool-use', 'structured-output'],
     pricing: { input: 0.25, output: 1.25 },
     benchmarks: { mmlu: 75.2, humaneval: null, mt_bench: null },
-    strengths: [
-      'Fastest and most affordable Claude model',
-      'Good for high-throughput tasks',
-    ],
+    strengths: ['Fastest and most affordable Claude model', 'Good for high-throughput tasks'],
     weaknesses: [
       'Less capable than Sonnet/Opus for complex reasoning',
       'Lower benchmark scores than larger Claude models',
@@ -90,12 +87,9 @@ export const SEED_MODELS: Model[] = [
     context_window: 2000000,
     modalities: ['text', 'image', 'audio', 'video'],
     capabilities: ['reasoning', 'vision', 'tool-use', 'structured-output', 'long-context', 'code'],
-    pricing: { input: 3.50, output: 10.50 },
+    pricing: { input: 3.5, output: 10.5 },
     benchmarks: { mmlu: 85.9, humaneval: 71.9, mt_bench: null },
-    strengths: [
-      '2M token context window — largest available',
-      'Strong multimodal reasoning',
-    ],
+    strengths: ['2M token context window — largest available', 'Strong multimodal reasoning'],
     weaknesses: [
       'Higher latency on very long contexts (>500K tokens)',
       'Cost scales significantly with context length',
@@ -169,13 +163,9 @@ export const SEED_MODELS: Model[] = [
     context_window: 128000,
     modalities: ['text'],
     capabilities: ['reasoning', 'tool-use', 'structured-output', 'code'],
-    pricing: { input: 3.00, output: 9.00 },
+    pricing: { input: 3.0, output: 9.0 },
     benchmarks: { mmlu: 84.0, humaneval: 92.0, mt_bench: null },
-    strengths: [
-      'Strong coding performance',
-      'Multilingual (80+ languages)',
-      'Competitive pricing',
-    ],
+    strengths: ['Strong coding performance', 'Multilingual (80+ languages)', 'Competitive pricing'],
     weaknesses: [
       'No vision modality',
       'Smaller ecosystem than OpenAI/Anthropic',
@@ -196,7 +186,7 @@ export const SEED_MODELS: Model[] = [
     context_window: 128000,
     modalities: ['text'],
     capabilities: ['reasoning', 'tool-use', 'code'],
-    pricing: { input: 0.30, output: 0.30 },
+    pricing: { input: 0.3, output: 0.3 },
     benchmarks: { mmlu: 68.0, humaneval: null, mt_bench: null },
     strengths: [
       '12B parameters — efficient and fast',
@@ -223,7 +213,7 @@ export const SEED_MODELS: Model[] = [
     context_window: 128000,
     modalities: ['text', 'image', 'audio'],
     capabilities: ['reasoning', 'vision', 'tool-use', 'structured-output', 'code'],
-    pricing: { input: 5.00, output: 15.00 },
+    pricing: { input: 5.0, output: 15.0 },
     benchmarks: { mmlu: 88.7, humaneval: 90.2, mt_bench: null },
     strengths: [
       'Best-in-class multimodal reasoning',
@@ -250,13 +240,9 @@ export const SEED_MODELS: Model[] = [
     context_window: 128000,
     modalities: ['text', 'image'],
     capabilities: ['reasoning', 'vision', 'tool-use', 'structured-output', 'code'],
-    pricing: { input: 0.15, output: 0.60 },
+    pricing: { input: 0.15, output: 0.6 },
     benchmarks: { mmlu: 82.0, humaneval: 87.2, mt_bench: null },
-    strengths: [
-      'Very low cost',
-      'Fast response times',
-      'Strong performance for its price',
-    ],
+    strengths: ['Very low cost', 'Fast response times', 'Strong performance for its price'],
     weaknesses: [
       'Less capable than GPT-4o on complex multi-step tasks',
       'No audio modality',
@@ -277,7 +263,7 @@ export const SEED_MODELS: Model[] = [
     context_window: 128000,
     modalities: ['text'],
     capabilities: ['reasoning', 'code', 'structured-output'],
-    pricing: { input: 15.00, output: 60.00 },
+    pricing: { input: 15.0, output: 60.0 },
     benchmarks: { mmlu: null, humaneval: 92.4, mt_bench: null },
     strengths: [
       'Exceptional multi-step reasoning',
