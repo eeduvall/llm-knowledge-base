@@ -38,6 +38,11 @@ function rowToModel(row: DbModelRow): Model {
       docs: row.docs_url,
       paper: row.paper_url,
     },
+    latency: {
+      first_token_ms: row.latency_first_token_ms,
+      end_to_end_ms: row.latency_end_to_end_ms,
+      throughput_tokens_per_sec: row.latency_throughput_tokens_per_sec,
+    },
   };
 }
 
@@ -80,4 +85,33 @@ export function getModelsByCapability(capability: string): Model[] {
     )
     .all(capability) as DbModelRow[];
   return rows.map(rowToModel);
+}
+
+/** Return all models that support a given modality (e.g. 'image', 'audio'). */
+export function getModelsByModality(modality: string): Model[] {
+  const db = getDb();
+  const rows = db
+    .prepare(
+      `SELECT m.* FROM models m, json_each(m.modalities) mod
+       WHERE mod.value = ?
+       ORDER BY m.provider, m.id`,
+    )
+    .all(modality) as DbModelRow[];
+  return rows.map(rowToModel);
+}
+
+/** Return all models matching a list of IDs (preserves requested order). */
+export function getModelsByIds(ids: string[]): Model[] {
+  if (ids.length === 0) return [];
+  const db = getDb();
+  const placeholders = ids.map(() => '?').join(', ');
+  const rows = db
+    .prepare(`SELECT * FROM models WHERE id IN (${placeholders})`)
+    .all(...ids) as DbModelRow[];
+  // Preserve the caller's requested order
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  return ids.flatMap((id) => {
+    const row = byId.get(id);
+    return row ? [rowToModel(row)] : [];
+  });
 }

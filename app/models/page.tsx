@@ -1,6 +1,6 @@
 import { Navbar } from '@/components/Navbar';
 import { ModelCard } from '@/components/ModelCard';
-import { loadModels } from '@/lib/models-server';
+import { getAllModels } from '@/lib/db/models';
 
 export const metadata = {
   title: 'Models — LLM Knowledge Base',
@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default function ModelsPage() {
-  const models = loadModels();
+  const models = getAllModels();
 
   return (
     <main style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
