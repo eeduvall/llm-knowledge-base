@@ -159,6 +159,11 @@ export function NodePanel({ modelId, onSelect }: { modelId: string; onSelect: (i
   --color-panel-bg: rgba(255, 255, 255, 0.03);
   --color-panel-bg-alt: rgba(108, 99, 255, 0.06);
   --color-overlay: rgba(5, 5, 16, 0.75);
+  --color-input-bg: rgba(255, 255, 255, 0.05);
+  --color-input-border: rgba(255, 255, 255, 0.10);
+  --color-pill-bg: rgba(255, 255, 255, 0.05);
+  --color-pill-border: rgba(255, 255, 255, 0.08);
+  --color-stats-bg: rgba(255, 255, 255, 0.04);
 }
 ```
 

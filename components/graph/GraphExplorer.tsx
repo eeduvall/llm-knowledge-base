@@ -269,7 +269,7 @@ export function GraphExplorer({ initialModels }: Props) {
               />
               <span
                 className="text-xs font-mono capitalize"
-                style={{ color: 'rgba(255,255,255,0.45)' }}
+                style={{ color: 'var(--color-text-faint)' }}
               >
                 {provider}
               </span>

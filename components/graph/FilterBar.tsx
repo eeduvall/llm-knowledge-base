@@ -60,7 +60,7 @@ function Section({ title, children, defaultOpen = true }: SectionProps) {
       >
         <span
           className="text-xs font-mono font-medium tracking-widest uppercase"
-          style={{ color: 'rgba(255,255,255,0.35)' }}
+          style={{ color: 'var(--color-text-faint)' }}
         >
           {title}
         </span>
@@ -73,7 +73,7 @@ function Section({ title, children, defaultOpen = true }: SectionProps) {
           className="flex-shrink-0 transition-transform duration-200"
           style={{
             transform: open ? 'rotate(0deg)' : 'rotate(-90deg)',
-            color: 'rgba(255,255,255,0.25)',
+            color: 'var(--color-text-faint)',
           }}
         >
           <path
@@ -106,9 +106,9 @@ function Pill({ label, active, color = 'var(--color-primary)', onClick }: PillPr
       onClick={onClick}
       className="w-fit px-3 py-1 rounded text-xs font-mono font-medium capitalize transition-all duration-200"
       style={{
-        backgroundColor: active ? `${color}22` : 'rgba(255,255,255,0.05)',
-        color: active ? color : 'rgba(255,255,255,0.5)',
-        border: `1px solid ${active ? color + '44' : 'rgba(255,255,255,0.08)'}`,
+        backgroundColor: active ? `${color}22` : 'var(--color-pill-bg)',
+        color: active ? color : 'var(--color-text-muted)',
+        border: `1px solid ${active ? color + '44' : 'var(--color-pill-border)'}`,
       }}
     >
       {label}
@@ -179,15 +179,15 @@ export function FilterBar({
       className="absolute top-0 left-0 h-full z-10 flex flex-col overflow-y-auto"
       style={{
         width: '13rem',
-        backgroundColor: 'rgba(5,5,16,0.88)',
-        borderRight: '1px solid rgba(255,255,255,0.07)',
+        backgroundColor: 'var(--color-overlay)',
+        borderRight: '1px solid var(--color-border)',
       }}
       aria-label="Graph filters"
     >
       {/* Panel header */}
       <div
         className="px-4 py-3 border-b flex-shrink-0"
-        style={{ borderColor: 'rgba(255,255,255,0.07)' }}
+        style={{ borderColor: 'var(--color-border)' }}
       >
         <span
           className="text-xs font-mono font-semibold tracking-widest uppercase"
@@ -200,6 +200,7 @@ export function FilterBar({
       <div className="flex flex-col gap-4 px-4 py-4 flex-1">
         {/* ── Search ── */}
         <div className="relative">
+          <label htmlFor="graph-search" className="sr-only">Search models</label>
           <svg
             width="12"
             height="12"
@@ -207,46 +208,49 @@ export function FilterBar({
             fill="none"
             aria-hidden="true"
             className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ color: 'rgba(255,255,255,0.3)' }}
+            style={{ color: 'var(--color-text-faint)' }}
           >
             <circle cx="5" cy="5" r="3.5" stroke="currentColor" strokeWidth="1.2" />
             <path d="M8 8l2.5 2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
           </svg>
           <input
+            id="graph-search"
             type="search"
             placeholder="Search models…"
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
-            className="w-full pl-7 pr-3 py-2 text-xs text-white placeholder-white/30 rounded outline-none transition-colors duration-200"
+            className="w-full pl-7 pr-3 py-2 text-xs rounded outline-none transition-colors duration-200"
             style={{
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              backgroundColor: 'var(--color-input-bg)',
+              border: '1px solid var(--color-input-border)',
+              color: 'var(--color-text)',
             }}
-            aria-label="Search models"
           />
         </div>
 
         {/* ── Provider ── */}
-        <Section title="Provider">
-          <Pill
-            label="All"
-            active={activeProvider === null}
-            color="var(--color-primary)"
-            onClick={() => onSelectProvider(null)}
-          />
-          {providers.map((provider) => {
-            const color = PROVIDER_COLORS[provider] ?? 'var(--color-primary)';
-            return (
-              <Pill
-                key={provider}
-                label={provider}
-                active={activeProvider === provider}
-                color={color}
-                onClick={() => onSelectProvider(activeProvider === provider ? null : provider)}
-              />
-            );
-          })}
-        </Section>
+        <div role="group" aria-label="Filter by provider">
+          <Section title="Provider">
+            <Pill
+              label="All"
+              active={activeProvider === null}
+              color="var(--color-primary)"
+              onClick={() => onSelectProvider(null)}
+            />
+            {providers.map((provider) => {
+              const color = PROVIDER_COLORS[provider] ?? 'var(--color-primary)';
+              return (
+                <Pill
+                  key={provider}
+                  label={provider}
+                  active={activeProvider === provider}
+                  color={color}
+                  onClick={() => onSelectProvider(activeProvider === provider ? null : provider)}
+                />
+              );
+            })}
+          </Section>
+        </div>
 
         {/* ── Capability ── */}
         <Section title="Capability" defaultOpen={true}>
@@ -311,7 +315,7 @@ export function FilterBar({
       {hasActiveFilters && (
         <div
           className="px-4 py-3 border-t flex-shrink-0"
-          style={{ borderColor: 'rgba(255,255,255,0.07)' }}
+          style={{ borderColor: 'var(--color-border)' }}
         >
           <button
             onClick={onClearAllFilters}

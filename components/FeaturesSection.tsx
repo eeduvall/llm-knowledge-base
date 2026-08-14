@@ -36,30 +36,37 @@ export function FeaturesSection() {
         {FEATURES.map((feature) => (
           <div
             key={feature.number}
-            className="rounded-xl p-6 flex flex-col gap-3 border transition-all duration-300 hover:border-white/15 group"
+            className="rounded-xl p-6 flex flex-col gap-3 border transition-all duration-300 group"
             style={{
-              backgroundColor: 'rgba(255,255,255,0.03)',
-              borderColor: 'rgba(255,255,255,0.07)',
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'var(--color-border)',
             }}
           >
             {/* Number / Tag */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-medium" style={{ color: '#6C63FF' }}>
+              <span
+                className="text-xs font-mono font-medium"
+                style={{ color: 'var(--color-primary)' }}
+              >
                 {feature.number} /
               </span>
               <span
                 className="text-xs font-mono font-medium tracking-widest uppercase"
-                style={{ color: '#6C63FF' }}
+                style={{ color: 'var(--color-primary)' }}
               >
                 {feature.tag}
               </span>
             </div>
 
             {/* Title */}
-            <h3 className="text-xl font-semibold text-white leading-snug">{feature.title}</h3>
+            <h3 className="text-xl font-semibold leading-snug" style={{ color: 'var(--color-text)' }}>
+              {feature.title}
+            </h3>
 
             {/* Description */}
-            <p className="text-sm text-white/50 leading-relaxed">{feature.description}</p>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+              {feature.description}
+            </p>
           </div>
         ))}
       </div>
