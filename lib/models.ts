@@ -32,6 +32,12 @@ export type Links = {
   paper: string | null;
 };
 
+export type Latency = {
+  first_token_ms: number | null;
+  end_to_end_ms: number | null;
+  throughput_tokens_per_sec: number | null;
+};
+
 export type Model = {
   id: string;
   name: string;
@@ -48,6 +54,7 @@ export type Model = {
   license: string;
   links: Links;
   last_verified?: string;
+  latency?: Latency;
 };
 
 // ---------------------------------------------------------------------------

@@ -26,6 +26,7 @@ export type ModelHighlights = {
   mmlu: NumericHighlight;
   humaneval: NumericHighlight;
   mt_bench: NumericHighlight;
+  firstTokenLatency: NumericHighlight;
 };
 
 /** Differences computed across all compared models. */
@@ -95,6 +96,7 @@ export function calculateDifferences(models: Model[]): DifferenceHighlights {
   const mmluMap = buildNumericHighlight(models, (m) => m.benchmarks.mmlu, false);
   const humaMap = buildNumericHighlight(models, (m) => m.benchmarks.humaneval, false);
   const mtMap = buildNumericHighlight(models, (m) => m.benchmarks.mt_bench, false);
+  const latencyMap = buildNumericHighlight(models, (m) => m.latency?.first_token_ms ?? null, true);
 
   const result: DifferenceHighlights = {};
   for (const model of models) {
@@ -105,6 +107,7 @@ export function calculateDifferences(models: Model[]): DifferenceHighlights {
       mmlu: mmluMap.get(model.id)!,
       humaneval: humaMap.get(model.id)!,
       mt_bench: mtMap.get(model.id)!,
+      firstTokenLatency: latencyMap.get(model.id)!,
     };
   }
   return result;
